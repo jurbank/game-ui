@@ -1,0 +1,113 @@
+---
+title: Modal
+description: A themed dialog that blocks the rest of the screen UI until the player responds.
+sidebar:
+  order: 3
+---
+
+import Example from "../../../components/Example.astro";
+import { PauseMenu } from "../../../components/examples/ModalExamples.tsx";
+
+A dialog that takes focus and blocks the rest of the screen UI until the player responds.
+
+<Example>
+  <PauseMenu client:load />
+</Example>
+
+<Example label="Arcade with token overrides" class="example-neon">
+  <PauseMenu client:load />
+</Example>
+
+## When to use
+
+- A decision the player must make before continuing: pause menus, leave or forfeit confirmations, match-found prompts.
+- Short forms that belong over the current screen, such as renaming a loadout.
+
+## When not to use
+
+- Information the player can ignore, such as a kill feed or reward notice: use the planned Toast, or a Panel.
+- Content that should stay visible while the player keeps playing: use a Panel in the HUD.
+- In-world prompts attached to an entity: use world UI.
+
+## Usage
+
+```tsx
+import { Button, Modal } from "@game-ui/react";
+
+const [paused, setPaused] = useState(false);
+
+<Modal
+  open={paused}
+  onClose={() => setPaused(false)}
+  title="Paused"
+  actions={<Button onClick={() => setPaused(false)}>Resume</Button>}
+/>;
+```
+
+Modal is controlled. The game owns `open` and decides when the modal opens, for example from a pause key, a button, or a server event.
+
+## Dismissal
+
+By default a modal is dismissible: Escape, a press on the backdrop, and the close button each call `onClose` with a reason of `"escape"`, `"backdrop"`, or `"close-button"`. The modal closes only when the game sets `open` to `false`, so the game can ignore a dismissal, for example while a match is reconnecting.
+
+Set `dismissible={false}` for decisions the player must answer explicitly. The close button is hidden, Escape and backdrop presses do nothing, and `onClose` is never called. Provide `actions` that set `open` to `false`.
+
+Closes the game makes itself, such as a Resume button or a server event, do not call `onClose`.
+
+## Stacking
+
+To show a modal over another, render it inside the first modal's `children`. Both stay open, and the outer dialog gets a `data-nested-dialog-open` attribute to style with.
+
+```tsx
+<Modal open={paused} onClose={resume} title="Paused" actions={…}>
+  <Modal open={confirming} dismissible={false} title="Leave match?" actions={…} />
+</Modal>
+```
+
+Two modals rendered side by side are not stacked: the newer one takes the screen and the older one waits behind it. Prefer one modal at a time, or nest.
+
+## Props
+
+| Prop           | Type                                 | Default                        |
+| -------------- | ------------------------------------ | ------------------------------ |
+| `open`         | `boolean`                            | required                       |
+| `title`        | `ReactNode`                          | required                       |
+| `onClose`      | `(reason: ModalCloseReason) => void` | none                           |
+| `description`  | `ReactNode`                          | none                           |
+| `children`     | `ReactNode`                          | none                           |
+| `actions`      | `ReactNode`                          | none                           |
+| `dismissible`  | `boolean`                            | `true`                         |
+| `closeLabel`   | `string`                             | `"Close"`                      |
+| `size`         | `"sm" \| "md" \| "lg"`               | `"md"`                         |
+| `initialFocus` | `RefObject<HTMLElement \| null>`     | first focusable element        |
+| `finalFocus`   | `RefObject<HTMLElement \| null>`     | element focused before opening |
+| `className`    | `string`                             | none                           |
+
+`className` is appended to the dialog popup's classes. The popup also has a `data-size` attribute, and `data-open`, `data-starting-style`, and `data-ending-style` while it animates.
+
+## Themes
+
+The dialog renders at the end of `<body>` so it can cover the whole screen. When it opens, it copies the theme in effect where `<Modal>` is rendered: the nearest `data-game-theme` value and the resolved value of every `--game-*` token. A modal declared inside a themed region, or inside an element with token overrides, matches that region, as in the second example above.
+
+The theme is read when the modal opens. Modal renders a hidden `<span>` where it is declared to find that theme.
+
+## Theme tokens
+
+Uses `--game-panel`, `--game-surface`, `--game-text`, `--game-text-muted`, `--game-border`, `--game-border-width`, `--game-radius-lg`, `--game-radius-md`, `--game-shadow`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, `--game-space-*`, `--game-duration-normal`, `--game-ease`, and `--game-focus-ring`.
+
+Opening and closing fade and scale over `--game-duration-normal`. With reduced motion, the duration is `0ms`.
+
+## Accessibility
+
+- Renders `role="dialog"` named by `title` and described by `description`.
+- Moves focus into the dialog on open, keeps Tab and Shift+Tab inside it, and returns focus to the previously focused element on close.
+- Makes the rest of the page inert and locks page scroll while open.
+- The close button is labelled by `closeLabel`. Translate it along with the rest of your UI.
+- For a destructive confirmation, pass `initialFocus` pointing at the safe choice.
+
+## Agent guidance
+
+- Keep `open` in game state and close the modal from `onClose` and from action handlers.
+- Use `dismissible={false}` only when the player must choose; otherwise leave Escape working.
+- Put decisions in `actions` as Buttons, with the primary choice last.
+- Nest a confirmation inside the modal that raises it rather than rendering both side by side.

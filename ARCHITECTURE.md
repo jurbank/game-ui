@@ -138,11 +138,25 @@ Screen-space UI rendered with React and normal DOM/CSS.
 - core
 - themes
 - React
+- Base UI (`@base-ui/react`)
 
 ### Must not depend on
 
 - Phaser
 - Individual games
+- Styled component libraries
+
+### Behavior primitives
+
+Components with non-trivial interaction behavior are built on [Base UI](https://base-ui.com), an unstyled, accessible React primitive library. Base UI supplies behavior and accessibility, such as focus trapping, focus restoration, Escape handling, ARIA wiring, and keyboard navigation. Game UI supplies all styling through semantic tokens.
+
+- Use Base UI for components where behavior is hard to get right: Modal (Dialog), ProgressBar (Progress), and later Toast, Menu, Select, Tabs, Slider, and Tooltip.
+- Do not wrap Base UI where native HTML is sufficient. Button renders a native `<button>` and Panel renders a `<div>` or `<section>`.
+- Base UI is an implementation detail. Components expose Game UI props and types, not Base UI's API, and consumers never import `@base-ui/react` to use Game UI.
+- Style Base UI parts with `game-*` utilities in `*.styles.ts`, using the data attributes Base UI sets for state, such as `data-open` and `data-disabled`.
+- Do not use shadcn/ui or other styled component libraries as a base. Their styles use Tailwind's default theme and their own tokens, which would be replaced entirely, and their copy-into-your-app model does not suit a shared package.
+
+Portaled parts such as dialogs, menus, and toasts render under `<body>`. A theme applied to the root element reaches them; a theme applied to a smaller region does not. Components that portal must carry the nearest theme into their portal so region-scoped themes still apply.
 
 ### State rule
 
@@ -531,6 +545,7 @@ Each framework package follows the same template:
 - Tests live in `tests/` and run through the package `test` script, so `vp run ready` includes them.
 - Framework runtimes (`react`, `react-dom`, `phaser`) are `peerDependencies`, also listed in `devDependencies` for local development. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.
 - Internal `@game-ui/*` packages a package needs at runtime are regular `dependencies` using `workspace:*`, which is rewritten to a version when packed.
+- Implementation libraries that consumers never import directly, such as `@base-ui/react`, are regular `dependencies`. They stay external in the build, so a consumer's bundler deduplicates them.
 
 The allowed dependency direction is enforced by `tools/workspace-checks`, which fails when a package declares or imports a dependency outside its allowed set. Register each new package there when it is introduced.
 

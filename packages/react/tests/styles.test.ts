@@ -4,11 +4,16 @@ import { fileURLToPath } from "node:url";
 import { compile } from "@tailwindcss/node";
 import { expect, test } from "vite-plus/test";
 import * as buttonStyles from "../src/components/Button/Button.styles.ts";
+import * as modalStyles from "../src/components/Modal/Modal.styles.ts";
 import * as panelStyles from "../src/components/Panel/Panel.styles.ts";
 
 const stylesPath = fileURLToPath(new URL("../src/styles.css", import.meta.url));
 
-const styleModules: Record<string, string | Record<string, string>>[] = [buttonStyles, panelStyles];
+const styleModules: Record<string, string | Record<string, string>>[] = [
+  buttonStyles,
+  modalStyles,
+  panelStyles,
+];
 
 const classStrings = styleModules.flatMap((styles) =>
   Object.values(styles).flatMap((value) =>

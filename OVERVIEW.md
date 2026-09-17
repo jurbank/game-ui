@@ -98,6 +98,7 @@ Examples:
 The initial stack is:
 
 - React for screen UI
+- Base UI for unstyled, accessible behavior primitives in complex screen UI components
 - Tailwind CSS for styling
 - CSS custom properties for theming
 - Phaser for 2D world UI rendering
@@ -176,6 +177,7 @@ Examples:
 - Toast
 - HUD layouts
   Components should consume semantic theme tokens rather than hardcoded visual values.
+  Components with complex interaction behavior, such as Modal, are built on Base UI's unstyled primitives rather than a styled library such as shadcn/ui, so themes control every visual value.
 
 ## packages/world-ui
 

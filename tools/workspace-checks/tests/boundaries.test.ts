@@ -10,7 +10,7 @@ import { describe, expect, test } from "vite-plus/test";
 const allowedDependencies: Record<string, readonly string[]> = {
   "@game-ui/core": [],
   "@game-ui/themes": ["@game-ui/core"],
-  "@game-ui/react": ["@game-ui/core", "@game-ui/themes", "react", "react-dom"],
+  "@game-ui/react": ["@game-ui/core", "@game-ui/themes", "@base-ui/react", "react", "react-dom"],
   "@game-ui/world-ui": ["@game-ui/core"],
   "@game-ui/phaser": ["@game-ui/core", "@game-ui/world-ui", "phaser"],
 };

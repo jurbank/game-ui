@@ -23,6 +23,10 @@ Use **world UI** when the element belongs to an entity or world position: a play
 
 Components never hardcode colors, fonts, radii, shadows, or spacing. They reference semantic tokens such as `--game-panel` and `--game-primary`, and themes supply the values. A game establishes its identity by selecting a theme and overriding tokens, not by forking components.
 
+## Accessible behavior
+
+Screen UI components use native HTML where it is enough and [Base UI](https://base-ui.com)'s unstyled primitives for complex behavior such as dialogs, so focus management and keyboard support come from a tested foundation while themes control every visual value. You never need to import Base UI yourself.
+
 ## State stays in the game
 
 Shared components do not own game state. They receive controlled values through props, and the game decides whether those values come from React state, a store, a server, or the game scene.

@@ -35,6 +35,8 @@
     "check": "vp check"
   },
   "dependencies": {
+    "@base-ui/react": "catalog:",
+    "@game-ui/core": "workspace:*",
     "@game-ui/themes": "workspace:*"
   },
   "devDependencies": {
@@ -54,6 +56,7 @@
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

@@ -11,3 +11,9 @@ export {
   type PanelProps,
   type PanelVariant,
 } from "./components/Panel/index.ts";
+export {
+  Modal,
+  type ModalCloseReason,
+  type ModalProps,
+  type ModalSize,
+} from "./components/Modal/index.ts";

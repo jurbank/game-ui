@@ -43,6 +43,15 @@ To change a game's look, override `--game-*` tokens. Do not fork or restyle shar
 - World UI belongs to an entity or world position and uses the game renderer.
 - Do not render many world-attached labels through React.
 
+## Extending the framework
+
+When adding a shared screen UI component:
+
+- Use native HTML when it provides the behavior, as Button does with `<button>`.
+- Build components with complex interaction behavior, such as dialogs, menus, selects, tabs, sliders, and toasts, on [Base UI](https://base-ui.com)'s unstyled primitives. Do not reimplement focus trapping or keyboard navigation.
+- Do not base components on shadcn/ui or other styled component libraries. Style everything with semantic `game-*` utilities.
+- Expose Game UI props, not Base UI's API.
+
 ## Keep game rules outside shared packages
 
 Shared components receive content and state through props. The game decides content, team rules, scoring, and match lifecycle.
