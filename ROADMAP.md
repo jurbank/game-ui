@@ -46,15 +46,15 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 
 **Outcome:** contributors can install, run the website, and validate packages with predictable commands.
 
-- [ ] Give `apps/website` a workspace package name and align the root `dev` task with it. It currently targets `docs#dev`, while the website package name is empty.
-- [ ] Resolve the esbuild build-script policy deliberately and verify a clean `vp install` completes. The initial install reports `ERR_PNPM_IGNORED_BUILDS` and generates an unresolved `allowBuilds.esbuild` placeholder.
-- [ ] Review the nested website workspace configuration and lockfile; establish the root workspace as the dependency-management entry point.
-- [ ] Fix the existing website formatting failures so `vp check` has a clean baseline.
+- [x] Give `apps/website` a workspace package name and align the root `dev` task with it. It currently targets `docs#dev`, while the website package name is empty.
+- [x] Resolve the esbuild build-script policy deliberately and verify a clean `vp install` completes. The initial install reports `ERR_PNPM_IGNORED_BUILDS` and generates an unresolved `allowBuilds.esbuild` placeholder.
+- [x] Review the nested website workspace configuration and lockfile; establish the root workspace as the dependency-management entry point.
+- [x] Fix the existing website formatting failures so `vp check` has a clean baseline.
 - [ ] Replace the placeholder `packages/utils` with `packages/core`, retaining only utilities needed by actual framework code.
 - [ ] Establish the package template: TypeScript configuration, declaration output, explicit exports, package metadata, and Vite+ build/test tasks.
 - [ ] Create `packages/themes` and `packages/react` for milestone 1. Create world UI and Phaser packages when milestone 3 begins rather than filling them with speculative APIs.
 - [ ] Define external and peer dependency handling so consumer builds do not bundle duplicate React or Phaser runtimes.
-- [ ] Replace the starter README with setup, workspace navigation, and validation instructions; align the architecture's repository tree with the chosen tooling.
+- [x] Replace the starter README with setup, workspace navigation, and validation instructions; align the architecture's repository tree with the chosen tooling.
 - [ ] Add CI using the repository's validation tasks and enforce the dependency boundaries as packages are introduced.
 
 **Acceptance criteria:** a fresh checkout installs successfully; `vp run dev` starts the website; checks, tests, and recursive builds pass. Public package imports resolve without reaching into `src`.

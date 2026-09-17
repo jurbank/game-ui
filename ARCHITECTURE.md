@@ -67,12 +67,12 @@ game-ui/
 │        │  └─ playful.css
 │        └─ index.css
 │
-├─ docs/
-│  ├─ ARCHITECTURE.md
-│  └─ OVERVIEW.md
+├─ ARCHITECTURE.md
+├─ OVERVIEW.md
+├─ ROADMAP.md
 ├─ package.json
 ├─ pnpm-workspace.yaml
-├─ turbo.json
+├─ vite.config.ts
 └─ tsconfig.json
 ```
 
