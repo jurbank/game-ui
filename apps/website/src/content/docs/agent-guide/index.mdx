@@ -1,0 +1,48 @@
+---
+title: Using Game UI
+description: Rules for coding agents building game interfaces with Game UI.
+sidebar:
+  order: 1
+---
+
+These rules help coding agents build game UI consistently with the framework.
+
+## Before creating UI
+
+1. Search the [component list](/components/) for an existing primitive.
+2. Check its documented variants and props.
+3. Check whether composing existing components solves the need.
+4. Create a new shared primitive only when the need is genuinely different.
+5. Create game-specific UI only when it should not belong to the shared framework.
+
+## Map needs to primitives
+
+| Need                          | Use                                                            |
+| ----------------------------- | -------------------------------------------------------------- |
+| A clickable action            | `Button` with a variant chosen by intent                       |
+| A destructive action          | `Button variant="danger"`                                      |
+| A grouped HUD or menu section | `Panel` with a `title`                                         |
+| A nested group in a panel     | `Panel variant="inset"`                                        |
+| A name above a character      | World UI (planned `Nameplate`)                                 |
+| A game timer or player list   | Planned `Timer` and `PlayerList`; compose with Panel meanwhile |
+
+## Use semantic styling
+
+Do not hardcode game-specific visual values in shared components.
+
+```text
+Avoid:   bg-blue-600  text-yellow-400  rounded-xl  color="#ffff00"
+Prefer:  bg-game-primary  text-game-text  rounded-game-md  variant="danger"
+```
+
+To change a game's look, override `--game-*` tokens. Do not fork or restyle shared components.
+
+## Choose the correct layer
+
+- Screen UI belongs to the viewport and uses React components.
+- World UI belongs to an entity or world position and uses the game renderer.
+- Do not render many world-attached labels through React.
+
+## Keep game rules outside shared packages
+
+Shared components receive content and state through props. The game decides content, team rules, scoring, and match lifecycle.

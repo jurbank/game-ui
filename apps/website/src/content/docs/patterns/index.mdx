@@ -1,0 +1,39 @@
+---
+title: Composition
+description: Build game interfaces by composing primitives and keeping game state in the game.
+sidebar:
+  order: 1
+---
+
+import Example from "../../../components/Example.astro";
+import { ReadyCheck } from "../../../components/examples/ReadyCheck.tsx";
+
+Most game screens are compositions of a few primitives. The lobby below is a Panel containing Buttons; the ready state lives in the example, not in the framework.
+
+<Example>
+  <ReadyCheck client:visible />
+</Example>
+
+```tsx
+import { Button, Panel } from "@game-ui/react";
+
+function Lobby({ readyCount, isReady, onToggleReady, onLeave }: LobbyProps) {
+  return (
+    <Panel title="Lobby" variant="raised">
+      <p>{readyCount} of 4 players ready</p>
+      <Button aria-pressed={isReady} onClick={onToggleReady}>
+        {isReady ? "Ready!" : "Ready up"}
+      </Button>
+      <Button variant="danger" onClick={onLeave}>
+        Leave lobby
+      </Button>
+    </Panel>
+  );
+}
+```
+
+## Guidelines
+
+- **Pass state in, send intent out.** Components receive values through props and report actions through callbacks such as `onToggleReady`. Your game decides what those actions do.
+- **Keep game rules in the game.** Winners, team membership, and match lifecycle never belong in shared components.
+- **Compose before creating.** Combine existing primitives and variants before building a new component.

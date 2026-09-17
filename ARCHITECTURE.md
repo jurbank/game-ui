@@ -338,7 +338,7 @@ Shared components should use semantic values rather than literal game colors.
 Conceptually:
 
 ```css
-@theme {
+@theme inline {
   --color-game-bg: var(--game-bg);
   --color-game-panel: var(--game-panel);
   --color-game-primary: var(--game-primary);
@@ -352,6 +352,10 @@ Shared components can then use:
 ```tsx
 <div className="bg-game-panel text-game-text border-game-border">
 ```
+
+The mapping must use `@theme inline` so utilities read the `--game-*` variables where they are applied; otherwise Tailwind resolves them once on `:root` and scoped themes or overrides do not reach the utilities.
+
+Framework CSS lives in the `game-ui` cascade layer (`game-ui.tokens`, `game-ui.themes`, `game-ui.base`, `game-ui.components`). Consumers declare its position after resets and before utilities, such as `@layer theme, base, game-ui, components, utilities;` with Tailwind, so resets like Preflight do not override components and utilities and unlayered game CSS take precedence. React component styles are precompiled with Tailwind into `@game-ui/react/styles.css` without Tailwind's default theme, so only static and semantic `game-*` utilities generate CSS. The full styling contract is documented in [`packages/themes/README.md`](./packages/themes/README.md).
 
 Avoid shared component styles such as:
 
@@ -473,9 +477,13 @@ A simple React component:
 packages/react/src/components/Button/
 ├─ Button.tsx
 ├─ Button.types.ts
-├─ Button.test.tsx
+├─ Button.styles.ts
 └─ index.ts
+packages/react/tests/
+└─ Button.test.tsx
 ```
+
+`*.styles.ts` holds the component's Tailwind class strings as complete literals, so the build can find them and tests can verify that every class generates CSS.
 
 A larger component may contain internal helpers:
 
@@ -512,6 +520,19 @@ import { Button } from "@game-ui/react/button";
 ```
 
 Use explicit package exports when useful.
+
+## Package Conventions
+
+Each framework package follows the same template:
+
+- Package name `@game-ui/<name>`, `"type": "module"`, and an explicit `exports` map. Only exported paths are public.
+- TypeScript packages build with `vp pack` to `dist/` with declaration files, and publish only `dist`. CSS-only packages publish their stylesheets unbuilt.
+- TypeScript entry points also export a `@game-ui/source` condition pointing at `src`, with the plain `dist` map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while published packages expose only `dist`.
+- Tests live in `tests/` and run through the package `test` script, so `vp run ready` includes them.
+- Framework runtimes (`react`, `react-dom`, `phaser`) are `peerDependencies`, also listed in `devDependencies` for local development. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.
+- Internal `@game-ui/*` packages a package needs at runtime are regular `dependencies` using `workspace:*`, which is rewritten to a version when packed.
+
+The allowed dependency direction is enforced by `tools/workspace-checks`, which fails when a package declares or imports a dependency outside its allowed set. Register each new package there when it is introduced.
 
 ## Documentation Site
 

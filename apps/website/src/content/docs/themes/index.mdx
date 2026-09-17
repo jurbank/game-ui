@@ -1,0 +1,77 @@
+---
+title: Theming
+description: Select a starting theme and override semantic tokens to create a game's visual identity.
+sidebar:
+  order: 1
+---
+
+import Example from "../../../components/Example.astro";
+import { ReadyCheck } from "../../../components/examples/ReadyCheck.tsx";
+
+CSS custom properties are the theming API. Components reference semantic tokens, themes supply values, and games override them.
+
+## Starting themes
+
+| Theme    | Status    | Designed for                                                             |
+| -------- | --------- | ------------------------------------------------------------------------ |
+| Arcade   | Available | Competitive and action games: dark base, bright accents, chunky controls |
+| Tactical | Planned   | Strategy and data-heavy games: restrained accents, compact spacing       |
+| Playful  | Planned   | Casual and party games: brighter surfaces, rounded, larger controls      |
+
+Apply a theme to any element and everything inside it:
+
+```html
+<html data-game-theme="arcade"></html>
+```
+
+Without a theme, components use neutral defaults.
+
+## Overriding tokens
+
+Override `--game-*` variables in your own CSS. Both examples below render the same `ReadyCheck` component; the second only changes tokens.
+
+<div class="not-content example-side-by-side">
+  <Example label="Arcade">
+    <ReadyCheck client:visible />
+  </Example>
+  <Example label="Arcade with token overrides" class="example-neon">
+    <ReadyCheck client:visible />
+  </Example>
+</div>
+
+```css
+.neon-arena {
+  --game-bg: #0a0514;
+  --game-surface: #150a2a;
+  --game-panel: #1f0f3d;
+  --game-primary: #7cf29a;
+  --game-primary-contrast: #062611;
+  --game-secondary: #9b5cff;
+  --game-secondary-contrast: #0a0514;
+  --game-border: #9b5cff;
+  --game-focus-ring: #ff5ce1;
+  --game-radius-md: 0;
+  --game-radius-lg: 0;
+  --game-border-width: 2px;
+  --game-shadow: 0 0 16px rgb(124 242 154 / 0.35);
+  --game-font-display: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+```
+
+Framework styles are in cascade layers, so your overrides win regardless of selector specificity. When you change a color that text sits on, also change its `-contrast` partner.
+
+## Tokens
+
+| Category   | Tokens                                                                                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color      | `bg`, `surface`, `panel`, `primary`, `primary-contrast`, `secondary`, `secondary-contrast`, `danger`, `danger-contrast`, `success`, `warning`, `text`, `text-muted`, `border`, `focus-ring` |
+| Typography | `font-body`, `font-display`, `font-size-sm`, `font-size-md`, `font-size-lg`, `font-size-xl`                                                                                                 |
+| Shape      | `radius-sm`, `radius-md`, `radius-lg`, `border-width`, `shadow`                                                                                                                             |
+| Spacing    | `space-xs`, `space-sm`, `space-md`, `space-lg`, `space-xl`                                                                                                                                  |
+| Motion     | `duration-fast`, `duration-normal`, `ease`                                                                                                                                                  |
+
+Each token is a CSS variable prefixed with `--game-`, such as `--game-panel`. Durations become `0ms` when the player prefers reduced motion.
+
+## With Tailwind CSS
+
+Import `@game-ui/themes/tailwind.css` after Tailwind to use tokens as utilities in your own game UI: `bg-game-panel`, `text-game-text`, `rounded-game-md`, `shadow-game`, `p-game-md`, and `font-game-display`.

@@ -1,0 +1,78 @@
+/* Layout for documentation examples. Visual values come from game tokens. */
+.example {
+  margin-block: 1.5rem;
+  padding: var(--game-space-xl);
+  border-radius: 0.5rem;
+  background: var(--game-bg);
+  color: var(--game-text);
+}
+
+.example-label {
+  margin: 0 0 var(--game-space-md);
+  color: var(--game-text-muted);
+  font-size: var(--game-font-size-sm);
+}
+
+.example-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--game-space-md);
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--game-space-md);
+}
+
+.example-text {
+  margin: 0 0 var(--game-space-md);
+  color: var(--game-text-muted);
+}
+
+.example-grid .example-text,
+.example-row .example-text {
+  margin: 0;
+}
+
+.example-stat {
+  margin: 0;
+  font-family: var(--game-font-display);
+  font-size: var(--game-font-size-xl);
+}
+
+.example-ready-check {
+  max-width: 32rem;
+}
+
+.example-side-by-side {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+}
+
+.example-side-by-side > .example {
+  margin: 0;
+}
+
+/*
+ * A game identity built only by overriding tokens. The components rendered
+ * inside are unchanged.
+ */
+.example-neon {
+  --game-bg: #0a0514;
+  --game-surface: #150a2a;
+  --game-panel: #1f0f3d;
+  --game-primary: #7cf29a;
+  --game-primary-contrast: #062611;
+  --game-secondary: #9b5cff;
+  --game-secondary-contrast: #0a0514;
+  --game-border: #9b5cff;
+  --game-focus-ring: #ff5ce1;
+  --game-radius-md: 0;
+  --game-radius-lg: 0;
+  --game-border-width: 2px;
+  --game-shadow: 0 0 16px rgb(124 242 154 / 0.35);
+  --game-font-display: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}

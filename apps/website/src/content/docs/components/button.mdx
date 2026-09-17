@@ -1,0 +1,83 @@
+---
+title: Button
+description: A themed native button for game actions.
+sidebar:
+  order: 1
+---
+
+import Example from "../../../components/Example.astro";
+import { ButtonSizes, ButtonVariants } from "../../../components/examples/ButtonGallery.tsx";
+import { ReadyCheck } from "../../../components/examples/ReadyCheck.tsx";
+
+A native `<button>` styled with semantic tokens.
+
+<Example>
+  <ReadyCheck client:load />
+</Example>
+
+## When to use
+
+- Actions the player takes in screen UI: ready up, confirm, retry, open a loadout, leave a lobby.
+
+## When not to use
+
+- Navigation to another page or URL: use a link.
+- In-world interaction hints such as "Press E": use world UI (planned `InteractionPrompt`).
+
+## Usage
+
+```tsx
+import { Button } from "@game-ui/react";
+
+<Button onClick={readyUp}>Ready up</Button>;
+```
+
+## Variants
+
+<Example>
+  <ButtonVariants />
+</Example>
+
+| Variant     | Use for                             | Tokens                                          |
+| ----------- | ----------------------------------- | ----------------------------------------------- |
+| `primary`   | The main action in a view (default) | `--game-primary`, `--game-primary-contrast`     |
+| `secondary` | Supporting actions                  | `--game-secondary`, `--game-secondary-contrast` |
+| `danger`    | Destructive or irreversible actions | `--game-danger`, `--game-danger-contrast`       |
+
+## Sizes
+
+<Example>
+  <ButtonSizes />
+</Example>
+
+## Props
+
+Button accepts every native `<button>` prop, including `ref`, plus:
+
+| Prop      | Type                                   | Default     |
+| --------- | -------------------------------------- | ----------- |
+| `variant` | `"primary" \| "secondary" \| "danger"` | `"primary"` |
+| `size`    | `"sm" \| "md" \| "lg"`                 | `"md"`      |
+| `type`    | `"button" \| "submit" \| "reset"`      | `"button"`  |
+
+`type` defaults to `"button"` so buttons inside forms do not submit unexpectedly. Pass `type="submit"` when a button should submit.
+
+`className` is appended to the component classes. Because component styles are layered, your classes take precedence. The rendered element also has `data-variant` and `data-size` attributes for targeting in your own CSS.
+
+## Theme tokens
+
+Also uses `--game-border`, `--game-border-width`, `--game-radius-md`, `--game-shadow`, `--game-font-display`, `--game-space-*`, `--game-font-size-*`, `--game-duration-fast`, `--game-ease`, and `--game-focus-ring`.
+
+## Accessibility
+
+- Renders a native button, so Enter and Space activate it and it joins the tab order.
+- Shows a visible focus outline using `--game-focus-ring` for keyboard focus.
+- `disabled` uses the native attribute, which removes the button from the tab order. If players need to discover why an action is unavailable, keep it enabled and explain in nearby text.
+- For toggles such as ready state, pass `aria-pressed`.
+- Icon-only buttons need an `aria-label`.
+
+## Agent guidance
+
+- Use Button for any clickable action in screen UI before creating a custom control.
+- Choose a variant by intent; do not restyle colors with `className`.
+- Keep the action's effect, such as marking a player ready, in game code passed through `onClick`.

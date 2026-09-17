@@ -1,0 +1,6 @@
+/*
+ * Cascade layer order: Starlight's resets and styles first, then Game UI, so
+ * component styles are not overridden by resets such as `button { font: inherit }`.
+ * Unlayered site styles, such as examples.css, take precedence over both.
+ */
+@layer starlight, game-ui;

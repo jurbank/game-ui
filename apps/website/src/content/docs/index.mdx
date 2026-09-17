@@ -1,39 +1,49 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Game UI
+description: Reusable, themeable UI for browser-based games built with React and Phaser.
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: Themeable screen UI for React and renderer-independent world UI for games. Pick a theme, override a few tokens, and compose your interface from shared primitives.
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Get started
+      link: /getting-started/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
+    - text: Browse components
+      link: /components/
       variant: minimal
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+import Example from "../../components/Example.astro";
+import { ReadyCheck } from "../../components/examples/ReadyCheck.tsx";
 
-## Next steps
+<Example label="Live example: Arcade theme">
+  <ReadyCheck client:load />
+</Example>
 
-<CardGrid stagger>
-  <Card title="Update content" icon="pencil">
-    Edit `src/content/docs/index.mdx` to see this page change.
-  </Card>
-  <Card title="Change page layout" icon="document">
-    Delete `template: splash` in `src/content/docs/index.mdx` to display a sidebar on this page.
-  </Card>
-  <Card title="Add new content" icon="add-document">
-    Add Markdown or MDX files to `src/content/docs` to create new pages.
-  </Card>
-  <Card title="Configure your site" icon="setting">
-    Edit your `sidebar` and other config in `astro.config.mjs`.
-  </Card>
-  <Card title="Read the docs" icon="open-book">
-    Learn more in [the Starlight Docs](https://starlight.astro.build/).
-  </Card>
+## What's available
+
+<CardGrid>
+  <LinkCard
+    title="Button"
+    description="Themed native button with primary, secondary, and danger variants."
+    href="/components/button/"
+  />
+  <LinkCard
+    title="Panel"
+    description="Themed surface for HUD sections, menus, and summaries."
+    href="/components/panel/"
+  />
+  <LinkCard
+    title="Arcade theme"
+    description="Dark base, bright accents, and chunky controls. Override any token."
+    href="/themes/"
+  />
+  <LinkCard
+    title="Agent guide"
+    description="How coding agents should choose and compose primitives."
+    href="/agent-guide/"
+  />
 </CardGrid>
+
+Modal, ProgressBar, Timer, PlayerList, Scoreboard, the Tactical and Playful themes, and world UI with Phaser are planned. See the [component overview](/components/) for status.

@@ -1,0 +1,21 @@
+---
+title: Overview
+description: World UI concepts attached to entities and world positions.
+sidebar:
+  order: 1
+---
+
+World UI is attached to an entity or world position rather than the screen: player names, unit health bars, damage numbers, interaction prompts, and objective markers.
+
+:::caution[Not available yet]
+World UI packages are planned for a later milestone. This page describes the intended design.
+:::
+
+## Design
+
+- `@game-ui/world-ui` will define renderer-independent concepts such as `FloatingLabel`, `Nameplate`, and `HealthBar`: their configuration, variants, priority, and lifetime.
+- `@game-ui/phaser` will render those concepts with Phaser objects, starting with `FloatingLabel`.
+- World anchors are plain coordinates, not Phaser sprites, so concepts are not tied to one renderer.
+- The game decides the content, such as which name to show; the renderer decides how it is drawn.
+
+Until then, render world-attached UI with your game renderer, and use [screen UI components](/components/) for viewport UI.

@@ -1,0 +1,30 @@
+---
+title: UI layers
+description: How Game UI separates the game world, world UI, and screen UI.
+sidebar:
+  order: 1
+---
+
+Game UI separates an interface into three layers.
+
+| Layer          | Examples                                         | Rendered by                       |
+| -------------- | ------------------------------------------------ | --------------------------------- |
+| **Game world** | Sprites, enemies, terrain, effects               | Your game; not part of Game UI    |
+| **World UI**   | Nameplates, health bars, damage numbers, prompts | The game renderer, such as Phaser |
+| **Screen UI**  | HUD panels, scoreboards, menus, lobbies          | React                             |
+
+## Choosing a layer
+
+Use **screen UI** when the element belongs to the viewport: a round timer, match scoreboard, or pause menu.
+
+Use **world UI** when the element belongs to an entity or world position: a player name above a character, a damage number above an enemy, or "Press E" above a chest. Do not render large quantities of world-attached UI through React.
+
+## Semantic tokens
+
+Components never hardcode colors, fonts, radii, shadows, or spacing. They reference semantic tokens such as `--game-panel` and `--game-primary`, and themes supply the values. A game establishes its identity by selecting a theme and overriding tokens, not by forking components.
+
+## State stays in the game
+
+Shared components do not own game state. They receive controlled values through props, and the game decides whether those values come from React state, a store, a server, or the game scene.
+
+The full technical boundaries are defined in `ARCHITECTURE.md` at the repository root.

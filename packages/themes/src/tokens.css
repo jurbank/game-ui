@@ -1,0 +1,48 @@
+/*
+ * Neutral default values for every semantic token.
+ * Components remain usable without a theme; themes override these values.
+ */
+@layer game-ui.tokens, game-ui.themes, game-ui.base, game-ui.components;
+
+@layer game-ui.tokens {
+  :root {
+    --game-bg: #0f1115;
+    --game-surface: #171a21;
+    --game-panel: #1e222b;
+    --game-primary: #e6e8ee;
+    --game-primary-contrast: #0f1115;
+    --game-secondary: #3a4150;
+    --game-secondary-contrast: #e6e8ee;
+    --game-danger: #cd2b31;
+    --game-danger-contrast: #ffffff;
+    --game-success: #46a758;
+    --game-warning: #f5a524;
+    --game-text: #e6e8ee;
+    --game-text-muted: #a0a6b4;
+    --game-border: #363c48;
+    --game-focus-ring: #7aa7ff;
+
+    --game-font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --game-font-display: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --game-font-size-sm: 0.875rem;
+    --game-font-size-md: 1rem;
+    --game-font-size-lg: 1.25rem;
+    --game-font-size-xl: 1.75rem;
+
+    --game-radius-sm: 4px;
+    --game-radius-md: 8px;
+    --game-radius-lg: 12px;
+    --game-border-width: 1px;
+    --game-shadow: 0 4px 12px rgb(0 0 0 / 0.35);
+
+    --game-space-xs: 0.25rem;
+    --game-space-sm: 0.5rem;
+    --game-space-md: 0.75rem;
+    --game-space-lg: 1rem;
+    --game-space-xl: 1.5rem;
+
+    --game-duration-fast: 100ms;
+    --game-duration-normal: 200ms;
+    --game-ease: cubic-bezier(0.2, 0, 0, 1);
+  }
+}

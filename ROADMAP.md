@@ -50,12 +50,12 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 - [x] Resolve the esbuild build-script policy deliberately and verify a clean `vp install` completes. The initial install reports `ERR_PNPM_IGNORED_BUILDS` and generates an unresolved `allowBuilds.esbuild` placeholder.
 - [x] Review the nested website workspace configuration and lockfile; establish the root workspace as the dependency-management entry point.
 - [x] Fix the existing website formatting failures so `vp check` has a clean baseline.
-- [ ] Replace the placeholder `packages/utils` with `packages/core`, retaining only utilities needed by actual framework code.
-- [ ] Establish the package template: TypeScript configuration, declaration output, explicit exports, package metadata, and Vite+ build/test tasks.
-- [ ] Create `packages/themes` and `packages/react` for milestone 1. Create world UI and Phaser packages when milestone 3 begins rather than filling them with speculative APIs.
-- [ ] Define external and peer dependency handling so consumer builds do not bundle duplicate React or Phaser runtimes.
+- [x] Replace the placeholder `packages/utils` with `packages/core`, retaining only utilities needed by actual framework code.
+- [x] Establish the package template: TypeScript configuration, declaration output, explicit exports, package metadata, and Vite+ build/test tasks.
+- [x] Create `packages/themes` and `packages/react` for milestone 1. Create world UI and Phaser packages when milestone 3 begins rather than filling them with speculative APIs.
+- [x] Define external and peer dependency handling so consumer builds do not bundle duplicate React or Phaser runtimes.
 - [x] Replace the starter README with setup, workspace navigation, and validation instructions; align the architecture's repository tree with the chosen tooling.
-- [ ] Add CI using the repository's validation tasks and enforce the dependency boundaries as packages are introduced.
+- [x] Add CI using the repository's validation tasks and enforce the dependency boundaries as packages are introduced.
 
 **Acceptance criteria:** a fresh checkout installs successfully; `vp run dev` starts the website; checks, tests, and recursive builds pass. Public package imports resolve without reaching into `src`.
 
@@ -63,14 +63,14 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 
 **Outcome:** a real component proves the path from tokens to shared package to live documentation.
 
-- [ ] Define the initial semantic token contract: colors, typography, radii, and shadows, plus spacing and motion tokens needed by the first components. Keep shared token names/types in core and CSS values in themes.
-- [ ] Implement base CSS, the Arcade theme, and Tailwind mappings to semantic variables.
-- [ ] Define the consumer styling contract: CSS export paths, import order, and how component styles reach the final build. Verify the approach in a consumer build rather than assuming Tailwind scans workspace packages.
-- [ ] Implement Button and Panel with small typed APIs, sensible defaults, semantic styling, and composition through children.
-- [ ] Preserve native button behavior, keyboard activation, visible focus, and disabled semantics.
-- [ ] Add React support to the Astro website and create the documentation sections for getting started, concepts, components, world UI, themes, patterns, and agent guidance.
-- [ ] Replace the starter landing page with a live Button/Panel example and a component index showing what is actually available.
-- [ ] Demonstrate a local token override that changes the example's identity without editing shared component source.
+- [x] Define the initial semantic token contract: colors, typography, radii, and shadows, plus spacing and motion tokens needed by the first components. Keep shared token names/types in core and CSS values in themes.
+- [x] Implement base CSS, the Arcade theme, and Tailwind mappings to semantic variables.
+- [x] Define the consumer styling contract: CSS export paths, import order, and how component styles reach the final build. Verify the approach in a consumer build rather than assuming Tailwind scans workspace packages.
+- [x] Implement Button and Panel with small typed APIs, sensible defaults, semantic styling, and composition through children.
+- [x] Preserve native button behavior, keyboard activation, visible focus, and disabled semantics.
+- [x] Add React support to the Astro website and create the documentation sections for getting started, concepts, components, world UI, themes, patterns, and agent guidance.
+- [x] Replace the starter landing page with a live Button/Panel example and a component index showing what is actually available.
+- [x] Demonstrate a local token override that changes the example's identity without editing shared component source.
 
 **Acceptance criteria:** the website imports Button and Panel through public package exports; the example is interactive, styled in a production build, and changes appearance through CSS variables. Core imports no React, Phaser, or Astro code.
 

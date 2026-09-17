@@ -1,0 +1,36 @@
+{
+  "name": "@game-ui/themes",
+  "version": "0.0.0",
+  "description": "Semantic CSS variable tokens, starting themes, and Tailwind mappings for Game UI.",
+  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": "./src/index.css",
+    "./tokens.css": "./src/tokens.css",
+    "./base.css": "./src/base.css",
+    "./tailwind.css": "./src/tailwind.css",
+    "./arcade.css": "./src/themes/arcade.css",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "vp test",
+    "check": "vp check"
+  },
+  "devDependencies": {
+    "@game-ui/core": "workspace:*",
+    "@types/node": "^26.1.1",
+    "tailwindcss": "catalog:",
+    "typescript": "^7.0.2",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

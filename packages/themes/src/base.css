@@ -1,0 +1,19 @@
+/*
+ * Minimal base styles for themed regions. Does not reset the host page.
+ */
+@layer game-ui.tokens, game-ui.themes, game-ui.base, game-ui.components;
+
+@layer game-ui.base {
+  [data-game-theme] {
+    color: var(--game-text);
+    font-family: var(--game-font-body);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root,
+    [data-game-theme] {
+      --game-duration-fast: 0ms;
+      --game-duration-normal: 0ms;
+    }
+  }
+}

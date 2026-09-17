@@ -1,0 +1,18 @@
+---
+/**
+ * Frame for live framework examples. Applies a game theme and opts out of
+ * Starlight's Markdown content styles.
+ */
+interface Props {
+  theme?: "arcade";
+  class?: string;
+  label?: string;
+}
+
+const { theme = "arcade", class: className, label } = Astro.props;
+---
+
+<div class:list={["not-content", "example", className]} data-game-theme={theme}>
+  {label && <p class="example-label">{label}</p>}
+  <slot />
+</div>

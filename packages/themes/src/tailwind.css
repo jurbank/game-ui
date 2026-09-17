@@ -1,0 +1,46 @@
+/*
+ * Tailwind CSS v4 mapping from utilities to semantic tokens.
+ * Import after `@import "tailwindcss";`.
+ *
+ * `inline` makes utilities reference the `--game-*` variables directly, so
+ * themes and overrides scoped to any element apply to the utilities inside it.
+ */
+@theme inline {
+  --color-game-bg: var(--game-bg);
+  --color-game-surface: var(--game-surface);
+  --color-game-panel: var(--game-panel);
+  --color-game-primary: var(--game-primary);
+  --color-game-primary-contrast: var(--game-primary-contrast);
+  --color-game-secondary: var(--game-secondary);
+  --color-game-secondary-contrast: var(--game-secondary-contrast);
+  --color-game-danger: var(--game-danger);
+  --color-game-danger-contrast: var(--game-danger-contrast);
+  --color-game-success: var(--game-success);
+  --color-game-warning: var(--game-warning);
+  --color-game-text: var(--game-text);
+  --color-game-text-muted: var(--game-text-muted);
+  --color-game-border: var(--game-border);
+  --color-game-focus-ring: var(--game-focus-ring);
+
+  --font-game-body: var(--game-font-body);
+  --font-game-display: var(--game-font-display);
+
+  --text-game-sm: var(--game-font-size-sm);
+  --text-game-md: var(--game-font-size-md);
+  --text-game-lg: var(--game-font-size-lg);
+  --text-game-xl: var(--game-font-size-xl);
+
+  --radius-game-sm: var(--game-radius-sm);
+  --radius-game-md: var(--game-radius-md);
+  --radius-game-lg: var(--game-radius-lg);
+
+  --shadow-game: var(--game-shadow);
+
+  --spacing-game-xs: var(--game-space-xs);
+  --spacing-game-sm: var(--game-space-sm);
+  --spacing-game-md: var(--game-space-md);
+  --spacing-game-lg: var(--game-space-lg);
+  --spacing-game-xl: var(--game-space-xl);
+
+  --ease-game: var(--game-ease);
+}

@@ -1,0 +1,76 @@
+---
+title: Panel
+description: A themed surface for grouping screen UI content.
+sidebar:
+  order: 2
+---
+
+import Example from "../../../components/Example.astro";
+import { NestedPanels, PanelVariants } from "../../../components/examples/PanelGallery.tsx";
+
+A themed container for HUD sections, menus, and summaries.
+
+<Example>
+  <NestedPanels />
+</Example>
+
+## When to use
+
+- Grouping related information or controls: a lobby, loadout, match summary, or settings section.
+- Separating nested groups inside a larger panel with the `inset` variant.
+
+## When not to use
+
+- Blocking dialogs that need focus management: use the planned Modal.
+- Page layout without a visible surface: use a plain element.
+
+## Usage
+
+```tsx
+import { Panel } from "@game-ui/react";
+
+<Panel title="Squad" variant="raised">
+  {children}
+</Panel>;
+```
+
+## Variants
+
+<Example>
+  <PanelVariants />
+</Example>
+
+| Variant   | Use for                                     | Tokens                          |
+| --------- | ------------------------------------------- | ------------------------------- |
+| `default` | Grouped content on the page background      | `--game-panel`                  |
+| `raised`  | Menus and overlays that sit above the scene | `--game-panel`, `--game-shadow` |
+| `inset`   | Nested groups inside another panel          | `--game-surface`                |
+
+## Props
+
+Panel accepts native element props, including `ref`, plus:
+
+| Prop           | Type                               | Default     |
+| -------------- | ---------------------------------- | ----------- |
+| `title`        | `ReactNode`                        | none        |
+| `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6`            | `2`         |
+| `variant`      | `"default" \| "raised" \| "inset"` | `"default"` |
+| `padding`      | `"none" \| "sm" \| "md" \| "lg"`   | `"md"`      |
+
+With a `title`, Panel renders a `<section>` labelled by its heading. Without one, it renders a `<div>`.
+
+## Theme tokens
+
+Also uses `--game-border`, `--game-border-width`, `--game-radius-lg`, `--game-text`, `--game-font-body`, `--game-font-display`, `--game-font-size-lg`, and `--game-space-*`.
+
+## Accessibility
+
+- A titled panel is a named region, so screen reader users can find it by its title.
+- Set `headingLevel` to fit the surrounding heading outline.
+- Untitled panels add no landmark. To make one a named region, pass `role="region"` and `aria-label`.
+
+## Agent guidance
+
+- Use Panel for any bordered, themed surface before writing a custom container.
+- Nest `inset` panels for sub-groups rather than inventing new surface colors.
+- Put game-specific content inside Panel through `children`.

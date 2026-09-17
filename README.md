@@ -19,12 +19,15 @@ The root workspace owns all dependencies and the single `pnpm-lock.yaml`. Run `v
 
 ## Workspace
 
-| Path             | Package            | Purpose                                        |
-| ---------------- | ------------------ | ---------------------------------------------- |
-| `apps/website`   | `@game-ui/website` | Astro/Starlight documentation and examples     |
-| `packages/utils` | `utils`            | Placeholder, to be replaced by `@game-ui/core` |
+| Path                     | Package                     | Purpose                                                 |
+| ------------------------ | --------------------------- | ------------------------------------------------------- |
+| `apps/website`           | `@game-ui/website`          | Astro/Starlight documentation and examples              |
+| `packages/core`          | `@game-ui/core`             | Renderer-independent types and token contract           |
+| `packages/themes`        | `@game-ui/themes`           | Token values, themes, and Tailwind mapping              |
+| `packages/react`         | `@game-ui/react`            | Screen UI React components                              |
+| `tools/workspace-checks` | `@game-ui/workspace-checks` | Repository checks such as package dependency boundaries |
 
-Framework packages (`core`, `themes`, `react`, `world-ui`, `phaser`) are added as their roadmap milestones begin.
+The remaining framework packages (`world-ui`, `phaser`) are added as their roadmap milestones begin. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/themes`](./packages/themes/README.md) for the styling contract.
 
 Run a task in one package with `vp run <package>#<task>`, for example `vp run @game-ui/website#build`.
 

@@ -11,8 +11,21 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "catalog:",
     "@astrojs/starlight": "^0.42.1",
+    "@game-ui/react": "workspace:*",
+    "@game-ui/themes": "workspace:*",
     "astro": "^7.2.10",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   }
 }

@@ -1,0 +1,59 @@
+{
+  "name": "@game-ui/react",
+  "version": "0.0.0",
+  "description": "Screen-space React components for Game UI.",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "@game-ui/source": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./styles.css": {
+      "@game-ui/source": "./src/styles.css",
+      "default": "./dist/styles.css"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./styles.css": "./dist/styles.css",
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack && tailwindcss --input src/styles.css --output dist/styles.css",
+    "test": "vp test",
+    "check": "vp check"
+  },
+  "dependencies": {
+    "@game-ui/themes": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "catalog:",
+    "@tailwindcss/node": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/node": "^26.1.1",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "happy-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "^7.0.2",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

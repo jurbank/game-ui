@@ -1,0 +1,80 @@
+---
+title: Installation
+description: Add Game UI packages, import styles, select a theme, and render your first components.
+sidebar:
+  order: 1
+---
+
+Game UI is split into small packages so a game installs only the layers it uses.
+
+| Package           | Use it for                                              |
+| ----------------- | ------------------------------------------------------- |
+| `@game-ui/themes` | Token values, starting themes, and the Tailwind mapping |
+| `@game-ui/react`  | Screen UI components such as Button and Panel           |
+| `@game-ui/core`   | Token names and shared types for code outside React     |
+
+:::note
+Packages are not published to a registry yet. Inside this repository, add them with `workspace:*`.
+:::
+
+## Install
+
+```bash
+pnpm add @game-ui/react @game-ui/themes react react-dom
+```
+
+`@game-ui/react` requires React 19 as a peer dependency, so your game controls the React version.
+
+## Import styles
+
+Framework CSS lives in the `game-ui` cascade layer. Declare its position once, after resets and before utilities, then import the stylesheets.
+
+With Tailwind CSS v4:
+
+```css title="src/styles.css"
+@layer theme, base, game-ui, components, utilities;
+
+@import "tailwindcss";
+@import "@game-ui/themes";
+@import "@game-ui/react/styles.css";
+@import "@game-ui/themes/tailwind.css";
+
+/* Your game styles and token overrides */
+```
+
+Without Tailwind:
+
+```css title="src/styles.css"
+@import "@game-ui/themes";
+@import "@game-ui/react/styles.css";
+
+/* Your game styles and token overrides */
+```
+
+Component styles are precompiled, so your Tailwind setup does not need to scan Game UI packages. The layer order keeps Tailwind's Preflight reset from overriding components while letting utilities you pass through `className`, and all of your unlayered CSS, take precedence. If you use another layered reset or framework, list its layers before `game-ui`.
+
+## Select a theme
+
+Set `data-game-theme` on the element that contains your game UI, usually the root:
+
+```html
+<html data-game-theme="arcade"></html>
+```
+
+See [Themes](/themes/) for the available themes and how to override tokens.
+
+## Render components
+
+```tsx
+import { Button, Panel } from "@game-ui/react";
+
+export function PauseMenu({ onResume }: { onResume: () => void }) {
+  return (
+    <Panel title="Paused" variant="raised">
+      <Button onClick={onResume}>Resume</Button>
+    </Panel>
+  );
+}
+```
+
+Components receive game state through props. Keep your game loop, match rules, and state store in your game.
