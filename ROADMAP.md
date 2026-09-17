@@ -2,20 +2,20 @@
 
 This roadmap turns [OVERVIEW.md](./OVERVIEW.md) and [ARCHITECTURE.md](./ARCHITECTURE.md) into an implementation sequence. Those documents define the product and package boundaries; this document defines what to build next and how to know it is ready.
 
-Start with a working themed React example in the documentation site, then expand the screen UI and prove the world UI boundary with Phaser. Complete the initial milestone before adding the broader component catalog.
+Start with a working themed React example in the documentation site, then expand the screen UI and prove world UI contracts with a game-owned canvas example and shared state integration. Complete the initial milestone before adding the broader component catalog.
 
 ## Current Baseline
 
-The repository currently contains:
+Milestones 0–2 are complete. The repository currently contains:
 
 - A pnpm workspace with Vite+ configuration, checks, tests, and build scripts.
-- An Astro/Starlight website with starter content.
-- A placeholder `packages/utils` package with one sample test.
-- The overview and architecture documents at the repository root.
+- An Astro/Starlight website with live React component examples.
+- `@game-ui/core`, `@game-ui/themes`, and `@game-ui/react`.
+- Seven initial screen components, three themes, and a composed HUD/menu example.
 
-The five framework packages, React examples, Tailwind integration, themes, and world UI renderers are not implemented yet.
+The world UI contracts and game-owned integration example in M3 are planned work. No engine renderer package is required.
 
-Use the existing Vite+ task runner. The source documents show `turbo.json` in their proposed trees, but adding a second task runner is unnecessary. Keep the planning documents at the root initially and link to them from the website rather than creating competing copies.
+Use the existing Vite+ task runner. Keep the planning documents at the root and maintain consistent summaries in the website documentation.
 
 ## Initial Milestone
 
@@ -23,24 +23,25 @@ The first useful version is ready when a consumer can install the packages, sele
 
 Required scope:
 
-- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, `@game-ui/world-ui`, and `@game-ui/phaser`.
+- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and the planned `@game-ui/world-ui` contracts package.
 - Arcade, Tactical, and Playful themes.
 - Button, Panel, Modal, ProgressBar, Timer, PlayerList, and Scoreboard.
-- FloatingLabel, Nameplate, and HealthBar concepts, with a Phaser FloatingLabel renderer at minimum.
+- FloatingLabel, Nameplate, and HealthBar specifications, typed contracts, and game implementation guidance.
 - An Astro documentation site with working examples and agent usage guidance.
-- A consumer example that demonstrates screen UI and world UI together while keeping game rules outside the framework.
+- A game-owned canvas example that demonstrates world labels and health bars alongside React UI, sharing health and selection through game-owned Zustand bindings.
+- A 3D integration recipe that checks spatial conventions without promising a shipped 3D renderer.
 
 The milestones below are ordered by dependency, not calendar dates. All unchecked tasks are planned work.
 
-| Milestone                    | Depends on       | Reviewable result                                                    |
-| ---------------------------- | ---------------- | -------------------------------------------------------------------- |
-| 0. Workspace foundation      | Existing starter | Reliable development, checks, and package builds                     |
-| 1. Themed React slice        | 0                | Button and Panel running in the docs with Arcade styling             |
-| 2. Screen UI and themes      | 1                | All initial screen components and three theme previews               |
-| 3. World UI and Phaser slice | 1                | Renderer-independent concepts and a working Phaser label demo        |
-| 4. Consumer readiness        | 2 and 3          | Documented, packaged initial version verified outside source imports |
+| Milestone                                  | Depends on       | Reviewable result                                                    |
+| ------------------------------------------ | ---------------- | -------------------------------------------------------------------- |
+| 0. Workspace foundation                    | Existing starter | Reliable development, checks, and package builds                     |
+| 1. Themed React slice                      | 0                | Button and Panel running in the docs with Arcade styling             |
+| 2. Screen UI and themes                    | 1                | All initial screen components and three theme previews               |
+| 3. World UI contracts and game integration | 2                | Engine-independent contracts, game-owned canvas UI, and shared state |
+| 4. Consumer readiness                      | 2 and 3          | Documented, packaged initial version verified outside source imports |
 
-Milestones 2 and 3 can proceed independently once milestone 1 establishes the shared contracts and example infrastructure.
+M3 builds on M2's screen components so its example can demonstrate shared health, selection, and semantic presentation across both UI layers.
 
 ## Milestone 0 — Make the Workspace Ready
 
@@ -52,8 +53,8 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 - [x] Fix the existing website formatting failures so `vp check` has a clean baseline.
 - [x] Replace the placeholder `packages/utils` with `packages/core`, retaining only utilities needed by actual framework code.
 - [x] Establish the package template: TypeScript configuration, declaration output, explicit exports, package metadata, and Vite+ build/test tasks.
-- [x] Create `packages/themes` and `packages/react` for milestone 1. Create world UI and Phaser packages when milestone 3 begins rather than filling them with speculative APIs.
-- [x] Define external and peer dependency handling so consumer builds do not bundle duplicate React or Phaser runtimes.
+- [x] Create `packages/themes` and `packages/react` for milestone 1. Defer the world UI contracts package to milestone 3 rather than filling it with speculative APIs.
+- [x] Define external and peer dependency handling so consumer builds do not bundle duplicate React runtimes.
 - [x] Replace the starter README with setup, workspace navigation, and validation instructions; align the architecture's repository tree with the chosen tooling.
 - [x] Add CI using the repository's validation tasks and enforce the dependency boundaries as packages are introduced.
 
@@ -91,48 +92,51 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 
 **Acceptance criteria:** all seven initial screen components are documented and usable in each theme. A demo updates health, time, player rows, and scores through props, opens and closes its modal by keyboard, and requires no shared global game store.
 
-## Milestone 3 — Prove World UI with Phaser
+## Milestone 3 — World UI Contracts and Game Integration
 
-**Outcome:** the first world UI implementation demonstrates reusable intent and renderer-specific execution.
+**Outcome:** a developer or agent can implement world UI in a game's chosen renderer and connect it to the same game-owned state and theme intent as the web UI, while retaining control over rendering and performance.
 
-- [ ] Add simple `WorldAnchor` and `WorldOffset` types to core. Start with coordinates; introduce a dynamic position getter only if the example needs it.
-- [ ] Create `@game-ui/world-ui` with FloatingLabel, Nameplate, and HealthBar contracts independent of React and Phaser.
-- [ ] Specify units, defaults, and update/lifecycle semantics for the supported configuration: anchors, offsets, variants, priority, visibility distance, and lifetime. Clearly distinguish concept fields from features the first renderer actually supports.
-- [ ] Create `@game-ui/phaser` and implement FloatingLabel rendering, content/position updates, visibility, depth, lifetime, and explicit disposal.
-- [ ] Define how world UI presentation receives semantic style values. CSS variables do not directly style Phaser text; use an explicit adapter or resolved style input without introducing DOM dependencies into core or world UI.
-- [ ] Add a client-only Phaser example to the Astro site, with cleanup on unmount and scene shutdown. Ensure the website's server build does not evaluate browser-only Phaser code.
-- [ ] Demonstrate a label following a moving world anchor and behaving correctly when the camera moves or zooms.
-- [ ] Test lifecycle cleanup and repeated creation/destruction; profile a repeatable many-label scenario and record hardware, label counts, and frame timing.
-- [ ] Add pooling or more complex culling only when the measured scenario requires it. Keep per-frame label updates out of React.
-- [ ] Document Nameplate and HealthBar as concept-only APIs until their renderers exist; do not imply they are already renderable through Phaser.
+- [ ] Create `@game-ui/world-ui` with lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Depend only on shared core types/tokens as needed; require no React, DOM, engine, state library, or world UI runtime.
+- [ ] Document each concept's purpose, content, semantic variants, defaults, required semantics, optional capabilities, and unsupported-option handling. Start with typed descriptors and examples; defer JSON Schema until serialized definitions need validation.
+- [ ] Define entity-reference and explicit-position anchor conventions suitable for 2D and 3D integrations. Specify coordinate spaces, offset/distance units, lifetime units, and missing-anchor behavior. Keep world-only types in world-ui; do not require native engine objects or per-frame descriptor allocation.
+- [ ] Write implementation guidance for projection, visibility, depth/occlusion, updates, lifetime, and disposal. Keep rendering, batching, culling, pooling, animation, and the update loop in the consuming game.
+- [ ] Map world concepts to related screen components and shared semantic roles: HealthBar to ProgressBar, Nameplate to player entries, and FloatingLabel to contextual text where useful. Document shared data without requiring identical visual rendering.
+- [ ] Define game-owned presentation mapping from semantic theme values to native renderer styles. Resolve values at initialization and theme changes; document conversions and unsupported effects without adding DOM dependencies to core or world-ui.
+- [ ] Build a client-only vanilla canvas reference game in the website with FloatingLabel, Nameplate, and HealthBar implementations alongside React UI. Keep its implementation in the example, document its supported capabilities, and ensure server builds do not evaluate browser-only code.
+- [ ] Demonstrate labels following moving anchors under camera movement/zoom. Add a 3D integration recipe covering entity resolution, projection, offset spaces, and occlusion decisions; identify it as guidance rather than a tested 3D renderer.
+- [ ] Create a Zustand store per example instance, owned by the demo game. Demonstrate shared health and selection from both a world interaction and a React control, with typed game actions and narrow subscriptions. Keep positions and camera animation in the game loop.
+- [ ] Document state versus one-shot events, game/server authority, optional game-owned providers, and subscription cleanup. Keep framework components controlled through props and callbacks; do not add a mandatory store, signal system, or generic data-provider API.
+- [ ] Test shared-state propagation, actions from either view, instance isolation, and cleanup on scene shutdown/unmount. Verify repeated creation/destruction leaves no retained subscriptions, listeners, or animation loops.
+- [ ] Profile a repeatable many-label scenario and record hardware, browser, label counts, and frame timing. Add pooling, culling complexity, or state-library changes only when measurements justify them. Do not parse schemas or read CSS values every frame.
+- [ ] Publish agent guidance for implementing the concepts in a game's renderer and connecting screen components. Distinguish contracts, game-owned examples, untested recipes, and shipped React components.
 
-**Acceptance criteria:** a Phaser label follows its anchor, honors the documented supported configuration, and leaves no retained objects or listeners after disposal. World UI depends only on core. No shared API accepts a Phaser sprite as its world anchor, and all text/content decisions stay in the demo game.
+**Acceptance criteria:** the canvas example renders all three initial concepts, follows moving anchors under camera changes, and cleans up objects, subscriptions, and animation loops on disposal. World and React health displays reflect the same game-owned values; selection from either view updates both without synchronizing separate authoritative copies. The documented contracts accommodate a 3D recipe without engine-specific types. A developer or agent can follow the guide to implement world UI in a chosen game environment without a framework renderer, mandatory state library, or per-frame React updates.
 
 ## Milestone 4 — Verify Consumer Readiness
 
 **Outcome:** another game can adopt the initial framework from its documentation and built packages.
 
-- [ ] Compose a small simulated game example in the website: Phaser world labels plus a React HUD, scoreboard, and modal. A complete game or networking backend is unnecessary.
-- [ ] Demonstrate a small typed state/command bridge owned by the example. Avoid making a particular store library mandatory for consumers.
-- [ ] Finish getting-started instructions covering package installation, CSS imports, theme selection, token overrides, React use, and Phaser lifecycle integration.
+- [ ] Extend the M3 game-owned canvas example into a consumer walkthrough with a React HUD, scoreboard, and modal. A complete game or networking backend is unnecessary.
+- [ ] Document how the example's typed state/actions bind to controlled component props, and how a consumer can replace Zustand without changing framework components or world contracts.
+- [ ] Finish getting-started instructions covering package installation, CSS imports, theme selection, token overrides, React use, game-owned world UI implementation, theme mapping, and state/subscription lifecycle integration.
 - [ ] Document every shipped component/concept with purpose, when to use and avoid it, props/configuration, variants, tokens, accessibility, relevant performance notes, live examples, and agent guidance.
 - [ ] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
 - [ ] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
-- [ ] Record supported runtime/framework versions based on tested combinations, plus known limitations and unsupported renderer features.
+- [ ] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
 - [ ] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
 - [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
 
-**Acceptance criteria:** the consumer fixture imports only public APIs, builds successfully, and renders with each theme. A developer can follow the guide to select a theme, override a few tokens, and compose screen/world UI without changing shared package source.
+**Acceptance criteria:** the consumer fixture imports only public APIs, builds successfully, and renders with each theme. A developer can follow the guide to select a theme, override a few tokens, and compose screen UI and implement native world UI from the contracts, sharing game-owned state and presentation roles without changing shared package source.
 
-## First Three Implementation PRs
+## Completed Foundation PR Sequence
 
-Keep each PR small enough to review against a concrete result:
+The foundation was organized around these reviewable results:
 
 1. **Repair the workspace baseline.** Fix the website name/task target, dependency build policy, workspace ownership, and existing formatting failures. Update setup instructions and establish passing validation.
 2. **Establish core and theme packaging.** Replace the sample utils package, add the first semantic tokens and Arcade CSS, and verify public JavaScript/type/CSS exports. Document the styling contract.
 3. **Render Button and Panel in the website.** Add the React package and Astro integration, build the two components, and ship their interactive docs with a token-override example.
 
-Finish any remaining milestone 0 infrastructure alongside these PRs before expanding the component catalog. Begin with PR 1.
+These foundation milestones are complete. The next implementation work is M3.
 
 ## Validation Gate
 
@@ -147,16 +151,16 @@ vp run ready
 
 `vp run ready` currently runs checks, recursive package test scripts, and recursive builds. Keep it aligned with newly introduced packages and consumer validation. Use `vp env doctor` when runtime or package-manager setup is suspect.
 
-Tests should target behavior and boundaries: controlled values, keyboard/focus behavior, theme delivery in consumer builds, allowed dependency direction, and renderer lifecycle cleanup. Review live examples for presentation, responsiveness, and camera behavior that unit tests cannot establish alone.
+Tests should target behavior and boundaries: controlled values, keyboard/focus behavior, theme delivery in consumer builds, allowed dependency direction, game-owned state bindings, and reference-example lifecycle cleanup. Review live examples for presentation, responsiveness, and camera behavior that unit tests cannot establish alone.
 
 ## After the Initial Milestone
 
 Choose the next work from actual game integration needs, in this order of preference:
 
 1. Fill demonstrated gaps in existing components and improve documentation from consumer feedback.
-2. Add Phaser Nameplate and HealthBar renderers when a game needs them.
-3. Add DamageNumber, InteractionPrompt, and ObjectiveMarker concepts together with their first real renderer/use case.
+2. Refine world UI contracts and implementation recipes from real 2D and 3D game integrations.
+3. Add DamageNumber, InteractionPrompt, and ObjectiveMarker concepts together with their first game-owned implementation/use case.
 4. Extract recurring screen patterns such as Toast, Lobby, HUDLayout, settings, inventory, matchmaking presentation, and kill feeds when composition reveals a reusable API.
-5. Consider Pixi, Three.js, DOM world UI, icons, or audio UI only with a concrete consumer.
+5. Extract optional engine or state adapters only when multiple integrations demonstrate repeated code. Consider icons or audio UI with a concrete consumer.
 
-Defer a runtime theme composer, general renderer abstraction, mandatory global state layer, and performance infrastructure without measured demand. Physics, networking, matchmaking backends, entity systems, AI, asset management, and game simulation remain outside framework scope.
+Defer a runtime theme composer, general renderer abstraction, mandatory global state/provider/signal layer, speculative state-library migrations, and performance infrastructure without measured demand. Physics, networking, matchmaking backends, entity systems, AI, asset management, and game simulation remain outside framework scope.

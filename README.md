@@ -1,6 +1,6 @@
 # Game UI
 
-A reusable UI framework for browser-based games: React screen UI, renderer-independent world UI concepts, a Phaser renderer, and themes built on semantic CSS variables.
+A reusable UI framework for browser-based games: React screen UI, engine-independent world UI contracts for game-owned implementations, and themes built on semantic CSS variables.
 
 - [OVERVIEW.md](./OVERVIEW.md) — purpose, goals, and design principles
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — package boundaries and dependency rules
@@ -27,7 +27,7 @@ The root workspace owns all dependencies and the single `pnpm-lock.yaml`. Run `v
 | `packages/react`         | `@game-ui/react`            | Screen UI React components                              |
 | `tools/workspace-checks` | `@game-ui/workspace-checks` | Repository checks such as package dependency boundaries |
 
-The remaining framework packages (`world-ui`, `phaser`) are added as their roadmap milestones begin. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/themes`](./packages/themes/README.md) for the styling contract.
+The planned `world-ui` contracts package is added in M3. Games own world rendering and state integration; no engine adapter or state library is required by the framework. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/themes`](./packages/themes/README.md) for the styling contract.
 
 Run a task in one package with `vp run <package>#<task>`, for example `vp run @game-ui/website#build`.
 

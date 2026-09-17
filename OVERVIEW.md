@@ -4,7 +4,7 @@
 
 This project is a reusable UI framework for browser-based games.
 Its goal is to make it fast to build visually consistent game interfaces across multiple projects without forcing every game to reinvent common UI patterns.
-The framework is designed primarily for games built with React and Phaser, but the architecture should remain flexible enough to support other renderers later.
+The framework provides React screen components and engine-independent world UI conventions. Games implement world UI in their own environment, whether that uses Phaser, Three.js, another web game framework, or vanilla canvas.
 The framework should be easy for both humans and coding agents to understand and extend.
 
 ## Core Goals
@@ -75,8 +75,8 @@ Examples:
 - Objective markers
 - Location labels
 - Status indicators
-  World UI belongs conceptually to the UI framework, but is usually rendered by the game renderer rather than React.
-  For Phaser games, world UI should normally be rendered through Phaser.
+
+The framework supplies specifications, typed contracts, semantic styling guidance, and recipes for world UI. Each game owns its implementation, rendering, lifecycle, and performance strategy.
 
 ### 3. Screen UI
 
@@ -101,14 +101,15 @@ The initial stack is:
 - Base UI for unstyled, accessible behavior primitives in complex screen UI components
 - Tailwind CSS for styling
 - CSS custom properties for theming
-- Phaser for 2D world UI rendering
+- Game-owned world UI using the game's chosen renderer
 - TypeScript throughout
 - Astro for documentation and component examples
-  The framework should avoid forcing Phaser-specific concerns into reusable UI concepts.
+
+No engine or state library is required by the shared world UI contracts.
 
 ## Repository Structure
 
-This project is a monorepo.
+This project is a monorepo. The target structure below includes the planned `world-ui` contracts package; renderer implementations belong in consuming games or website examples.
 
 ```text
 game-ui/
@@ -118,12 +119,10 @@ game-ui/
 │  ├─ core/
 │  ├─ react/
 │  ├─ world-ui/
-│  ├─ phaser/
 │  └─ themes/
-├─ docs/
 ├─ package.json
 ├─ pnpm-workspace.yaml
-└─ turbo.json
+└─ vite.config.ts
 ```
 
 ## apps/website
@@ -155,10 +154,10 @@ Examples:
 - Shared types
 - Semantic design tokens
 - Common utilities
-- World anchor types
+- Types shared across UI layers
 - UI state contracts
 - Shared enums
-  This package must not depend on React or Phaser.
+  This package must not depend on React, game engines, or state libraries.
 
 ## packages/react
 
@@ -181,29 +180,21 @@ Examples:
 
 ## packages/world-ui
 
-Defines world UI concepts and behaviors without assuming a specific renderer.
-Examples:
+Planned for M3: lightweight TypeScript contracts and documentation for FloatingLabel, Nameplate, and HealthBar. DamageNumber, InteractionPrompt, and ObjectiveMarker can follow when games need them.
 
-- FloatingLabel
-- Nameplate
-- HealthBar
-- DamageNumber
-- InteractionPrompt
-- ObjectiveMarker
-  This package should define configuration, behavior, lifecycle, priority, and semantic variants.
-  It should not directly depend on Phaser.
+Specifications describe content, semantic variants, spatial conventions, defaults, and required versus optional behavior. Agents and developers use them to implement components in their own games. They do not provide renderable components, an update loop, or state ownership. No runtime schema interpreter is required; JSON Schema can be added if serialized definitions need validation.
 
-## packages/phaser
+Game implementations handle 2D or 3D anchors, camera projection, culling, pooling, animation, and cleanup. Reference implementations in the website demonstrate integration without creating a required engine adapter package.
 
-Provides Phaser renderers and adapters for world UI concepts.
-Examples:
+## Shared State and UI Integration
 
-- FloatingLabelRenderer
-- NameplateRenderer
-- HealthBarRenderer
-- DamageNumberRenderer
-- ObjectiveMarkerRenderer
-  This package translates world UI concepts into Phaser objects and game-loop behavior.
+World and screen UI consume game-owned state and send actions to the game. For example, selecting an entity in either view calls the same game action, and both views observe the resulting selection. The game or authoritative server validates gameplay changes.
+
+A world HealthBar and a React ProgressBar can share health values and semantic color roles. Documentation should recommend related screen components for each world concept. Games translate theme values into native renderer styles at initialization or theme changes; CSS variables do not automatically style world objects.
+
+Keep component APIs controlled through props and callbacks. Game-owned wrappers bind them to a store. Keep per-frame transforms and animation in the game loop, subscribe narrowly to UI values, and clean up subscriptions when instances are destroyed.
+
+Use Zustand in the first integration example without making it a framework dependency. A provider may inject a game-specific store instance, but the framework does not require providers, signals, or a state library. Keep the current store until profiling demonstrates a reason to change; adopting MobX is not an initial milestone requirement. See [React/Game Communication](./ARCHITECTURE.md#reactgame-communication) for integration details.
 
 ## packages/themes
 
@@ -321,7 +312,7 @@ Before creating new game UI, an agent should:
 2. Check documented variants.
 3. Check whether composition of existing components can solve the need.
 4. Create a new reusable primitive only when the need is genuinely different.
-5. Create game-specific UI only when it should not belong to the shared framework.
+5. Implement world UI in the game using the documented conventions; reusable screen components remain in the framework.
 
 ## Agent Rule: Do Not Hardcode Theme Values
 
@@ -369,7 +360,8 @@ Supported conceptual variants may include:
 - Fade behavior
 - Alignment
 - Lifetime
-  The renderer decides how the label is drawn.
+
+The game implementation decides how the label is drawn and documents its supported capabilities, coordinate spaces, and units.
 
 ## Framework Scope
 
@@ -385,6 +377,8 @@ Out of scope unless clearly needed:
 - Level generation
 - General asset management
 - Core game simulation
+- A shared world rendering runtime
+- A mandatory state store, provider, or signal system
 
 ## Design Principles
 
@@ -421,7 +415,7 @@ Games must be able to customize the framework without forking shared components.
 ### Performance Awareness
 
 React is appropriate for most screen UI.
-High-volume or world-attached UI should generally use the game renderer.
+World-attached UI is implemented in the game renderer. Performance depends on rendering strategy, allocations, and update/subscription costs; code location or state-library choice alone does not guarantee speed.
 
 ### Progressive Complexity
 
@@ -448,7 +442,9 @@ The first useful version should include:
 - FloatingLabel concept
 - Nameplate concept
 - HealthBar concept
-- Phaser renderer for at least one world UI primitive
+- Game-owned canvas reference example with world labels and health bars alongside React UI
+- Shared health and selection through game-owned Zustand bindings
+- A 3D integration recipe that checks the contracts for hidden 2D assumptions
 - Component documentation
 - Agent usage documentation
 
@@ -457,14 +453,11 @@ The first useful version should include:
 Potential future packages may include:
 
 ```text
-packages/pixi
-packages/three
-packages/dom-world-ui
 packages/icons
 packages/audio-ui
 ```
 
-These should only be introduced when actual games require them.
+These should only be introduced when actual games require them. Optional engine or state adapters may be extracted from repeated game integrations; no engine package is part of the initial milestone.
 
 ## Success Criteria
 
@@ -474,5 +467,7 @@ The framework is successful when a new game can quickly establish a complete UI 
 2. Choosing a starting theme.
 3. Overriding a small number of tokens.
 4. Composing existing UI primitives.
-5. Adding only the game-specific UI that is genuinely unique.
+5. Implementing world UI with the game renderer using documented contracts and recipes.
+6. Binding both UI layers to game-owned state and actions.
+7. Adding game-specific behavior where needed.
    A coding agent should be able to inspect the documentation and understand the same workflow without needing broad knowledge of every game in the larger ecosystem.

@@ -13,7 +13,7 @@ These rules help coding agents build game UI consistently with the framework.
 2. Check its documented variants and props.
 3. Check whether composing existing components solves the need.
 4. Create a new shared primitive only when the need is genuinely different.
-5. Create game-specific UI only when it should not belong to the shared framework.
+5. Implement world UI in the game using the documented conventions; world concepts do not imply a shipped renderer.
 
 ## Map needs to primitives
 
@@ -55,3 +55,12 @@ When adding a shared screen UI component:
 ## Keep game rules outside shared packages
 
 Shared components receive content and state through props. The game decides content, team rules, scoring, and match lifecycle.
+
+## Bind state in the game
+
+- Keep store bindings in game-owned wrappers; pass values and callbacks to shared components.
+- Let world and screen interactions call the same game actions and observe game-owned state.
+- Keep gameplay authority in the game or server and per-frame transforms in the game loop.
+- Subscribe narrowly and dispose subscriptions on scene or UI teardown.
+- Use the existing state library. M3's planned Zustand example is a recipe, not a framework dependency; do not add a provider, signal runtime, or store migration without a demonstrated need.
+- Follow [world UI guidance](/world-ui/) for native implementations and related screen components. Resolve semantic theme values when initializing or changing themes, not every frame.

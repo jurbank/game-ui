@@ -7,11 +7,11 @@ sidebar:
 
 Game UI separates an interface into three layers.
 
-| Layer          | Examples                                         | Rendered by                       |
-| -------------- | ------------------------------------------------ | --------------------------------- |
-| **Game world** | Sprites, enemies, terrain, effects               | Your game; not part of Game UI    |
-| **World UI**   | Nameplates, health bars, damage numbers, prompts | The game renderer, such as Phaser |
-| **Screen UI**  | HUD panels, scoreboards, menus, lobbies          | React                             |
+| Layer          | Examples                                         | Rendered by                         |
+| -------------- | ------------------------------------------------ | ----------------------------------- |
+| **Game world** | Sprites, enemies, terrain, effects               | Your game; not part of Game UI      |
+| **World UI**   | Nameplates, health bars, damage numbers, prompts | The game renderer: engine or canvas |
+| **Screen UI**  | HUD panels, scoreboards, menus, lobbies          | React                               |
 
 ## Choosing a layer
 
@@ -30,5 +30,11 @@ Screen UI components use native HTML where it is enough and [Base UI](https://ba
 ## State stays in the game
 
 Shared components do not own game state. They receive controlled values through props, and the game decides whether those values come from React state, a store, a server, or the game scene.
+
+World UI implementations also live in the game. Both UI layers read game-owned state and send actions to the game; avoid synchronizing separate authoritative copies. A world selection and a React selection control can call the same game action and observe its result. The game or authoritative server validates gameplay changes.
+
+The planned M3 example uses one Zustand store per game instance, with React selectors and native subscriptions. A game-owned provider may inject that instance, but shared components require only props and callbacks. See [Zustand's APIs](https://zustand.docs.pmnd.rs/reference/index) and [selective subscriptions](https://zustand.docs.pmnd.rs/reference/middlewares/subscribe-with-selector).
+
+MobX, signals, or another store can supply the same values. Keep the current store until profiling demonstrates a reason to change. Keep per-frame positions and camera animation in the game loop, publish UI-relevant changes, and dispose subscriptions on teardown. No framework store or signal runtime is planned for M3.
 
 The full technical boundaries are defined in `ARCHITECTURE.md` at the repository root.

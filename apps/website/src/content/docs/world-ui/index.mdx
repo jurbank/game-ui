@@ -1,21 +1,40 @@
 ---
 title: Overview
-description: World UI concepts attached to entities and world positions.
+description: Engine-independent world UI contracts implemented inside your game.
 sidebar:
   order: 1
 ---
 
-World UI is attached to an entity or world position rather than the screen: player names, unit health bars, damage numbers, interaction prompts, and objective markers.
+World UI is attached to an entity or world position: player names, unit health bars, damage numbers, interaction prompts, and objective markers.
 
-:::caution[Not available yet]
-World UI packages are planned for a later milestone. This page describes the intended design.
+:::caution[Contracts and examples planned]
+M3 will introduce the world UI contracts package and reference example described here. They are not implemented yet. No framework renderer package is required.
 :::
 
-## Design
+## Implementation belongs to the game
 
-- `@game-ui/world-ui` will define renderer-independent concepts such as `FloatingLabel`, `Nameplate`, and `HealthBar`: their configuration, variants, priority, and lifetime.
-- `@game-ui/phaser` will render those concepts with Phaser objects, starting with `FloatingLabel`.
-- World anchors are plain coordinates, not Phaser sprites, so concepts are not tied to one renderer.
-- The game decides the content, such as which name to show; the renderer decides how it is drawn.
+The planned `@game-ui/world-ui` package defines specifications and lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Developers and agents use these conventions to implement native world UI with Phaser, Three.js, another engine, or vanilla canvas.
 
-Until then, render world-attached UI with your game renderer, and use [screen UI components](/components/) for viewport UI.
+The game owns render objects, anchor resolution, camera projection, visibility, animation, batching, pooling, and cleanup. The contracts introduce no required update loop, state library, component tree, or per-frame schema processing. JSON Schema is deferred until serialized definitions need validation.
+
+Spatial conventions will address entity references and explicit 2D/3D positions, coordinate spaces, offset/distance units, lifetime, and missing anchors. Implementations must document supported behavior and optional capabilities such as occlusion or distance fading.
+
+M3 will provide a game-owned canvas example and a 3D integration recipe. A recipe describes implementation choices; it does not establish tested engine support or provide a production renderer.
+
+## Connect world and screen UI
+
+| World concept | Related screen UI                                                               | Shared data                             |
+| ------------- | ------------------------------------------------------------------------------- | --------------------------------------- |
+| HealthBar     | [ProgressBar](/components/progress-bar/)                                        | Current value, maximum, semantic tone   |
+| Nameplate     | [PlayerList](/components/player-list/) or [Scoreboard](/components/scoreboard/) | Identity, display name, status          |
+| FloatingLabel | Text composed inside [Panel](/components/panel/)                                | Content and semantic role when relevant |
+
+These are composition suggestions. Both views consume game-owned values and render independently. Games map semantic theme values to native colors, fonts, sizes, or materials at initialization and theme changes; CSS variables do not automatically style engine objects.
+
+Interactions from either view call game actions. For example, selecting an entity in the world or a React control calls the same `selectEntity(id)` action; both observe the resulting selection. See [state ownership](/concepts/#state-stays-in-the-game).
+
+## Performance boundary
+
+Keep positions, camera transforms, and animation in the game loop. Subscribe screen components only to the values they display, and clean up subscriptions when instances are destroyed. Avoid per-frame React updates, descriptor allocation, schema interpretation, and computed-style reads in the world rendering path.
+
+Game ownership gives the renderer control over optimization; it does not guarantee performance. Profile representative label counts and update patterns before introducing more complex culling, pooling, or a different state library.
