@@ -33,7 +33,7 @@ export const scoreboardName = "[font-weight:400]";
 export const scoreboardNameText = "block max-w-[16rem] truncate";
 
 export const scoreboardScore =
-  "tabular-nums font-game-display group-data-highlight:text-game-primary";
+  "tabular-nums font-game-display group-data-highlight:text-game-primary-text";
 
 export const scoreboardValue = "tabular-nums";
 

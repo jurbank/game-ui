@@ -20,12 +20,13 @@ export const playerListDetail = "shrink-0 tabular-nums text-game-text-muted";
 
 export const playerListStatus = "shrink-0 font-game-display uppercase text-game-sm";
 
+/** Status is text on a surface, so it uses the tone's text-safe value. */
 export const playerListStatusTones: Record<PlayerStatusTone, string> = {
   default: "text-game-text-muted",
-  primary: "text-game-primary",
-  success: "text-game-success",
-  warning: "text-game-warning",
-  danger: "text-game-danger",
+  primary: "text-game-primary-text",
+  success: "text-game-success-text",
+  warning: "text-game-warning-text",
+  danger: "text-game-danger-text",
 };
 
 export const playerListActions = "flex shrink-0 items-center gap-game-xs";

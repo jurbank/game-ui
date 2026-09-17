@@ -11,12 +11,16 @@
     --game-panel: #1a1e42;
     --game-primary: #ffd23f;
     --game-primary-contrast: #1a1400;
+    --game-primary-text: #ffd23f;
     --game-secondary: #3ee8ff;
     --game-secondary-contrast: #04212a;
     --game-danger: #ff4d6d;
     --game-danger-contrast: #1f0008;
+    --game-danger-text: #ff4d6d;
     --game-success: #3dff9a;
+    --game-success-text: #3dff9a;
     --game-warning: #ff9f1c;
+    --game-warning-text: #ff9f1c;
     --game-text: #f5f7ff;
     --game-text-muted: #aab2dc;
     --game-border: #4a53a8;

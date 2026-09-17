@@ -38,11 +38,23 @@ function contrast(a: string, b: string): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-/** Foreground/background pairs that must meet WCAG AA for normal text. */
+/** Surfaces that text can sit on. */
+const surfaces = ["bg", "surface", "panel"] as const;
+
+/** Tones components render as text, which must be readable on every surface. */
+const toneTexts = ["primary-text", "success-text", "warning-text", "danger-text"] as const;
+
+/**
+ * Foreground/background pairs that must meet WCAG AA for normal text.
+ * `-contrast` tokens are text on a solid fill; `-text` tokens are the tone
+ * used as text on a surface.
+ */
 const textPairs = [
-  ["text", "bg"],
-  ["text", "panel"],
-  ["text-muted", "panel"],
+  ...surfaces.flatMap((surface) => [
+    ["text", surface] as const,
+    ["text-muted", surface] as const,
+    ...toneTexts.map((tone) => [tone, surface] as const),
+  ]),
   ["primary-contrast", "primary"],
   ["secondary-contrast", "secondary"],
   ["danger-contrast", "danger"],

@@ -3,6 +3,11 @@
  *
  * Each name maps to a CSS custom property (`--game-<name>`). Themes supply the
  * values; components reference only these names.
+ *
+ * A colour used as a solid fill and the same colour used as text need
+ * different values: a fill is judged against the text on it (`-contrast`),
+ * while text is judged against the surface behind it (`-text`). Light themes
+ * cannot satisfy both with one value.
  */
 export const gameTokens = {
   color: [
@@ -11,12 +16,16 @@ export const gameTokens = {
     "panel",
     "primary",
     "primary-contrast",
+    "primary-text",
     "secondary",
     "secondary-contrast",
     "danger",
     "danger-contrast",
+    "danger-text",
     "success",
+    "success-text",
     "warning",
+    "warning-text",
     "text",
     "text-muted",
     "border",

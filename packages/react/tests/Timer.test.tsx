@@ -94,7 +94,7 @@ test("applies variant, size, class names, and refs", () => {
   expect(root.dataset.variant).toBe("danger");
   expect(root.dataset.size).toBe("lg");
   expect(root.className.split(" ").at(-1)).toBe("ml-auto");
-  expect(screen.getByRole("timer").className).toContain("text-game-danger");
+  expect(screen.getByRole("timer").className).toContain("text-game-danger-text");
   expect(screen.getByRole("timer").className).toContain("text-game-xl");
 });
 

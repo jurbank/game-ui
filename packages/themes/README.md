@@ -12,6 +12,8 @@ CSS custom properties are the theming API. Token names are defined by `@game-ui/
 | `@game-ui/themes/tokens.css`   | Neutral default value for every token on `:root`                |
 | `@game-ui/themes/base.css`     | Text color and font for themed regions; reduced-motion handling |
 | `@game-ui/themes/arcade.css`   | Arcade theme, scoped to `[data-game-theme="arcade"]`            |
+| `@game-ui/themes/tactical.css` | Tactical theme, scoped to `[data-game-theme="tactical"]`        |
+| `@game-ui/themes/playful.css`  | Playful theme, scoped to `[data-game-theme="playful"]`          |
 | `@game-ui/themes/tailwind.css` | Tailwind v4 `@theme` mapping from utilities to tokens           |
 
 Import only the themes a game uses by combining `tokens.css`, `base.css`, and individual theme files instead of the package root.

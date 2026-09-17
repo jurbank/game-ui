@@ -97,7 +97,7 @@ test("statuses carry their tone", () => {
   );
   const status = screen.getAllByRole("row")[1]?.querySelector("[data-game-part=status]");
   expect(status?.textContent).toBe("Eliminated");
-  expect(status?.className).toContain("text-game-danger");
+  expect(status?.className).toContain("text-game-danger-text");
 });
 
 test("an empty scoreboard explains itself instead of rendering an empty table", () => {

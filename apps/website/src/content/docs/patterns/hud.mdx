@@ -1,0 +1,72 @@
+---
+title: HUD demo
+description: A running match HUD composed from every screen component, with all state in the game.
+sidebar:
+  order: 2
+---
+
+import Example from "../../../components/Example.astro";
+import { MatchDemo } from "../../../components/examples/MatchDemo.tsx";
+
+A round in progress, built only from Game UI primitives. The clock runs, health and scores change, and the pause menu opens with **P** or the button. Press **S** for standings, and **Escape** to close the menu.
+
+<Example>
+  <MatchDemo client:visible />
+</Example>
+
+## What this demonstrates
+
+- Every screen component working together: Timer, ProgressBar, Panel, PlayerList, Scoreboard, Modal, and Button.
+- Values reaching the UI only through props. Take damage, heal, and score to watch the health bar, squad rows, and standings update.
+- A HUD that reflows from a two-column layout to a single column on a narrow screen, without the components knowing anything about layout.
+- Keyboard control the game owns: the demo binds **P** and **S** itself, and Modal handles Escape and focus.
+
+## Where the state lives
+
+The whole match is one reducer inside the example. There is no store in `@game-ui/react`, no context to wire up, and no provider to wrap the app in.
+
+```tsx
+interface MatchState {
+  remaining: number;
+  paused: boolean;
+  showScoreboard: boolean;
+  players: { id: string; name: string; health: number; score: number }[];
+}
+
+const [state, dispatch] = useReducer(matchReducer, initialState);
+```
+
+Everything on screen is derived from that state and passed down:
+
+```tsx
+<Timer label="Round 3" value={state.remaining} variant={timeTone} />
+<ProgressBar label="Health" value={self.health} variant={healthTone} showValue />
+<PlayerList aria-label="Squad" players={squad} size="sm" />
+<Scoreboard rows={rows} columns={[{ id: "health", header: "HP" }]} />
+```
+
+Swap the reducer for Zustand, Colyseus, a server snapshot, or Phaser's game loop and none of the components change.
+
+## Decisions the game makes here
+
+The framework renders; the demo decides. In this example the game code owns:
+
+- **Thresholds.** Health turns amber under 50 and red under 20; the clock turns amber at 30 seconds and red at 10. The components only receive a `variant`.
+- **Ranking.** The standings are sorted by score in the example, and the leader is flagged with `highlight`. Scoreboard never sorts.
+- **Round lifecycle.** The clock stops at zero and the standings become final scores, because the reducer says so.
+- **Keybindings.** **P** and **S** are the demo's choice. Components never listen for game keys.
+- **Who "you" are.** `self` marks the local player in the squad list and the standings.
+
+## Layout
+
+The HUD is a flex column with a two-column grid in the middle, defined in the example's own stylesheet using spacing tokens:
+
+```css
+.demo-hud-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--game-space-md);
+}
+```
+
+Components fill the width they are given, so the same markup works in a sidebar, a wide HUD, or a phone-sized viewport. Position your HUD with your own layout CSS and let the components size to it.

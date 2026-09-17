@@ -9,8 +9,8 @@ export const timerTime =
 
 export const timerVariants: Record<TimerVariant, string> = {
   default: "text-game-text",
-  warning: "text-game-warning",
-  danger: "text-game-danger",
+  warning: "text-game-warning-text",
+  danger: "text-game-danger-text",
 };
 
 export const timerSizes: Record<TimerSize, string> = {

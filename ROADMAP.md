@@ -78,14 +78,14 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 
 **Outcome:** the framework can compose a useful HUD, scoreboard, and menu across all three starting themes.
 
-- [ ] Add Tactical and Playful themes and a preview that renders the same component examples in each theme.
+- [x] Add Tactical and Playful themes and a preview that renders the same component examples in each theme.
 - [x] Add Base UI (`@base-ui/react`) to `@game-ui/react` and the dependency boundary allowlist. Build interactive components on its unstyled primitives, per the behavior primitives section of the architecture.
 - [x] Build ProgressBar on Base UI Progress with controlled `value` and `max`, accessible labeling, and documented behavior for empty, full, and invalid ranges.
 - [x] Build Timer around a game-provided time value and formatting options. Keep the authoritative clock and match lifecycle in the game.
 - [x] Build Modal on Base UI Dialog with an accessible name, focus management, focus restoration, Escape handling, and a documented dismissal policy. Ensure region-scoped themes reach the portaled dialog.
 - [x] Build PlayerList with game-provided entries and explicit empty-state behavior.
 - [x] Build Scoreboard with supplied rows, scores, and statuses. Games determine winners, team membership, and ranking policy.
-- [ ] Compose a responsive HUD/menu example from these primitives. Keep any demo match state in the website example.
+- [x] Compose a responsive HUD/menu example from these primitives. Keep any demo match state in the website example.
 - [ ] Verify theme contrast, keyboard interaction, long labels, narrow viewports, and reduced-motion behavior where motion exists.
 - [ ] Add meaningful tests for component interactions and boundary values, with live documentation alongside each component.
 

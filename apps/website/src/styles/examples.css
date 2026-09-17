@@ -52,6 +52,17 @@
   gap: 1rem;
 }
 
+.example-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.example-themes > .example {
+  margin: 0;
+}
+
 .example-side-by-side > .example {
   margin: 0;
 }
@@ -90,4 +101,36 @@
 
 .example-stack-top {
   margin-top: var(--game-space-md);
+}
+
+/* Layout for the composed HUD demo. Only layout lives here; every visual
+   value comes from the components and their theme. */
+.demo-hud {
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-md);
+}
+
+.demo-hud-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--game-space-md);
+}
+
+.demo-hud-objective {
+  flex: 1 1 14rem;
+  max-width: 24rem;
+}
+
+.demo-hud-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--game-space-md);
+  align-items: start;
+}
+
+.demo-hud-controls {
+  gap: var(--game-space-sm);
 }

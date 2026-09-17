@@ -73,7 +73,7 @@ test("shows icons, details, and toned statuses supplied by the game", () => {
   expect(within(row).getByText("1,240")).toBeTruthy();
   const status = row.querySelector("[data-game-part=status]");
   expect(status?.textContent).toBe("Eliminated");
-  expect(status?.className).toContain("text-game-danger");
+  expect(status?.className).toContain("text-game-danger-text");
 });
 
 test("a status without a tone is muted", () => {

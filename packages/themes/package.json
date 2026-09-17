@@ -16,6 +16,8 @@
     "./base.css": "./src/base.css",
     "./tailwind.css": "./src/tailwind.css",
     "./arcade.css": "./src/themes/arcade.css",
+    "./tactical.css": "./src/themes/tactical.css",
+    "./playful.css": "./src/themes/playful.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {

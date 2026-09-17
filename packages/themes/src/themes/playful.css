@@ -1,0 +1,52 @@
+/*
+ * Playful: casual, family, and party games.
+ * Light surfaces, saturated accents, round corners, bouncy motion.
+ */
+@layer game-ui.tokens, game-ui.themes, game-ui.base, game-ui.components;
+
+@layer game-ui.themes {
+  [data-game-theme="playful"] {
+    --game-bg: #fdf3e7;
+    --game-surface: #f6ece0;
+    --game-panel: #ffffff;
+    --game-primary: #ff7a59;
+    --game-primary-contrast: #3a1200;
+    --game-primary-text: #b8371a;
+    --game-secondary: #6f4bf5;
+    --game-secondary-contrast: #ffffff;
+    --game-danger: #d81b45;
+    --game-danger-contrast: #ffffff;
+    --game-danger-text: #c2153c;
+    --game-success: #2fb170;
+    --game-success-text: #13704a;
+    --game-warning: #f4b400;
+    --game-warning-text: #8a5a00;
+    --game-text: #2b2140;
+    --game-text-muted: #6b5f86;
+    --game-border: #e3d3bf;
+    --game-focus-ring: #6f4bf5;
+
+    --game-font-body: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+    --game-font-display: ui-rounded, "SF Pro Rounded", "Trebuchet MS", system-ui, sans-serif;
+    --game-font-size-sm: 0.9375rem;
+    --game-font-size-md: 1.0625rem;
+    --game-font-size-lg: 1.375rem;
+    --game-font-size-xl: 2rem;
+
+    --game-radius-sm: 8px;
+    --game-radius-md: 14px;
+    --game-radius-lg: 22px;
+    --game-border-width: 2px;
+    --game-shadow: 0 6px 16px rgb(43 33 64 / 0.16);
+
+    --game-space-xs: 0.375rem;
+    --game-space-sm: 0.625rem;
+    --game-space-md: 1rem;
+    --game-space-lg: 1.375rem;
+    --game-space-xl: 2rem;
+
+    --game-duration-fast: 120ms;
+    --game-duration-normal: 240ms;
+    --game-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}

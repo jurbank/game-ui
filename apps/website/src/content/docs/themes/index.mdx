@@ -7,16 +7,35 @@ sidebar:
 
 import Example from "../../../components/Example.astro";
 import { ReadyCheck } from "../../../components/examples/ReadyCheck.tsx";
+import { ThemeShowcase } from "../../../components/examples/ThemeShowcase.tsx";
 
 CSS custom properties are the theming API. Components reference semantic tokens, themes supply values, and games override them.
 
 ## Starting themes
 
-| Theme    | Status    | Designed for                                                             |
-| -------- | --------- | ------------------------------------------------------------------------ |
-| Arcade   | Available | Competitive and action games: dark base, bright accents, chunky controls |
-| Tactical | Planned   | Strategy and data-heavy games: restrained accents, compact spacing       |
-| Playful  | Planned   | Casual and party games: brighter surfaces, rounded, larger controls      |
+| Theme    | Designed for                                                             |
+| -------- | ------------------------------------------------------------------------ |
+| Arcade   | Competitive and action games: dark base, bright accents, chunky controls |
+| Tactical | Strategy, simulation, and data-heavy games: desaturated, sharp, compact  |
+| Playful  | Casual and party games: light surfaces, round corners, bouncy motion     |
+
+The three panels below are the same components with the same props. Only the token values around them differ.
+
+<div class="not-content example-themes">
+  <Example label="Arcade" theme="arcade">
+    <ThemeShowcase client:visible />
+  </Example>
+  <Example label="Tactical" theme="tactical">
+    <ThemeShowcase client:visible />
+  </Example>
+  <Example label="Playful" theme="playful">
+    <ThemeShowcase client:visible />
+  </Example>
+</div>
+
+Each theme sets every token, so a game picks one and overrides only what it wants to change. Themes differ in more than colour: Tactical uses a monospace display face, 2px corners, and restrained easing, while Playful uses rounded faces, 22px corners, thicker borders, and overshoot easing.
+
+## Selecting a theme
 
 Apply a theme to any element and everything inside it:
 
@@ -62,15 +81,29 @@ Framework styles are in cascade layers, so your overrides win regardless of sele
 
 ## Tokens
 
-| Category   | Tokens                                                                                                                                                                                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Color      | `bg`, `surface`, `panel`, `primary`, `primary-contrast`, `secondary`, `secondary-contrast`, `danger`, `danger-contrast`, `success`, `warning`, `text`, `text-muted`, `border`, `focus-ring` |
-| Typography | `font-body`, `font-display`, `font-size-sm`, `font-size-md`, `font-size-lg`, `font-size-xl`                                                                                                 |
-| Shape      | `radius-sm`, `radius-md`, `radius-lg`, `border-width`, `shadow`                                                                                                                             |
-| Spacing    | `space-xs`, `space-sm`, `space-md`, `space-lg`, `space-xl`                                                                                                                                  |
-| Motion     | `duration-fast`, `duration-normal`, `ease`                                                                                                                                                  |
+| Category   | Tokens                                                                                                                                                                                                                                                     |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color      | `bg`, `surface`, `panel`, `primary`, `primary-contrast`, `primary-text`, `secondary`, `secondary-contrast`, `danger`, `danger-contrast`, `danger-text`, `success`, `success-text`, `warning`, `warning-text`, `text`, `text-muted`, `border`, `focus-ring` |
+| Typography | `font-body`, `font-display`, `font-size-sm`, `font-size-md`, `font-size-lg`, `font-size-xl`                                                                                                                                                                |
+| Shape      | `radius-sm`, `radius-md`, `radius-lg`, `border-width`, `shadow`                                                                                                                                                                                            |
+| Spacing    | `space-xs`, `space-sm`, `space-md`, `space-lg`, `space-xl`                                                                                                                                                                                                 |
+| Motion     | `duration-fast`, `duration-normal`, `ease`                                                                                                                                                                                                                 |
 
 Each token is a CSS variable prefixed with `--game-`, such as `--game-panel`. Durations become `0ms` when the player prefers reduced motion.
+
+### Fills, contrast, and text
+
+A colour used as a solid fill and the same colour used as text need different values, so each tone has up to three tokens:
+
+| Suffix      | Role                          | Judged against           | Example use                         |
+| ----------- | ----------------------------- | ------------------------ | ----------------------------------- |
+| none        | The solid fill                | its `-contrast` partner  | a danger Button, a ProgressBar fill |
+| `-contrast` | Text sitting **on** that fill | the fill                 | the label inside a danger Button    |
+| `-text`     | The tone used **as** text     | `bg`, `surface`, `panel` | an "Eliminated" status, a red Timer |
+
+A light theme cannot satisfy both roles with one value: Playful's primary is a bright coral that works as a button fill but would fail contrast as text on white, so `--game-primary-text` is a deeper coral. When overriding a tone, set all of its tokens.
+
+Every starting theme is tested for WCAG AA contrast on each of these pairs, across all three surfaces.
 
 ## With Tailwind CSS
 

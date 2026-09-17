@@ -11,12 +11,16 @@
   --color-game-panel: var(--game-panel);
   --color-game-primary: var(--game-primary);
   --color-game-primary-contrast: var(--game-primary-contrast);
+  --color-game-primary-text: var(--game-primary-text);
   --color-game-secondary: var(--game-secondary);
   --color-game-secondary-contrast: var(--game-secondary-contrast);
   --color-game-danger: var(--game-danger);
   --color-game-danger-contrast: var(--game-danger-contrast);
+  --color-game-danger-text: var(--game-danger-text);
   --color-game-success: var(--game-success);
+  --color-game-success-text: var(--game-success-text);
   --color-game-warning: var(--game-warning);
+  --color-game-warning-text: var(--game-warning-text);
   --color-game-text: var(--game-text);
   --color-game-text-muted: var(--game-text-muted);
   --color-game-border: var(--game-border);
