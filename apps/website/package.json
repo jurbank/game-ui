@@ -1,16 +1,17 @@
 {
-  "name": "website",
-  "version": "0.0.0",
-  "private": true,
+  "name": "",
   "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "vp dev",
-    "build": "tsc && vp build",
-    "preview": "vp preview"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "devDependencies": {
-    "typescript": "^7.0.2",
-    "vite": "catalog:",
-    "vite-plus": "catalog:"
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.1",
+    "astro": "^7.2.10",
+    "sharp": "^0.35.3"
   }
 }
