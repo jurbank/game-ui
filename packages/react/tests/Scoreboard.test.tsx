@@ -161,3 +161,24 @@ test("applies size, class names, refs, and an empty marker", () => {
   rerender(<Scoreboard ref={ref} caption="Scores" rows={[]} data-testid="board" />);
   expect(screen.getByTestId("board").dataset.empty).toBe("");
 });
+
+test("follows standings the game reorders", () => {
+  const { rerender } = render(<Scoreboard caption="Scores" rows={rows} />);
+  expect(screen.getAllByRole("rowheader").map((cell) => cell.textContent)).toEqual([
+    "Wisp",
+    "Nova",
+    "Rook",
+  ]);
+
+  // Nova overtakes Wisp: the game re-ranks and moves the highlight.
+  const overtaken: ScoreboardRow[] = [
+    { id: "p1", name: "Nova", rank: 1, score: 1600, self: true, highlight: true },
+    { id: "p3", name: "Wisp", rank: 2, score: 1510 },
+    { id: "p2", name: "Rook", rank: 3, score: 980 },
+  ];
+  rerender(<Scoreboard caption="Scores" rows={overtaken} />);
+  const [first] = screen.getAllByRole("row").slice(1);
+  expect(first?.dataset.rowId).toBe("p1");
+  expect(first?.dataset.highlight).toBe("");
+  expect(within(first!).getByRole("cell", { name: "1600" })).toBeTruthy();
+});

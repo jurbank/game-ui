@@ -33,6 +33,19 @@ const classNames = [
   ...new Set(classStrings.flatMap((value) => value.split(/\s+/).filter(Boolean))),
 ];
 
+test("animated components time themselves with motion tokens", () => {
+  // Hard-coded durations would ignore the reduced-motion override, which works
+  // by setting the duration tokens to 0ms.
+  const timed = classNames.filter((name) => name.startsWith("duration-"));
+  expect(timed.length).toBeGreaterThan(0);
+  for (const name of timed) {
+    expect(name).toMatch(/^duration-\(--game-duration-(fast|normal)\)$/);
+  }
+  for (const name of classNames.filter((name) => name.startsWith("ease-"))) {
+    expect(name).toBe("ease-game");
+  }
+});
+
 test("every component class generates CSS", async () => {
   const compiler = await compile(readFileSync(stylesPath, "utf8"), {
     base: fileURLToPath(new URL("../src/", import.meta.url)),

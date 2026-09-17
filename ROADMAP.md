@@ -86,8 +86,8 @@ Milestones 2 and 3 can proceed independently once milestone 1 establishes the sh
 - [x] Build PlayerList with game-provided entries and explicit empty-state behavior.
 - [x] Build Scoreboard with supplied rows, scores, and statuses. Games determine winners, team membership, and ranking policy.
 - [x] Compose a responsive HUD/menu example from these primitives. Keep any demo match state in the website example.
-- [ ] Verify theme contrast, keyboard interaction, long labels, narrow viewports, and reduced-motion behavior where motion exists.
-- [ ] Add meaningful tests for component interactions and boundary values, with live documentation alongside each component.
+- [x] Verify theme contrast, keyboard interaction, long labels, narrow viewports, and reduced-motion behavior where motion exists.
+- [x] Add meaningful tests for component interactions and boundary values, with live documentation alongside each component.
 
 **Acceptance criteria:** all seven initial screen components are documented and usable in each theme. A demo updates health, time, player rows, and scores through props, opens and closes its modal by keyboard, and requires no shared global game store.
 

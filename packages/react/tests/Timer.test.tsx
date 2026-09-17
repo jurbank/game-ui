@@ -105,3 +105,28 @@ test("formats durations without a component", () => {
     dateTime: "PT1H2M3.4S",
   });
 });
+
+test("follows a clock the game advances", () => {
+  const { rerender } = render(<Timer aria-label="Time" value={61_000} />);
+  expect(reading()).toBe("1:01");
+
+  rerender(<Timer aria-label="Time" value={1_000} />);
+  expect(reading()).toBe("0:01");
+  expect(screen.getByRole("timer").getAttribute("datetime")).toBe("PT0H0M1S");
+
+  rerender(<Timer aria-label="Time" value={0} />);
+  expect(reading()).toBe("0:00");
+});
+
+test("truncates at fractional boundaries too", () => {
+  const { rerender } = render(<Timer aria-label="Time" value={9_999} precision="tenths" />);
+  expect(reading()).toBe("0:09.9");
+
+  rerender(<Timer aria-label="Time" value={9_999} precision="hundredths" />);
+  expect(reading()).toBe("0:09.99");
+});
+
+test("handles durations far beyond a single match", () => {
+  render(<Timer aria-label="Playtime" value={360_000_000} />);
+  expect(reading()).toBe("100:00:00");
+});

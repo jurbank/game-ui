@@ -129,3 +129,40 @@ test("applies size, class names, refs, and an empty marker", () => {
   rerender(<PlayerList ref={ref} aria-label="Squad" players={[]} data-testid="list" />);
   expect(screen.getByTestId("list").dataset.empty).toBe("");
 });
+
+test("follows a roster the game changes", () => {
+  const { rerender } = render(<PlayerList aria-label="Squad" players={squad} />);
+  expect(screen.getAllByRole("listitem")).toHaveLength(3);
+
+  const afterElimination: PlayerEntry[] = [
+    { id: "p1", name: "Nova", status: "Eliminated", statusTone: "danger" },
+    { id: "p3", name: "Wisp", status: "Ready", statusTone: "success" },
+  ];
+  rerender(<PlayerList aria-label="Squad" players={afterElimination} />);
+  const rows = screen.getAllByRole("listitem");
+  expect(rows.map((row) => row.dataset.playerId)).toEqual(["p1", "p3"]);
+  expect(rows[0]?.textContent).toBe("NovaEliminated");
+
+  // A roster that empties mid-match falls back to the empty state.
+  rerender(<PlayerList aria-label="Squad" players={[]} />);
+  expect(screen.queryByRole("list")).toBeNull();
+  expect(screen.getByText("No players")).toBeTruthy();
+});
+
+test("reaches every player's actions by keyboard, in row order", async () => {
+  const user = userEvent.setup();
+  render(
+    <PlayerList
+      aria-label="Squad"
+      players={[
+        { id: "p1", name: "Nova", actions: <Button>Mute Nova</Button> },
+        { id: "p2", name: "Rook", actions: <Button>Mute Rook</Button> },
+      ]}
+    />,
+  );
+
+  await user.tab();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Mute Nova" }));
+  await user.tab();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Mute Rook" }));
+});

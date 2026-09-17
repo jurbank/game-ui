@@ -148,3 +148,32 @@ test("the indicator fills the track height in every state", () => {
   expect(indicator?.style.height).toBe("");
   expect(indicator?.className).toContain("h-full");
 });
+
+test("measures progress within a range that does not start at zero", () => {
+  const { rerender } = render(<ProgressBar aria-label="Reactor" value={15} min={10} max={20} />);
+  expect(indicatorWidth()).toBe("50%");
+  expect(screen.getByRole("progressbar").getAttribute("aria-valuemin")).toBe("10");
+
+  rerender(<ProgressBar aria-label="Reactor" value={10} min={10} max={20} />);
+  expect(indicatorWidth()).toBe("0%");
+
+  // Below the minimum clamps to the minimum, not to zero.
+  rerender(<ProgressBar aria-label="Reactor" value={4} min={10} max={20} />);
+  expect(indicatorWidth()).toBe("0%");
+  expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("10");
+});
+
+test("follows a value the game changes", () => {
+  const { rerender } = render(<ProgressBar aria-label="Health" value={100} />);
+  expect(indicatorWidth()).toBe("100%");
+  expect(screen.getByRole("progressbar").dataset.complete).toBe("");
+
+  rerender(<ProgressBar aria-label="Health" value={40} />);
+  expect(indicatorWidth()).toBe("40%");
+  expect(screen.getByRole("progressbar").dataset.complete).toBeUndefined();
+  expect(screen.getByRole("progressbar").getAttribute("aria-valuetext")).toBe("40%");
+
+  // A value that becomes unknown mid-match stops reporting a number.
+  rerender(<ProgressBar aria-label="Health" value={null} />);
+  expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBeNull();
+});

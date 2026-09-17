@@ -87,6 +87,27 @@ test.each(themeNames)("%s theme is scoped, layered, exported, and bundled", (nam
   expect(readCss("index.css")).toContain(`@import "./themes/${name}.css";`);
 });
 
+describe("reduced motion", () => {
+  const base = readCss("base.css");
+
+  test("zeroes both duration tokens for players who ask for less motion", () => {
+    const block = base.match(/@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\n {2}\}/)?.[0];
+    expect(block).toBeTruthy();
+    expect(block).toContain("--game-duration-fast: 0ms;");
+    expect(block).toContain("--game-duration-normal: 0ms;");
+    // Region-scoped themes redeclare the tokens, so the override must reach
+    // them too, not only `:root`.
+    expect(block).toContain("[data-game-theme]");
+  });
+
+  test.each(stylesheets)("$label declares durations the override can replace", ({ file }) => {
+    const values = declarations(readCss(file));
+    for (const token of ["duration-fast", "duration-normal"] as const) {
+      expect(values.get(`--game-${token}`)).toMatch(/^\d+ms$/);
+    }
+  });
+});
+
 describe("tailwind mapping", () => {
   const mapping = declarations(readCss("tailwind.css"));
 
