@@ -1,0 +1,115 @@
+---
+title: Scoreboard
+description: A themed results table built from rows, scores, and statuses the game supplies.
+sidebar:
+  order: 7
+---
+
+import Example from "../../../components/Example.astro";
+import { MatchResults, TeamScoreboards } from "../../../components/examples/ScoreboardExamples.tsx";
+
+A results table built from rows the game has already ranked.
+
+<Example>
+  <MatchResults client:load />
+</Example>
+
+## When to use
+
+- End-of-match and end-of-round results, live match standings, tournament tables.
+- Any ranked or scored table of players or teams in screen UI.
+
+## When not to use
+
+- A roster without scores or placement: use [PlayerList](/components/player-list/).
+- A single value filling a range: use [ProgressBar](/components/progress-bar/).
+- Anything attached to a character in the world: use world UI.
+
+## The game decides who is winning
+
+Scoreboard renders finished rows. It never sorts, ranks, breaks ties, totals scores, assigns teams, or decides who won. Those are game rules, and they differ per game: highest score, lowest time, most objectives, or something else entirely.
+
+```tsx
+import { Scoreboard } from "@game-ui/react";
+
+<Scoreboard
+  caption="Final scores"
+  columns={[{ id: "kills", header: "K" }]}
+  rows={ranked.map((player, index) => ({
+    id: player.id,
+    name: player.name,
+    rank: String(index + 1),
+    score: player.score,
+    values: { kills: player.kills },
+    highlight: player.score === topScore,
+    self: player.id === localPlayerId,
+  }))}
+/>;
+```
+
+`rank` is text, so a game with ties can pass `1=`, and a game with no places can leave it out. `highlight` marks a winner the game has chosen.
+
+## Teams
+
+There is no team grouping, because team membership and team scoring are game rules. Render one Scoreboard per team, each inside a Panel that carries the team's name and total.
+
+<Example>
+  <TeamScoreboards client:load />
+</Example>
+
+## Columns
+
+The name column is always present. Rank, score, and status columns appear only when a row supplies them, so a simple scoreboard stays narrow. Extra statistics come from `columns` plus each row's `values`, keyed by column id.
+
+| Column    | Appears when         | Header prop                     |
+| --------- | -------------------- | ------------------------------- |
+| Rank      | any row has `rank`   | `rankHeader`                    |
+| Name      | always               | `nameHeader`                    |
+| `columns` | you pass them        | each column's `header`          |
+| Score     | any row has `score`  | `scoreHeader`                   |
+| Status    | any row has `status` | none; the header is hidden text |
+
+Statistic columns are right-aligned for numbers. Pass `align: "start"` for text such as a team or class name. A row that omits a column's value renders an empty cell.
+
+## Empty state
+
+With no rows, Scoreboard renders a message instead of an empty table, and the root element gets `data-empty`. The default is "No results yet"; pass `empty` to fit the moment, as the example does for a match that has not started.
+
+## Props
+
+Scoreboard accepts native `<div>` props, including `ref`, plus:
+
+| Prop          | Type                          | Default            |
+| ------------- | ----------------------------- | ------------------ |
+| `rows`        | `readonly ScoreboardRow[]`    | required           |
+| `columns`     | `readonly ScoreboardColumn[]` | `[]`               |
+| `caption`     | `ReactNode`                   | none               |
+| `hideCaption` | `boolean`                     | `false`            |
+| `nameHeader`  | `ReactNode`                   | `"Player"`         |
+| `scoreHeader` | `ReactNode`                   | `"Score"`          |
+| `rankHeader`  | `ReactNode`                   | `"#"`              |
+| `empty`       | `ReactNode`                   | `"No results yet"` |
+| `size`        | `"sm" \| "md"`                | `"md"`             |
+
+Each row accepts `id`, `name`, `rank`, `score`, `values`, `status`, `statusTone`, `self`, and `highlight`.
+
+Rows carry `data-game-part="row"`, `data-row-id`, and `data-self` or `data-highlight` where they apply. Score and status cells carry `data-game-part="score"` and `data-game-part="status"`.
+
+## Theme tokens
+
+Uses `--game-panel`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-primary`, `--game-success`, `--game-warning`, `--game-danger`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, and `--game-space-*`.
+
+## Accessibility
+
+- Renders a real `<table>`, so screen readers can navigate it by row and column.
+- `caption` names the table and stays available to screen readers when `hideCaption` is set. Without a caption, pass `aria-label`.
+- Each name is a row header, so a cell is announced with the player it belongs to.
+- Scores and statuses are text, not colour alone: a highlighted winner still reads as a rank and a score.
+- Numbers use `tabular-nums` so columns stay aligned as values change.
+
+## Agent guidance
+
+- Rank, sort, total, and group in game code; pass Scoreboard the finished order.
+- Use `highlight` for a winner the game determined, never as decoration.
+- Add statistics through `columns` and `values` rather than packing them into the name.
+- For per-team tables, render one Scoreboard per team instead of adding grouping.

@@ -1,0 +1,118 @@
+---
+title: ProgressBar
+description: A themed bar for values that fill a range, such as health, shields, and loading.
+sidebar:
+  order: 4
+---
+
+import Example from "../../../components/Example.astro";
+import {
+  HudBars,
+  ProgressBarSizes,
+  ProgressBarStates,
+  ProgressBarVariants,
+} from "../../../components/examples/ProgressBarExamples.tsx";
+
+A bar that shows how far a value has filled its range.
+
+<Example>
+  <HudBars client:load />
+</Example>
+
+## When to use
+
+- Screen-space readouts of a value between two bounds: health, shields, armor, stamina, ammo, experience, objective capture, download or asset loading.
+- Any progress the player reads but does not drag.
+
+## When not to use
+
+- A bar attached to a character or object in the world: use world UI (planned `HealthBar`).
+- A value the player sets, such as a volume control: use the planned Slider.
+- Elapsed or remaining match time: use the planned Timer.
+
+## Usage
+
+```tsx
+import { ProgressBar } from "@game-ui/react";
+
+<ProgressBar label="Health" value={health} max={maxHealth} variant="success" />;
+```
+
+ProgressBar is controlled. The game owns `value`, `min`, and `max`, and decides what they mean.
+
+## Values
+
+| Case           | Prop values                                            | Behavior                                                          |
+| -------------- | ------------------------------------------------------ | ----------------------------------------------------------------- |
+| Empty          | `value={min}`                                          | Bar is empty, and reports the minimum.                            |
+| Full           | `value={max}`                                          | Bar is full, and gets `data-complete`.                            |
+| Out of range   | `value` above `max` or below `min`                     | Clamped into the range for both the fill and the announced value. |
+| Unknown        | `value={null}` or not finite                           | Indeterminate: striped bar, announced as indeterminate, no value. |
+| Unusable range | `max` at or below `min`, or a bound that is not finite | Bar renders empty rather than a broken width.                     |
+
+An unusable range is a bug in the game, not a state to design for. It renders empty so a missing or not-yet-loaded maximum cannot produce a `NaN` width mid-match.
+
+<Example>
+  <ProgressBarStates client:load />
+</Example>
+
+## Variants
+
+Pick a variant by what the value means. Thresholds are the game's policy: switch variants from your own state, as the health bar in the first example does.
+
+<Example>
+  <ProgressBarVariants client:load />
+</Example>
+
+| Variant   | Use for                              | Tokens           |
+| --------- | ------------------------------------ | ---------------- |
+| `primary` | Neutral progress (default)           | `--game-primary` |
+| `success` | Healthy values, completed objectives | `--game-success` |
+| `warning` | Values worth attention               | `--game-warning` |
+| `danger`  | Critical values                      | `--game-danger`  |
+
+## Sizes
+
+<Example>
+  <ProgressBarSizes client:load />
+</Example>
+
+## Props
+
+ProgressBar accepts native `<div>` props, including `ref`, plus:
+
+| Prop        | Type                                              | Default       |
+| ----------- | ------------------------------------------------- | ------------- |
+| `value`     | `number \| null`                                  | required      |
+| `min`       | `number`                                          | `0`           |
+| `max`       | `number`                                          | `100`         |
+| `label`     | `ReactNode`                                       | none          |
+| `showValue` | `boolean`                                         | `false`       |
+| `format`    | `Intl.NumberFormatOptions`                        | percentage    |
+| `locale`    | `Intl.LocalesArgument`                            | the runtime's |
+| `variant`   | `"primary" \| "success" \| "warning" \| "danger"` | `"primary"`   |
+| `size`      | `"sm" \| "md" \| "lg"`                            | `"md"`        |
+
+`format` sets both the displayed and the announced value, so they never disagree. Without it, the value is a percentage of the range.
+
+The root element has `data-variant` and `data-size`, plus `data-progressing`, `data-complete`, or `data-indeterminate`. The filled element has `data-game-part="indicator"` for targeting in your own CSS.
+
+## Theme tokens
+
+Uses `--game-primary`, `--game-success`, `--game-warning`, `--game-danger`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-sm`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-size-sm`, `--game-space-*`, `--game-duration-normal`, and `--game-ease`.
+
+The fill animates over `--game-duration-normal`, which is `0ms` under reduced motion.
+
+## Accessibility
+
+- Renders `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-valuetext`.
+- `label` names the bar. Without a `label`, pass `aria-label`; a bar with neither is unnamed for screen reader users.
+- Color alone does not carry meaning: keep the label, and use `showValue` where the number matters.
+- An indeterminate bar announces as indeterminate rather than reporting a value.
+
+## Agent guidance
+
+- Use ProgressBar for any screen-space value that fills a range, before writing a custom bar.
+- Keep `value` in game state; the component never animates toward a value on its own.
+- Choose the variant from game thresholds rather than restyling colors with `className`.
+- Use `value={null}` while a value is genuinely unknown, not as a loading placeholder for a known value.

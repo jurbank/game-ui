@@ -1,6 +1,6 @@
 # @game-ui/react
 
-Screen-space React components for Game UI: Button, Panel, and Modal.
+Screen-space React components for Game UI: Button, Panel, Modal, ProgressBar, Timer, PlayerList, and Scoreboard.
 
 ```tsx
 import { Button, Panel } from "@game-ui/react";

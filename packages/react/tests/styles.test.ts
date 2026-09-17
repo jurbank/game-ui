@@ -6,6 +6,10 @@ import { expect, test } from "vite-plus/test";
 import * as buttonStyles from "../src/components/Button/Button.styles.ts";
 import * as modalStyles from "../src/components/Modal/Modal.styles.ts";
 import * as panelStyles from "../src/components/Panel/Panel.styles.ts";
+import * as playerListStyles from "../src/components/PlayerList/PlayerList.styles.ts";
+import * as progressBarStyles from "../src/components/ProgressBar/ProgressBar.styles.ts";
+import * as scoreboardStyles from "../src/components/Scoreboard/Scoreboard.styles.ts";
+import * as timerStyles from "../src/components/Timer/Timer.styles.ts";
 
 const stylesPath = fileURLToPath(new URL("../src/styles.css", import.meta.url));
 
@@ -13,6 +17,10 @@ const styleModules: Record<string, string | Record<string, string>>[] = [
   buttonStyles,
   modalStyles,
   panelStyles,
+  playerListStyles,
+  scoreboardStyles,
+  progressBarStyles,
+  timerStyles,
 ];
 
 const classStrings = styleModules.flatMap((styles) =>

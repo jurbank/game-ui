@@ -1,0 +1,117 @@
+---
+title: Timer
+description: A themed clock reading for a time value the game owns.
+sidebar:
+  order: 5
+---
+
+import Example from "../../../components/Example.astro";
+import {
+  RoundClock,
+  TimerPrecisions,
+  TimerStates,
+  TimerVariants,
+} from "../../../components/examples/TimerExamples.tsx";
+
+A clock reading for a time the game keeps.
+
+<Example>
+  <RoundClock client:load />
+</Example>
+
+## When to use
+
+- Match, round, and phase clocks, counting up or down.
+- Respawn, cooldown, and objective countdowns in screen UI.
+- Run times and split times in a results screen.
+
+## When not to use
+
+- Counting the time itself. Timer never ticks on its own; it renders the value it is given.
+- A cooldown shown as a filling bar: use [ProgressBar](/components/progress-bar/).
+- A countdown attached to something in the world: use world UI.
+
+## The game owns the clock
+
+Timer is controlled and has no internal interval. The game advances time, decides when the clock starts, pauses, and ends, and stays the authority when the server disagrees with the local frame.
+
+```tsx
+import { Timer } from "@game-ui/react";
+
+<Timer label="Time remaining" value={remainingMs} />;
+```
+
+`value` is in milliseconds, matching `performance.now()` and server timestamp deltas. For seconds, pass `seconds * 1000`.
+
+This keeps one clock in the game rather than a second one in the UI that can drift from it, and it means a paused, rewound, or server-corrected clock needs no special support here.
+
+## Readings
+
+| Case            | Value               | Reading   |
+| --------------- | ------------------- | --------- |
+| Under an hour   | `95_000`            | `1:35`    |
+| An hour or more | `3_725_000`         | `1:02:05` |
+| Past zero       | any negative value  | `0:00`    |
+| Unknown         | `NaN` or not finite | `--:--`   |
+
+Time is truncated, not rounded, so a reading never shows a unit it has not reached: `59.9` seconds reads as `0:59`, never `1:00`. A countdown that runs past zero reads as `0:00`, so overtime is the game's own value to show.
+
+An unknown time renders a placeholder rather than `0:00`, so a missing or not-yet-synced clock cannot read as expired.
+
+<Example>
+  <TimerStates client:load />
+</Example>
+
+## Precision
+
+<Example>
+  <TimerPrecisions client:load />
+</Example>
+
+Use `tenths` or `hundredths` for run times and short cooldowns. Keep `seconds` for match clocks: a hundredths reading repaints every frame and draws the eye away from play.
+
+## Variants
+
+Thresholds are the game's policy. Switch variants from your own state, as the round clock above does at 30 and 10 seconds.
+
+<Example>
+  <TimerVariants client:load />
+</Example>
+
+## Props
+
+Timer accepts native `<div>` props, including `ref`, plus:
+
+| Prop        | Type                                    | Default     |
+| ----------- | --------------------------------------- | ----------- |
+| `value`     | `number` (milliseconds)                 | required    |
+| `precision` | `"seconds" \| "tenths" \| "hundredths"` | `"seconds"` |
+| `hours`     | `"auto" \| "always" \| "never"`         | `"auto"`    |
+| `label`     | `ReactNode`                             | none        |
+| `variant`   | `"default" \| "warning" \| "danger"`    | `"default"` |
+| `size`      | `"sm" \| "md" \| "lg"`                  | `"md"`      |
+
+`hours="never"` folds hours into the minutes, so `1:30:00` reads as `90:00` for a race clock. The machine-readable value keeps the hours either way.
+
+The root element has `data-variant` and `data-size`. The reading is a `<time>` element with a `datetime` attribute and `data-game-part="time"`.
+
+## Theme tokens
+
+Uses `--game-text`, `--game-text-muted`, `--game-warning`, `--game-danger`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, `--game-space-xs`, `--game-duration-normal`, and `--game-ease`.
+
+Digits use `tabular-nums` so the reading does not shift as numbers change.
+
+## Accessibility
+
+- The reading has `role="timer"`, which names it without announcing every tick.
+- `label` names the timer. Without a `label`, pass `aria-label`.
+- The `<time datetime>` attribute carries the duration in machine-readable form.
+- Announce the moments that matter, such as the last ten seconds, from game code. A timer that speaks every second buries everything else a player needs to hear.
+- Color alone does not carry urgency: keep the label, and pair a critical countdown with a sound or message.
+
+## Agent guidance
+
+- Keep the clock in game state and pass milliseconds; never add an interval inside UI code to drive a Timer.
+- Use `variant` for urgency thresholds the game defines, rather than restyling colors.
+- Use `NaN` while a clock is genuinely unknown, such as before the server's first sync.
+- For a cooldown the player watches fill, pair Timer with ProgressBar rather than replacing one with the other.

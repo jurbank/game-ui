@@ -1,0 +1,112 @@
+---
+title: PlayerList
+description: A themed list of players the game supplies, with names, statuses, and per-player controls.
+sidebar:
+  order: 6
+---
+
+import Example from "../../../components/Example.astro";
+import {
+  LobbyRoster,
+  PlayerListEmpty,
+  PlayerListStatuses,
+} from "../../../components/examples/PlayerListExamples.tsx";
+
+A list of players, built from entries the game supplies.
+
+<Example>
+  <LobbyRoster client:load />
+</Example>
+
+## When to use
+
+- Lobby rosters, ready checks, party and squad lists, spectator lists.
+- Any screen-space list of players with a name and a state.
+
+## When not to use
+
+- Ranked results with scores and placements: use the planned Scoreboard.
+- A name floating above a character in the world: use world UI (planned `Nameplate`).
+- A list of things that are not players: use your own list inside a Panel.
+
+## The game owns the roster
+
+PlayerList renders the entries it is given, in the order it is given them. It never sorts, filters, groups by team, or decides who counts as ready.
+
+```tsx
+import { PlayerList } from "@game-ui/react";
+
+<PlayerList
+  aria-label="Players in this lobby"
+  players={players.map((player) => ({
+    id: player.id,
+    name: player.name,
+    status: player.ready ? "Ready" : "Waiting",
+    statusTone: player.ready ? "success" : "warning",
+  }))}
+/>;
+```
+
+Sorting by score, splitting teams, and hiding spectators are game rules. Do them in game code and pass the result.
+
+## Empty state
+
+A list with no players renders a message instead of an empty list, so nothing reads as a list with nothing in it. The default is "No players"; pass `empty` to say something that fits the moment.
+
+<Example>
+  <PlayerListEmpty client:load />
+</Example>
+
+The root element gets `data-empty` while the list is empty.
+
+## Entries
+
+Each entry is a plain object. Only `id` and `name` are required.
+
+| Field        | Type                                                           | Use for                                             |
+| ------------ | -------------------------------------------------------------- | --------------------------------------------------- |
+| `id`         | `string`                                                       | A stable, unique key. Also set as `data-player-id`. |
+| `name`       | `ReactNode`                                                    | The displayed name.                                 |
+| `status`     | `ReactNode`                                                    | Short state text such as "Ready" or "Eliminated".   |
+| `statusTone` | `"default" \| "primary" \| "success" \| "warning" \| "danger"` | The meaning of that state.                          |
+| `detail`     | `ReactNode`                                                    | Secondary text such as a score, level, or ping.     |
+| `icon`       | `ReactNode`                                                    | Avatar, team colour, or role icon.                  |
+| `self`       | `boolean`                                                      | Marks the local player's row.                       |
+| `actions`    | `ReactNode`                                                    | Controls for that player, such as kick or mute.     |
+
+<Example>
+  <PlayerListStatuses client:load />
+</Example>
+
+Long names truncate rather than wrap, and carry the full name in a `title`, so a long name cannot push a status or a button out of a narrow panel.
+
+## Props
+
+PlayerList accepts native `<div>` props, including `ref`, plus:
+
+| Prop      | Type                     | Default        |
+| --------- | ------------------------ | -------------- |
+| `players` | `readonly PlayerEntry[]` | required       |
+| `empty`   | `ReactNode`              | `"No players"` |
+| `size`    | `"sm" \| "md"`           | `"md"`         |
+
+The root element has `data-size`, and `data-empty` when there are no players. Each row has `data-game-part="player"`, its `data-player-id`, and `data-self` on the local player. Status text has `data-game-part="status"`.
+
+## Theme tokens
+
+Uses `--game-panel`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-sm`, `--game-text`, `--game-text-muted`, `--game-primary`, `--game-success`, `--game-warning`, `--game-danger`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, and `--game-space-*`.
+
+## Accessibility
+
+- Renders a `<ul>`, so screen readers announce how many players are in the list.
+- Name the list with `aria-label`, or `aria-labelledby` pointing at a heading such as a Panel title.
+- Status is text, not colour alone, so its meaning survives without the tone.
+- Per-player controls are ordinary focusable elements in the row; label them with the player's name, as in "Kick Nova", so they are distinguishable out of context.
+- An empty list is a paragraph rather than an empty `<ul>`.
+
+## Agent guidance
+
+- Build entries from game state in game code; do not sort or filter inside the component.
+- Keep `id` stable across updates so rows are not remounted as players move.
+- Use `statusTone` for meaning, not decoration, and always keep the status text.
+- Put per-player controls in `actions` rather than making rows clickable.

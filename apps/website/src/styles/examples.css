@@ -76,3 +76,18 @@
   --game-shadow: 0 0 16px rgb(124 242 154 / 0.35);
   --game-font-display: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
+
+.example-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-md);
+  margin-bottom: var(--game-space-lg);
+}
+
+.example-stack:last-child {
+  margin-bottom: 0;
+}
+
+.example-stack-top {
+  margin-top: var(--game-space-md);
+}
