@@ -10,10 +10,10 @@ Milestones 0–2 are complete. The repository currently contains:
 
 - A pnpm workspace with Vite+ configuration, checks, tests, and build scripts.
 - An Astro/Starlight website with live React component examples.
-- `@game-ui/core`, `@game-ui/themes`, and `@game-ui/react`.
+- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and `@game-ui/world-ui`.
 - Seven initial screen components, three themes, and a composed HUD/menu example.
 
-The world UI contracts and game-owned integration example in M3 are planned work. No engine renderer package is required.
+M3 implementation is in progress: the world UI contracts, game-owned canvas integration, documentation, and lifecycle tests are implemented. Performance measurement and final browser review are tracked below. No engine renderer package is required.
 
 Use the existing Vite+ task runner. Keep the planning documents at the root and maintain consistent summaries in the website documentation.
 
@@ -23,7 +23,7 @@ The first useful version is ready when a consumer can install the packages, sele
 
 Required scope:
 
-- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and the planned `@game-ui/world-ui` contracts package.
+- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and the `@game-ui/world-ui` contracts package.
 - Arcade, Tactical, and Playful themes.
 - Button, Panel, Modal, ProgressBar, Timer, PlayerList, and Scoreboard.
 - FloatingLabel, Nameplate, and HealthBar specifications, typed contracts, and game implementation guidance.
@@ -96,19 +96,21 @@ M3 builds on M2's screen components so its example can demonstrate shared health
 
 **Outcome:** a developer or agent can implement world UI in a game's chosen renderer and connect it to the same game-owned state and theme intent as the web UI, while retaining control over rendering and performance.
 
-- [ ] Create `@game-ui/world-ui` with lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Depend only on shared core types/tokens as needed; require no React, DOM, engine, state library, or world UI runtime.
-- [ ] Document each concept's purpose, content, semantic variants, defaults, required semantics, optional capabilities, and unsupported-option handling. Start with typed descriptors and examples; defer JSON Schema until serialized definitions need validation.
-- [ ] Define entity-reference and explicit-position anchor conventions suitable for 2D and 3D integrations. Specify coordinate spaces, offset/distance units, lifetime units, and missing-anchor behavior. Keep world-only types in world-ui; do not require native engine objects or per-frame descriptor allocation.
-- [ ] Write implementation guidance for projection, visibility, depth/occlusion, updates, lifetime, and disposal. Keep rendering, batching, culling, pooling, animation, and the update loop in the consuming game.
-- [ ] Map world concepts to related screen components and shared semantic roles: HealthBar to ProgressBar, Nameplate to player entries, and FloatingLabel to contextual text where useful. Document shared data without requiring identical visual rendering.
-- [ ] Define game-owned presentation mapping from semantic theme values to native renderer styles. Resolve values at initialization and theme changes; document conversions and unsupported effects without adding DOM dependencies to core or world-ui.
-- [ ] Build a client-only vanilla canvas reference game in the website with FloatingLabel, Nameplate, and HealthBar implementations alongside React UI. Keep its implementation in the example, document its supported capabilities, and ensure server builds do not evaluate browser-only code.
-- [ ] Demonstrate labels following moving anchors under camera movement/zoom. Add a 3D integration recipe covering entity resolution, projection, offset spaces, and occlusion decisions; identify it as guidance rather than a tested 3D renderer.
-- [ ] Create a Zustand store per example instance, owned by the demo game. Demonstrate shared health and selection from both a world interaction and a React control, with typed game actions and narrow subscriptions. Keep positions and camera animation in the game loop.
-- [ ] Document state versus one-shot events, game/server authority, optional game-owned providers, and subscription cleanup. Keep framework components controlled through props and callbacks; do not add a mandatory store, signal system, or generic data-provider API.
-- [ ] Test shared-state propagation, actions from either view, instance isolation, and cleanup on scene shutdown/unmount. Verify repeated creation/destruction leaves no retained subscriptions, listeners, or animation loops.
+- [x] Create `@game-ui/world-ui` with lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Depend only on shared core types/tokens as needed; require no React, DOM, engine, state library, or world UI runtime.
+- [x] Document each concept's purpose, content, semantic variants, defaults, required semantics, optional capabilities, and unsupported-option handling. Start with typed descriptors and examples; defer JSON Schema until serialized definitions need validation.
+- [x] Define entity-reference and explicit-position anchor conventions suitable for 2D and 3D integrations. Specify coordinate spaces, offset/distance units, lifetime units, and missing-anchor behavior. Keep world-only types in world-ui; do not require native engine objects or per-frame descriptor allocation.
+- [x] Write implementation guidance for projection, visibility, depth/occlusion, updates, lifetime, and disposal. Keep rendering, batching, culling, pooling, animation, and the update loop in the consuming game.
+- [x] Map world concepts to related screen components and shared semantic roles: HealthBar to ProgressBar, Nameplate to player entries, and FloatingLabel to contextual text where useful. Document shared data without requiring identical visual rendering.
+- [x] Define game-owned presentation mapping from semantic theme values to native renderer styles. Resolve values at initialization and theme changes; document conversions and unsupported effects without adding DOM dependencies to core or world-ui.
+- [x] Build a client-only vanilla canvas reference game in the website with FloatingLabel, Nameplate, and HealthBar implementations alongside React UI. Keep its implementation in the example, document its supported capabilities, and ensure server builds do not evaluate browser-only code.
+- [x] Demonstrate labels following moving anchors under camera movement/zoom. Add a 3D integration recipe covering entity resolution, projection, offset spaces, and occlusion decisions; identify it as guidance rather than a tested 3D renderer.
+- [x] Create a Zustand store per example instance, owned by the demo game. Demonstrate shared health and selection from both a world interaction and a React control, with typed game actions and narrow subscriptions. Keep positions and camera animation in the game loop.
+- [x] Document state versus one-shot events, game/server authority, optional game-owned providers, and subscription cleanup. Keep framework components controlled through props and callbacks; do not add a mandatory store, signal system, or generic data-provider API.
+- [x] Test shared-state propagation, actions from either view, instance isolation, and cleanup on scene shutdown/unmount. Verify repeated creation/destruction leaves no retained subscriptions, listeners, or animation loops.
 - [ ] Profile a repeatable many-label scenario and record hardware, browser, label counts, and frame timing. Add pooling, culling complexity, or state-library changes only when measurements justify them. Do not parse schemas or read CSS values every frame.
-- [ ] Publish agent guidance for implementing the concepts in a game's renderer and connecting screen components. Distinguish contracts, game-owned examples, untested recipes, and shipped React components.
+- [x] Publish agent guidance for implementing the concepts in a game's renderer and connecting screen components. Distinguish contracts, game-owned examples, untested recipes, and shipped React components.
+
+**Validation status (2026-09-17):** format/lint/type checks, automated state/lifecycle tests, package builds, and the production website build pass. The canvas page includes repeatable 7/201/1,001-descriptor scenarios and 300-frame median/p95 measurements. Browser visual/input review and recorded profiling remain pending: this workspace session rejected the preview server's localhost listener with `EPERM`, and Chrome exited during launch. No browser frame-time results are claimed. Run the production preview in an environment that allows local servers, follow `/world-ui/canvas/`, and record hardware, browser, viewport/DPR, counts, and timing before marking M3 complete.
 
 **Acceptance criteria:** the canvas example renders all three initial concepts, follows moving anchors under camera changes, and cleans up objects, subscriptions, and animation loops on disposal. World and React health displays reflect the same game-owned values; selection from either view updates both without synchronizing separate authoritative copies. The documented contracts accommodate a 3D recipe without engine-specific types. A developer or agent can follow the guide to implement world UI in a chosen game environment without a framework renderer, mandatory state library, or per-frame React updates.
 
@@ -136,7 +138,7 @@ The foundation was organized around these reviewable results:
 2. **Establish core and theme packaging.** Replace the sample utils package, add the first semantic tokens and Arcade CSS, and verify public JavaScript/type/CSS exports. Document the styling contract.
 3. **Render Button and Panel in the website.** Add the React package and Astro integration, build the two components, and ship their interactive docs with a token-override example.
 
-These foundation milestones are complete. The next implementation work is M3.
+These foundation milestones are complete. M3 is in progress; finish its validation before moving to M4.
 
 ## Validation Gate
 

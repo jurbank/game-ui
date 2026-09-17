@@ -23,7 +23,7 @@ These rules help coding agents build game UI consistently with the framework.
 | A destructive action          | `Button variant="danger"`                                              |
 | A grouped HUD or menu section | `Panel` with a `title`                                                 |
 | A nested group in a panel     | `Panel variant="inset"`                                                |
-| A name above a character      | World UI (planned `Nameplate`)                                         |
+| A name above a character      | World UI `Nameplate` contract                                          |
 | A game timer or player list   | [Timer](/components/timer/) and [PlayerList](/components/player-list/) |
 
 ## Use semantic styling
@@ -62,5 +62,5 @@ Shared components receive content and state through props. The game decides cont
 - Let world and screen interactions call the same game actions and observe game-owned state.
 - Keep gameplay authority in the game or server and per-frame transforms in the game loop.
 - Subscribe narrowly and dispose subscriptions on scene or UI teardown.
-- Use the existing state library. M3's planned Zustand example is a recipe, not a framework dependency; do not add a provider, signal runtime, or store migration without a demonstrated need.
-- Follow [world UI guidance](/world-ui/) for native implementations and related screen components. Resolve semantic theme values when initializing or changing themes, not every frame.
+- Use the existing state library. The canvas example's Zustand binding is game-owned, not a framework dependency; do not add a provider, signal runtime, or store migration without a demonstrated need.
+- Follow [world implementation guidance](/world-ui/integration/) for native implementations and related screen components. Resolve semantic theme values when initializing or changing themes, not every frame.

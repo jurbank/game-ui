@@ -1,0 +1,51 @@
+---
+title: 3D integration recipe
+description: Projection, offset spaces, and occlusion choices for a game-owned 3D renderer.
+sidebar:
+  order: 5
+---
+
+This is **untested guidance**, not a shipped Three.js, Babylon, or other 3D renderer. The types accommodate 3D; each engine integration still needs implementation and verification.
+
+```ts
+import type { Nameplate } from "@game-ui/world-ui";
+
+const nameplate: Nameplate<"3d"> = {
+  kind: "nameplate",
+  id: "name:pilot-7",
+  name: "Nova",
+  anchor: {
+    kind: "entity",
+    dimension: "3d",
+    entityId: "pilot-7",
+    localOffset: { x: 0, y: 1.8, z: 0 },
+  },
+  offset: { space: "screen", x: 0, y: -12 },
+  missingAnchor: "hide",
+  occlusion: "hide",
+  maxDistance: 60,
+};
+```
+
+For this recipe choose meters, +y up, a right-handed world, and a perspective camera looking along local -z. These are recipe choices, not framework constraints. Convert consistently for other engine conventions. This descriptor requires occlusion and distance cutoff support; reject it if unavailable.
+
+## Resolution and projection
+
+1. Resolve the stable entity ID. Transform `localOffset` (or local origin) through its complete world matrix, including rotation/scale. This is not always equivalent to adding a global height.
+2. Explicit positions are already in world coordinates. Add any `world` offset in world axes/units.
+3. Apply supported `maxDistance` using Euclidean camera-to-result distance before screen offsets; this differs from view-space depth.
+4. Transform to view/clip space. Hide points behind the camera or outside near/far depth before dividing by homogeneous w. Follow the engine's depth convention; clip-depth ranges differ.
+5. Divide clip x/y by w for normalized device coordinates. For CSS viewport width W/height H, use `x = (ndcX + 1) * W / 2`, `y = (1 - ndcY) * H / 2`. Add the viewport origin only when drawing into a larger surface.
+6. Add `screen` offsets in CSS pixels. Scale by DPR at the framebuffer boundary. For fixed-screen-size native billboards, convert pixel size into world size at the anchor depth using the renderer's projection/viewport scale.
+
+Reuse vectors, matrices, and render objects. A missing entity follows `missingAnchor`; an existing entity behind the camera is only hidden. Persistent labels resume without restarting their lifetime.
+
+## Depth, occlusion, and disposal
+
+Choose depth-tested native billboards or projected overlays with explicit occlusion queries. For overlays, use raycasts or depth-buffer queries with documented treatment of transparent surfaces, self-occlusion, and query frequency. `none` may show labels through geometry; `hide` hides blocked labels. Frustum clipping alone is not occlusion. Profile before adding expensive per-label/per-frame raycasts.
+
+Choose lighting, tone mapping, and depth-write policies for UI materials. Specify clipping and sizing; convert semantic colors to the renderer's color space. Dispose or return owned text/geometry/material resources when descriptors end; shared assets need separate ownership. Unsubscribe scene bindings and cancel pending occlusion work on shutdown.
+
+## Verify in your engine
+
+Check entity removal/reappearance, recycled IDs, camera translation/rotation/zoom, near-plane crossings, offscreen positions, multiple viewports, and DPR changes. Verify local offsets follow entity transforms, world offsets follow world axes, and screen offsets remain fixed CSS-pixel gaps. Test opaque/transparent occluders, self-occlusion, distance thresholds, theme changes, and repeated disposal. Record tested engine/browser versions before claiming support.

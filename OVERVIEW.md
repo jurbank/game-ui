@@ -109,7 +109,7 @@ No engine or state library is required by the shared world UI contracts.
 
 ## Repository Structure
 
-This project is a monorepo. The target structure below includes the planned `world-ui` contracts package; renderer implementations belong in consuming games or website examples.
+This project is a monorepo. The structure below includes the `world-ui` contracts package; renderer implementations belong in consuming games or website examples.
 
 ```text
 game-ui/
@@ -180,7 +180,7 @@ Examples:
 
 ## packages/world-ui
 
-Planned for M3: lightweight TypeScript contracts and documentation for FloatingLabel, Nameplate, and HealthBar. DamageNumber, InteractionPrompt, and ObjectiveMarker can follow when games need them.
+Lightweight TypeScript contracts and documentation for FloatingLabel, Nameplate, and HealthBar. DamageNumber, InteractionPrompt, and ObjectiveMarker can follow when games need them.
 
 Specifications describe content, semantic variants, spatial conventions, defaults, and required versus optional behavior. Agents and developers use them to implement components in their own games. They do not provide renderable components, an update loop, or state ownership. No runtime schema interpreter is required; JSON Schema can be added if serialized definitions need validation.
 

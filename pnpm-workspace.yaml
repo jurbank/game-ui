@@ -23,6 +23,7 @@ catalog:
   typescript: ^7.0.2
   vite: npm:@voidzero-dev/vite-plus-core@0.2.9
   vite-plus: 0.2.9
+  zustand: ^5.0.15
 overrides:
   vite: "catalog:"
 peerDependencyRules:

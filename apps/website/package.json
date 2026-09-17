@@ -8,22 +8,28 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vp test"
   },
   "dependencies": {
     "@astrojs/react": "catalog:",
     "@astrojs/starlight": "^0.42.1",
+    "@game-ui/core": "workspace:*",
     "@game-ui/react": "workspace:*",
     "@game-ui/themes": "workspace:*",
+    "@game-ui/world-ui": "workspace:*",
     "astro": "^7.2.10",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.3",
+    "zustand": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/vite": "catalog:",
+    "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "happy-dom": "catalog:",
     "tailwindcss": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"

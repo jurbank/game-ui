@@ -1,0 +1,60 @@
+---
+title: State and presentation integration
+description: Bind game-owned state and semantic theme roles to native and screen UI.
+sidebar:
+  order: 4
+---
+
+Both views read one game-owned state snapshot. World and React interactions call the same typed actions; the game or authoritative server validates commands and publishes outcomes. The demo's `selectEntity(id)` and `changeHealth(id, delta)` are local game actions, not networking or authorization APIs.
+
+## State, events, and subscriptions
+
+The demo creates one vanilla Zustand store per mounted game. React uses `useStore` selectors; native code uses selective subscriptions, following Zustand's [vanilla store API](https://zustand.docs.pmnd.rs/reference/apis/create-store) and [subscribeWithSelector](https://zustand.docs.pmnd.rs/reference/middlewares/subscribe-with-selector).
+
+```tsx
+// Game-owned binding; ProgressBar has no Zustand dependency.
+const pilot = useStore(game.store, (state) =>
+  state.pilots.find((entry) => entry.id === state.selectedId),
+);
+<ProgressBar label={`${pilot.name} health`} value={pilot.health} max={pilot.max} />;
+
+// Game-owned scene binding. Call stop when the scene shuts down.
+const stop = game.store.subscribe(
+  (state) => state.selectedId,
+  (id) => updateSelectionDecoration(id),
+);
+```
+
+Health and selection are persistent state. Positions, camera transforms, and animation time live in the native loop without per-frame React updates. Render descriptors cache presentation derived from state; they cannot mutate authoritative health.
+
+A one-shot health-change event creates a temporary FloatingLabel. The demo publishes state before synchronous event delivery to current listeners, with no replay. A new scene sees current health without replaying old effects. Networked games must choose delivery, deduplication, and reconciliation rules. Events do not replace a state snapshot. Unsubscribe both state and event listeners on disposal.
+
+A game-owned provider may inject an instance when useful. Shared components require only props/callbacks. React state, signals, MobX, another store, or server snapshots can supply them without changing contracts. No framework provider, signal runtime, or generic data-provider API is required.
+
+## Semantic presentation mapping
+
+Resolve styles at initialization and explicit theme changes. `readPresentation` is a browser adapter inside the game example; core and world-ui contain no DOM code.
+
+| Role                 | Canvas mapping                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| Ordinary/intent text | `text` or `primary-text`, `success-text`, `warning-text`, `danger-text`            |
+| Health fill          | `primary`, `success`, `warning`, `danger`                                          |
+| Label backing        | `panel`                                                                            |
+| Selection            | `primary` ring plus a diamond cue                                                  |
+| Font                 | Resolved `font-body` family at 14 CSS pixels                                       |
+| Sizing               | Game world scale for markers; CSS pixels for text, health bars, and screen offsets |
+
+Installed themes use canvas-compatible CSS colors and system fonts. Other games must convert to native numeric/linear-space colors, load fonts/assets, and choose world or screen sizing. Validate custom CSS colors/font availability at initialization; unresolved CSS expressions cannot be passed blindly to every engine. Re-resolve after token overrides change, never every frame.
+
+Shadows, radii, easing, and materials have no universal native equivalent. This example omits them explicitly. Other integrations should document conversions or reject unsupported effects. Shared intent/data need not produce identical pixels in both layers.
+
+## Implementation checklist for agents
+
+1. Read the [contracts](/world-ui/contracts/) and identify the game's renderer, units, entity registry, cameras, and current state/actions.
+2. Declare supported anchors, offsets, lifetime clock, and optional capabilities. Reject unsupported requests at setup/update.
+3. Allocate native objects/stable descriptors at setup; resolve anchors and update transforms in the existing loop.
+4. Bind selected state to controlled React props and native presentation. Keep game/server authority in the game.
+5. Map semantic tokens on initialization/theme changes; document conversions and unsupported effects.
+6. Handle missing entities, invalid projection, clipping, and occlusion. Verify [3D conventions](/world-ui/3d-recipe/) in the target engine before claiming support.
+7. Provide accessible screen equivalents; remove listeners, subscriptions, and objects on teardown; test repeated recreation.
+8. Profile before adding pooling, complex culling, or a different state library.

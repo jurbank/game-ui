@@ -24,10 +24,11 @@ The root workspace owns all dependencies and the single `pnpm-lock.yaml`. Run `v
 | `apps/website`           | `@game-ui/website`          | Astro/Starlight documentation and examples              |
 | `packages/core`          | `@game-ui/core`             | Renderer-independent types and token contract           |
 | `packages/themes`        | `@game-ui/themes`           | Token values, themes, and Tailwind mapping              |
+| `packages/world-ui`      | `@game-ui/world-ui`         | Engine-independent world UI contracts                   |
 | `packages/react`         | `@game-ui/react`            | Screen UI React components                              |
 | `tools/workspace-checks` | `@game-ui/workspace-checks` | Repository checks such as package dependency boundaries |
 
-The planned `world-ui` contracts package is added in M3. Games own world rendering and state integration; no engine adapter or state library is required by the framework. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/themes`](./packages/themes/README.md) for the styling contract.
+The `@game-ui/world-ui` package supplies typed world concepts. The website includes a game-owned canvas example with shared Zustand health/selection and a 3D integration recipe. Games own world rendering and state integration; no engine adapter or state library is required by the framework. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/themes`](./packages/themes/README.md) for the styling contract.
 
 Run a task in one package with `vp run <package>#<task>`, for example `vp run @game-ui/website#build`.
 

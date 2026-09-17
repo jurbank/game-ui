@@ -18,7 +18,7 @@ The framework should make UI reusable across games without coupling game logic, 
 
 ## Repository Structure
 
-Target structure: `world-ui` is planned for M3; its contracts are not implemented yet. World renderer implementations live in consuming games or website examples.
+Current structure: `world-ui` provides typed FloatingLabel, Nameplate, and HealthBar contracts. World renderer implementations live in consuming games or website examples.
 
 ```text
 game-ui/
@@ -169,7 +169,7 @@ The game decides whether that value comes from Zustand, Colyseus, React state, P
 
 Provide engine-independent specifications, lightweight TypeScript contracts, and implementation guidance for UI attached to entities or world positions. Agents and developers use these conventions to build native world UI inside their games.
 
-This planned package does not create render objects, run an update loop, own state, or require a component tree. A game may consume its types at development time without a framework runtime in the world rendering path. Start with typed descriptors and documentation; add JSON Schema only when serialized definitions need validation. Do not interpret or validate descriptors every frame.
+This package does not create render objects, run an update loop, own state, or require a component tree. A game may consume its types at development time without a framework runtime in the world rendering path. Start with typed descriptors and documentation; add JSON Schema only when serialized definitions need validation. Do not interpret or validate descriptors every frame.
 
 ### Initial concepts
 
@@ -187,7 +187,7 @@ World UI may use core's shared types and semantic token names. It must not depen
 
 Each concept documents content, semantic variants, defaults, configuration, and implementation responsibilities. Distinguish required semantics from optional capabilities such as occlusion, distance fading, or overlap handling. Each implementation must state what it supports and how unsupported options are handled.
 
-The exact public types will be established in M3 using a working example and a 3D integration recipe. The contract is a vocabulary for implementation, not a universal scene graph or renderer API.
+The public types in `packages/world-ui/src/index.ts` are used by a working canvas example and an untested 3D integration recipe in the website. The contract is a vocabulary for implementation, not a universal scene graph or renderer API.
 
 ## World Anchors and Spatial Semantics
 

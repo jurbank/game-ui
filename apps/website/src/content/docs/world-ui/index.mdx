@@ -5,36 +5,42 @@ sidebar:
   order: 1
 ---
 
-World UI is attached to an entity or world position: player names, unit health bars, damage numbers, interaction prompts, and objective markers.
+`@game-ui/world-ui` exports TypeScript contracts for **FloatingLabel**, **Nameplate**, and **HealthBar**: plain-data descriptions of UI attached to an entity or world position. They introduce no renderer, DOM dependency, React component, store, or update loop.
 
-:::caution[Contracts and examples planned]
-M3 will introduce the world UI contracts package and reference example described here. They are not implemented yet. No framework renderer package is required.
-:::
+```ts
+import type { HealthBar } from "@game-ui/world-ui";
 
-## Implementation belongs to the game
+const health: HealthBar<"2d"> = {
+  kind: "health-bar",
+  id: "health:pilot-7",
+  anchor: { kind: "entity", dimension: "2d", entityId: "pilot-7" },
+  offset: { space: "screen", x: 0, y: -24 },
+  label: "Pilot health",
+  value: 42,
+  max: 100,
+  tone: "warning",
+};
+```
 
-The planned `@game-ui/world-ui` package defines specifications and lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Developers and agents use these conventions to implement native world UI with Phaser, Three.js, another engine, or vanilla canvas.
+Add the workspace package to your game alongside the screen/theme packages you need. Use `import type`; no world UI runtime needs to enter your game bundle. Typed descriptors are checked during development. Serialized data still needs game-owned validation at its input boundary; no JSON Schema is shipped.
 
-The game owns render objects, anchor resolution, camera projection, visibility, animation, batching, pooling, and cleanup. The contracts introduce no required update loop, state library, component tree, or per-frame schema processing. JSON Schema is deferred until serialized definitions need validation.
+## What is available
 
-Spatial conventions will address entity references and explicit 2D/3D positions, coordinate spaces, offset/distance units, lifetime, and missing anchors. Implementations must document supported behavior and optional capabilities such as occlusion or distance fading.
+| Artifact                                            | Status                                                  |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| [Specifications and types](/world-ui/contracts/)    | Shared public contract                                  |
+| [Canvas game and React bindings](/world-ui/canvas/) | Working game-owned reference example                    |
+| [3D integration recipe](/world-ui/3d-recipe/)       | Guidance; no tested 3D renderer or engine support claim |
+| [React components](/components/)                    | Shipped screen UI                                       |
 
-M3 will provide a game-owned canvas example and a 3D integration recipe. A recipe describes implementation choices; it does not establish tested engine support or provide a production renderer.
+Your game owns render objects, entity resolution, projection, visibility, animation, updates, batching, pooling, and disposal. Use stable descriptors and native objects; update content when state changes and read spatial data directly in your game loop. Do not allocate descriptors, parse schemas, or resolve CSS values every frame.
 
 ## Connect world and screen UI
 
-| World concept | Related screen UI                                                               | Shared data                             |
-| ------------- | ------------------------------------------------------------------------------- | --------------------------------------- |
-| HealthBar     | [ProgressBar](/components/progress-bar/)                                        | Current value, maximum, semantic tone   |
-| Nameplate     | [PlayerList](/components/player-list/) or [Scoreboard](/components/scoreboard/) | Identity, display name, status          |
-| FloatingLabel | Text composed inside [Panel](/components/panel/)                                | Content and semantic role when relevant |
+| World concept | Related screen UI                                                               | Shared data                            |
+| ------------- | ------------------------------------------------------------------------------- | -------------------------------------- |
+| HealthBar     | [ProgressBar](/components/progress-bar/)                                        | Value, maximum, and game-selected tone |
+| Nameplate     | [PlayerList](/components/player-list/) or [Scoreboard](/components/scoreboard/) | Identity, name, and status             |
+| FloatingLabel | Contextual text in [Panel](/components/panel/)                                  | Text and semantic role                 |
 
-These are composition suggestions. Both views consume game-owned values and render independently. Games map semantic theme values to native colors, fonts, sizes, or materials at initialization and theme changes; CSS variables do not automatically style engine objects.
-
-Interactions from either view call game actions. For example, selecting an entity in the world or a React control calls the same `selectEntity(id)` action; both observe the resulting selection. See [state ownership](/concepts/#state-stays-in-the-game).
-
-## Performance boundary
-
-Keep positions, camera transforms, and animation in the game loop. Subscribe screen components only to the values they display, and clean up subscriptions when instances are destroyed. Avoid per-frame React updates, descriptor allocation, schema interpretation, and computed-style reads in the world rendering path.
-
-Game ownership gives the renderer control over optimization; it does not guarantee performance. Profile representative label counts and update patterns before introducing more complex culling, pooling, or a different state library.
+Both layers observe game-owned values and send actions to the game. They may render differently. World styling comes from a game-owned presentation mapping; CSS variables cannot automatically style a native renderer. See [state and presentation integration](/world-ui/integration/).

@@ -134,3 +134,33 @@
 .demo-hud-controls {
   gap: var(--game-space-sm);
 }
+
+.world-game {
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-lg);
+  padding: var(--game-space-md);
+}
+
+.world-game-canvas {
+  display: block;
+  width: 100%;
+  height: 360px;
+  border: var(--game-border-width) solid var(--game-border);
+  border-radius: var(--game-radius-md);
+}
+
+.world-game-settings select {
+  background: var(--game-panel);
+  color: var(--game-text);
+  border: var(--game-border-width) solid var(--game-border);
+  border-radius: var(--game-radius-sm);
+  padding: var(--game-space-sm);
+  font: inherit;
+}
+
+.world-game-settings select:focus-visible,
+.world-game summary:focus-visible {
+  outline: 2px solid var(--game-focus-ring);
+  outline-offset: 3px;
+}

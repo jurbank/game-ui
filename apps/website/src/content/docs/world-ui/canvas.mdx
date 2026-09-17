@@ -1,0 +1,43 @@
+---
+title: Canvas reference game
+description: World labels and React health controls observing one game-owned store.
+sidebar:
+  order: 3
+---
+
+import { WorldGame } from "../../../components/examples/WorldGame";
+
+Click a world pilot to select them and deal 10 damage, or use the keyboard-accessible controls below the canvas. Names and health follow moving entities under camera pan/zoom. Theme changes reach both views. Stop the scene, change health, then restart: the new scene reads current state.
+
+<WorldGame client:only="react" />
+
+This is a **game-owned reference implementation** in `apps/website/src/components/examples/world-game/` and `WorldGame.tsx`, importing public framework APIs. It is not a reusable framework renderer or complete game.
+
+## Supported capabilities
+
+| Concern              | This example                                                                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Concepts             | FloatingLabel, Nameplate with status/selection, determinate HealthBar                                                                              |
+| Anchors              | 2D entities and explicit world positions; missing anchors hide or dispose                                                                          |
+| Coordinates          | +x right, +y down; one world unit = one CSS pixel at zoom 1; translation-only entities                                                             |
+| Offsets              | Entity-local and world offsets in world units; screen offsets in CSS pixels                                                                        |
+| Camera               | Orthographic 2D pan/zoom; viewport-centered projection; fixed screen-size labels                                                                   |
+| Lifetime             | Active scene milliseconds; elapsed frame time capped at 100 ms after tab suspension; disabling movement freezes transforms but labels still expire |
+| Visibility           | Explicit visibility and viewport clipping; no depth occlusion, distance cutoff, overlap avoidance, or fading                                       |
+| Unsupported requests | Reject 3D anchors, `occlusion: "hide"`, and any `maxDistance` at creation/update                                                                   |
+| Presentation         | Semantic fill/text colors and font family; fixed CSS-pixel geometry; no shadow, material, radius, or motion-token conversion                       |
+| Interaction          | World marker clicks select/damage one of three pilots; equivalent React selection/damage/heal controls                                             |
+| Reduced motion       | Movement initially disabled when requested; user may toggle it                                                                                     |
+| Disposal             | Cancel rAF, disconnect ResizeObserver, remove pointer handler, unsubscribe state/events, clear descriptors/positions; idempotent                   |
+
+CSS is read only on initialization and explicit theme changes. DPR scales the drawing surface (capped at 2), not descriptor units. System fonts and plain text have backdrops. Production overlap avoidance and long-name layout are outside this example.
+
+`client:only="react"` excludes the island from server rendering, following [Astro's framework component guidance](https://docs.astro.build/en/guides/framework-components/). Browser resources are also created inside effects/`createScene`, never at module evaluation. Tests cover StrictMode, repeated scene recreation, and actions from either view.
+
+## Repeatable many-label measurement
+
+Open **Many-label measurement**, choose 3, 100, or 500 entities, keep movement on, and warm up for five seconds. Measure 300 frames with the tab visible and without interactions. Each entity has a Nameplate and HealthBar, plus one static FloatingLabel: 7, 201, or 1,001 persistent descriptors. Crowd health is fixed; this measures moving label rendering, not store-update throughput.
+
+Record hardware, OS, browser/version, viewport, DPR, theme, motion preference, counts, and median/p95 draw/frame times. Repeat each count three times in a production build. Draw timing measures synchronous JavaScript/Canvas2D command submission, excluding deferred rasterization/compositing. Frame timing measures rAF intervals including scheduling/refresh limits. Neither alone is end-to-end GPU cost. Hidden tabs and headless environments are not representative interactive results.
+
+No pooling, spatial index, or store migration is justified without target-hardware measurements. See the repository's `ROADMAP.md` for measurement status and recorded results when available.
