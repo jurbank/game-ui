@@ -40,4 +40,16 @@ Open **Many-label measurement**, choose 3, 100, or 500 entities, keep movement o
 
 Record hardware, OS, browser/version, viewport, DPR, theme, motion preference, counts, and median/p95 draw/frame times. Repeat each count three times in a production build. Draw timing measures synchronous JavaScript/Canvas2D command submission, excluding deferred rasterization/compositing. Frame timing measures rAF intervals including scheduling/refresh limits. Neither alone is end-to-end GPU cost. Hidden tabs and headless environments are not representative interactive results.
 
-No pooling, spatial index, or store migration is justified without target-hardware measurements. See the repository's `ROADMAP.md` for measurement status and recorded results when available.
+No pooling, spatial index, or store migration is justified without target-hardware measurements. See the repository's `ROADMAP.md` for measurement status.
+
+### Recorded baseline (2026-09-17)
+
+MacBook Air (Apple M5, 10 cores, 16 GB), macOS 26.5.2, Chrome 152, Astro production preview. Canvas 696 × 360 CSS px, DPR 1 on a 3440 × 1440 @ 50 Hz display. Tactical theme, movement on, reduced motion off, three runs per count.
+
+| Entities | Descriptors | Draw median  | Draw p95     | Frame median | Frame p95    |
+| -------- | ----------- | ------------ | ------------ | ------------ | ------------ |
+| 3        | 7           | 0.10 ms      | 0.20 ms      | 20.0 ms      | 20.7–20.8 ms |
+| 100      | 201         | 0.60 ms      | 1.00–1.10 ms | 20.0 ms      | 20.7–21.0 ms |
+| 500      | 1,001       | 1.80–1.90 ms | 2.20–2.30 ms | 20.0 ms      | 20.9–21.0 ms |
+
+Draw cost grows roughly linearly with descriptor count and stays under 10% of the frame budget at 1,001 descriptors. Frame median matched the display's 50 Hz vsync interval at every count, so this scenario is presentation-bound rather than draw-bound on this hardware. These numbers justify no pooling, culling, or state-library change. Re-measure on lower-end target hardware before relying on them.

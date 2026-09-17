@@ -6,14 +6,14 @@ Start with a working themed React example in the documentation site, then expand
 
 ## Current Baseline
 
-Milestones 0–2 are complete. The repository currently contains:
+Milestones 0–3 are complete. The repository currently contains:
 
 - A pnpm workspace with Vite+ configuration, checks, tests, and build scripts.
 - An Astro/Starlight website with live React component examples.
 - `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and `@game-ui/world-ui`.
 - Seven initial screen components, three themes, and a composed HUD/menu example.
 
-M3 implementation is in progress: the world UI contracts, game-owned canvas integration, documentation, and lifecycle tests are implemented. Performance measurement and final browser review are tracked below. No engine renderer package is required.
+M3 is finished: the world UI contracts, game-owned canvas integration, documentation, lifecycle tests, browser review, and recorded profiling are all done. No engine renderer package is required. M4 is the next milestone.
 
 Use the existing Vite+ task runner. Keep the planning documents at the root and maintain consistent summaries in the website documentation.
 
@@ -107,10 +107,22 @@ M3 builds on M2's screen components so its example can demonstrate shared health
 - [x] Create a Zustand store per example instance, owned by the demo game. Demonstrate shared health and selection from both a world interaction and a React control, with typed game actions and narrow subscriptions. Keep positions and camera animation in the game loop.
 - [x] Document state versus one-shot events, game/server authority, optional game-owned providers, and subscription cleanup. Keep framework components controlled through props and callbacks; do not add a mandatory store, signal system, or generic data-provider API.
 - [x] Test shared-state propagation, actions from either view, instance isolation, and cleanup on scene shutdown/unmount. Verify repeated creation/destruction leaves no retained subscriptions, listeners, or animation loops.
-- [ ] Profile a repeatable many-label scenario and record hardware, browser, label counts, and frame timing. Add pooling, culling complexity, or state-library changes only when measurements justify them. Do not parse schemas or read CSS values every frame.
+- [x] Profile a repeatable many-label scenario and record hardware, browser, label counts, and frame timing. Add pooling, culling complexity, or state-library changes only when measurements justify them. Do not parse schemas or read CSS values every frame.
 - [x] Publish agent guidance for implementing the concepts in a game's renderer and connecting screen components. Distinguish contracts, game-owned examples, untested recipes, and shipped React components.
 
-**Validation status (2026-09-17):** format/lint/type checks, automated state/lifecycle tests, package builds, and the production website build pass. The canvas page includes repeatable 7/201/1,001-descriptor scenarios and 300-frame median/p95 measurements. Browser visual/input review and recorded profiling remain pending: this workspace session rejected the preview server's localhost listener with `EPERM`, and Chrome exited during launch. No browser frame-time results are claimed. Run the production preview in an environment that allows local servers, follow `/world-ui/canvas/`, and record hardware, browser, viewport/DPR, counts, and timing before marking M3 complete.
+**Validation status (2026-09-17):** complete. Format/lint/type checks, automated state/lifecycle tests, package builds, and the production website build pass.
+
+Browser review ran against the Astro production preview on a MacBook Air (Apple M5, 16 GB), macOS 26.5.2, Chrome 152, canvas 696 × 360 CSS px at DPR 1 on a 3440 × 1440 @ 50 Hz display. Confirmed in the browser: all three concepts render; nameplates and health bars follow moving anchors under camera pan/zoom; a world click selects a pilot, applies damage, and spawns a `lifetimeMs`-bounded damage label that expires on schedule; the React ProgressBar and the world health bar report the same game-owned value; selection propagates from either view; a theme change restyles both views; stopping the scene clears the canvas and halts the loop, and restarting reconnects to current state. No page console errors.
+
+Recorded profiling (three runs per count, movement on, tab visible):
+
+| Entities | Descriptors | Draw median  | Draw p95     | Frame median | Frame p95    |
+| -------- | ----------- | ------------ | ------------ | ------------ | ------------ |
+| 3        | 7           | 0.10 ms      | 0.20 ms      | 20.0 ms      | 20.7–20.8 ms |
+| 100      | 201         | 0.60 ms      | 1.00–1.10 ms | 20.0 ms      | 20.7–21.0 ms |
+| 500      | 1,001       | 1.80–1.90 ms | 2.20–2.30 ms | 20.0 ms      | 20.9–21.0 ms |
+
+Draw cost scales roughly linearly with descriptor count and stays under 10% of the frame budget at 1,001 descriptors; frame median matched the 50 Hz vsync interval at every count. No pooling, culling, or state-library change is justified by these measurements. Full conditions are published at `/world-ui/canvas/`; re-measure on lower-end target hardware before relying on them.
 
 **Acceptance criteria:** the canvas example renders all three initial concepts, follows moving anchors under camera changes, and cleans up objects, subscriptions, and animation loops on disposal. World and React health displays reflect the same game-owned values; selection from either view updates both without synchronizing separate authoritative copies. The documented contracts accommodate a 3D recipe without engine-specific types. A developer or agent can follow the guide to implement world UI in a chosen game environment without a framework renderer, mandatory state library, or per-frame React updates.
 
@@ -138,7 +150,7 @@ The foundation was organized around these reviewable results:
 2. **Establish core and theme packaging.** Replace the sample utils package, add the first semantic tokens and Arcade CSS, and verify public JavaScript/type/CSS exports. Document the styling contract.
 3. **Render Button and Panel in the website.** Add the React package and Astro integration, build the two components, and ship their interactive docs with a token-override example.
 
-These foundation milestones are complete. M3 is in progress; finish its validation before moving to M4.
+These foundation milestones are complete, as is M3 and its validation. M4 is the next milestone.
 
 ## Validation Gate
 
