@@ -136,9 +136,11 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 - [x] Document every shipped component/concept with purpose, when to use and avoid it, props/configuration, variants, tokens, accessibility, relevant performance notes, live examples, and agent guidance.
 - [x] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
 - [x] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
-- [ ] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
+- [x] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
 - [ ] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
 - [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+
+**Compatibility status (2026-09-18):** done. `/getting-started/compatibility/` records the tested combinations (consumer fixture, workspace, docs build, and Chrome review), declared requirements, a browser floor inherited from Tailwind CSS v4 (Safari 16.4, Chrome 111, Firefox 128) with only Chrome tested, known limitations for packaging, screen UI, world UI, and performance, and what each reference example does and does not cover. No engine support is claimed.
 
 **Agent guide status (2026-09-18):** done. `/agent-guide/` now distinguishes shipped components, contracts, game-owned examples, untested recipes, and planned items; gives a viewport-versus-world decision rule; maps common game UI needs (including unshipped ones such as toasts, damage numbers, and interaction prompts) to existing primitives or compositions; requires checking variants, composition, and token overrides before adding a primitive; and ends with a completion checklist. The `@game-ui/react` and `@game-ui/world-ui` READMEs, which ship in the packages, carry a condensed version for agents working in a consumer's `node_modules`.
 

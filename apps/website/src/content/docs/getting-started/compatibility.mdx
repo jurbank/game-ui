@@ -1,0 +1,75 @@
+---
+title: Compatibility and limitations
+description: Tested versions, supported environments, known limitations, and what the reference examples do and do not cover.
+sidebar:
+  order: 4
+---
+
+This page records what has actually been tested. Anything not listed as tested may work, but has not been verified. Game UI makes no engine support claims.
+
+## Tested combinations
+
+Recorded 2026-09-18. The first three rows run on every `vp run ready`; browser review is manual.
+
+| Where                                  | What is verified                                                                                                        | Versions                                                                                                                  |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Consumer fixture (`examples/consumer`) | Installs packed tarballs outside the workspace, type checks the shipped declarations, builds, and checks the CSS output | React and react-dom 19.3.0, TypeScript 5.9.3 (`skipLibCheck: false`), Vite 7.3.6, Tailwind CSS 4.3.3, pnpm 11.21, Node 24 |
+| Workspace packages and tests           | Lint, type check, unit and component tests in happy-dom, package builds                                                 | TypeScript 7.0, Vite+ 0.2.9, React 19.3, Base UI 1.8, pnpm 12.4.2, Node 24.15                                             |
+| Documentation site                     | Production build and static prerendering of every example                                                               | Astro 7.2, Starlight 0.42                                                                                                 |
+| Browser review                         | All components in all three themes, keyboard and modal behavior, the canvas game, the walkthrough                       | Chrome 152 on macOS 26.5.2                                                                                                |
+
+## Declared requirements
+
+| Requirement      | Range                                             | Notes                                                                                                                   |
+| ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| React, react-dom | `^19.0.0` (peer dependencies)                     | Only 19.3 is tested. React 18 is not supported.                                                                         |
+| Module format    | ESM only                                          | No CommonJS build. Use a bundler, with TypeScript `moduleResolution` set to `bundler`, `node16`, or `nodenext`.         |
+| TypeScript       | Any version that reads the shipped `.d.mts` files | 5.9 and 7.0 are tested.                                                                                                 |
+| Tailwind CSS     | Optional; v4 for `@game-ui/themes/tailwind.css`   | Component styles are precompiled, so Tailwind is not required. The token utilities mapping uses Tailwind v4's `@theme`. |
+| Node             | `>=22.18.0` to develop this repository            | Consumers need Node only for their own build tooling.                                                                   |
+
+### Browsers
+
+Component CSS is compiled by Tailwind CSS v4 and uses cascade layers and registered custom properties (`@property`). Tailwind v4 targets **Safari 16.4, Chrome 111, and Firefox 128** or newer, so treat those as the floor. Only Chrome 152 has been reviewed by hand; Safari, Firefox, mobile browsers, and embedded webviews have not been tested.
+
+## Known limitations
+
+### Packaging
+
+- Packages are not published to a registry. Install from packed tarballs with `overrides`, as described in [Installation](/getting-started/#install).
+- `@game-ui/react` depends on the exact versions of `@game-ui/core` and `@game-ui/themes`, so a consumer cannot mix versions of them.
+- No CommonJS build and no UMD or CDN bundle.
+
+### Screen UI
+
+- Built-in strings are English defaults: PlayerList `empty`, Scoreboard `nameHeader`, `scoreHeader`, `rankHeader`, and `empty`, and Modal `closeLabel`. Each is a prop, so pass translated text. ProgressBar formats values with `Intl` and accepts `locale`.
+- Right-to-left layouts have not been tested.
+- PlayerList and Scoreboard render every row, with no virtualization.
+- Timer has no clock. The game supplies the time.
+- ProgressBar is horizontal only.
+- Keyboard and focus behavior is covered by automated tests and a manual Chrome review. No screen reader testing has been recorded.
+- Server rendering is verified only through Astro's static prerendering of the docs site. Other server rendering frameworks have not been tested.
+
+### World UI
+
+- `@game-ui/world-ui` is types only. There is no renderer, runtime validation, or JSON Schema. Validate serialized descriptors yourself.
+- No engine integration is tested. The [3D recipe](/world-ui/3d-recipe/) is guidance, not a tested integration; Phaser, PixiJS, Three.js, Babylon.js, and others have no support claims.
+- The contracts define no interaction, animation, overlap avoidance, distance fading, or layout priority. Those are game responsibilities.
+- DamageNumber, InteractionPrompt, and ObjectiveMarker are not defined. Use FloatingLabel until they are.
+
+### Performance
+
+- Many-label performance was measured once, on an Apple M5 MacBook Air in Chrome. See the [recorded baseline](/world-ui/canvas/#recorded-baseline-2026-09-17). Re-measure on your lowest target hardware before relying on it.
+
+## What the reference examples cover
+
+The examples are game-owned code in the docs site, not packages. Use them as patterns.
+
+| Example                                               | Covers                                                                                                                                                              | Does not cover                                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [Canvas reference game](/world-ui/canvas/)            | Canvas2D FloatingLabel, Nameplate, and HealthBar; 2D entity and position anchors; camera pan and zoom; lifetimes; theme mapping; disposal; a many-label measurement | 3D anchors, occlusion, `maxDistance`, overlap avoidance, fading, long-name layout, WebGL |
+| [Consumer walkthrough](/getting-started/walkthrough/) | The canvas game plus a React HUD, standings, pause and round-over Modals, a game clock and keybinding, pause freezing the scene, a replaceable state binding        | Networking, server authority, persistence, audio, gamepad input                          |
+| [HUD demo](/patterns/hud/)                            | Every screen component composed into a responsive HUD with reducer-owned state                                                                                      | World UI                                                                                 |
+| [3D recipe](/world-ui/3d-recipe/)                     | Guidance on entity resolution, projection, offsets, and occlusion in 3D                                                                                             | Any tested 3D code                                                                       |
+
+The canvas page's [supported capabilities](/world-ui/canvas/#supported-capabilities) table lists the reference game's exact subset of the contracts.
