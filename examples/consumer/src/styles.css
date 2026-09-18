@@ -1,0 +1,42 @@
+/*
+ * The documented consumer styling contract, exercised verbatim. If the
+ * getting-started guide changes, change this file to match and re-verify.
+ */
+@layer theme, base, game-ui, components, utilities;
+
+@import "tailwindcss";
+@import "@game-ui/themes";
+@import "@game-ui/react/styles.css";
+@import "@game-ui/themes/tailwind.css";
+
+/* Game styles and token overrides follow the framework imports. */
+body {
+  margin: 0;
+  padding: 2rem;
+  font-family: system-ui, sans-serif;
+  background: var(--game-bg);
+  color: var(--game-text);
+}
+
+.hud {
+  margin-block: 2rem;
+  max-width: 44rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-block-end: 0.75rem;
+}
+
+.world-readout {
+  font-size: 0.875rem;
+  color: var(--game-text-muted);
+}
+
+/* A local token override must retheme without editing shared component source. */
+.hud[data-game-theme="playful"] {
+  --game-radius-md: 1.5rem;
+}

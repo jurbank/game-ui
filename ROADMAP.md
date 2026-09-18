@@ -135,10 +135,21 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 - [ ] Finish getting-started instructions covering package installation, CSS imports, theme selection, token overrides, React use, game-owned world UI implementation, theme mapping, and state/subscription lifecycle integration.
 - [ ] Document every shipped component/concept with purpose, when to use and avoid it, props/configuration, variants, tokens, accessibility, relevant performance notes, live examples, and agent guidance.
 - [ ] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
-- [ ] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
+- [x] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
 - [ ] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
 - [ ] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
 - [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+
+**Consumer fixture status (2026-09-17):** done. `examples/consumer` installs packed tarballs outside the pnpm workspace and is verified by `vp run verify-consumer`, wired into `vp run ready`. The fixture has its own `pnpm-workspace.yaml`, so it never sees the `@game-ui/source` condition that resolves workspace imports to `src`.
+
+The gate runs `publint` and `arethetypeswrong` against real tarballs, then installs, type checks, and builds the fixture, then asserts the output. `arethetypeswrong` uses the `esm-only` profile because the packages are deliberately ESM-only; node10 and CJS resolution failures are expected, not defects. Its CSS entry is excluded because that tool resolves only JavaScript and type entries.
+
+Tested combination: Node 24.15/24.21, pnpm 12.4.2 (workspace) and 11.21 (fixture), React and react-dom 19.3.0, TypeScript 5.9.3 against the shipped declarations with `skipLibCheck: false`, Vite 7.3.6, Tailwind CSS 4.3.3. The fixture deliberately uses mainstream Vite and TypeScript rather than the workspace's Vite+ and TypeScript 7, so the recorded combination matches what a consumer is likely to have.
+
+Two findings worth carrying forward:
+
+- The packed `@game-ui/react` depends on `@game-ui/core` and `@game-ui/themes` by exact version, which pnpm resolves from the registry. Until those versions are published, the fixture needs `overrides` pointing them at the same tarballs. Consider `workspace:^` instead of `workspace:*` when versioning, so consumers can deduplicate.
+- Browser review of the fixture's production build on macOS 26.5.2 / Chrome 152 confirmed all seven screen components render in all three themes, a local `--game-radius-md` override retheming without touching shared source, and the portaled Modal correctly inheriting a region-scoped theme. No page console errors.
 
 **Acceptance criteria:** the consumer fixture imports only public APIs, builds successfully, and renders with each theme. A developer can follow the guide to select a theme, override a few tokens, and compose screen UI and implement native world UI from the contracts, sharing game-owned state and presentation roles without changing shared package source.
 

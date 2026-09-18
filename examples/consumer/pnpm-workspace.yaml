@@ -1,0 +1,17 @@
+# The fixture is its own single-package workspace root. pnpm stops at the
+# nearest pnpm-workspace.yaml, so this isolates the fixture from the
+# repository workspace and its `@game-ui/source` resolution.
+packages:
+  - .
+
+# @game-ui/react depends on core and themes by version. Until those versions
+# exist on a registry, point the transitive resolutions at the same tarballs.
+# Remove this block once the packages are published.
+overrides:
+  "@game-ui/core": "file:.tarballs/game-ui-core.tgz"
+  "@game-ui/themes": "file:.tarballs/game-ui-themes.tgz"
+  "@game-ui/world-ui": "file:.tarballs/game-ui-world-ui.tgz"
+
+# Same policy as the repository root: esbuild needs its postinstall.
+allowBuilds:
+  esbuild: true
