@@ -54,6 +54,8 @@ Projection failure (behind the camera or outside valid depth) hides a label with
 
 ## FloatingLabel
 
+See the [FloatingLabel page](/world-ui/floating-label/) for usage, tones, accessibility, performance, and a live example.
+
 Use `kind: "floating-label"` with required plain `text` for a contextual message attached to a place or entity. All shared tones apply; default is ordinary text. Text updates replace content; an empty string draws no text. Strings are never markup.
 
 Use it for a relay label or short-lived health-change notification. Avoid it for viewport notifications (compose text inside Panel) or identity/status (Nameplate). Damage-event handling, trajectories, stacking, and pooling remain game mechanics, not a shipped DamageNumber system.
@@ -62,11 +64,15 @@ Text maps to `--game-text` or `--game-{primary,success,warning,danger}-text`; fo
 
 ## Nameplate
 
+See the [Nameplate page](/world-ui/nameplate/) for usage, tones, accessibility, performance, and a live example.
+
 Use `kind: "nameplate"` with required plain `name`, optional plain `status` (omitted = none), and optional `selected` (default = false). Render selection with a visible non-color cue. Do not infer teams, rank, status, or identity from anchor IDs. All shared tones apply to text.
 
 Use it above a character; avoid it for ranked screen data (Scoreboard) or health meters (HealthBar). Share game identity and display names with PlayerList/Scoreboard entries. The canvas example uses `◆` for selection, `Ready`/`Down` status, semantic text colors, and a panel backdrop.
 
 ## HealthBar
+
+See the [HealthBar page](/world-ui/health-bar/) for usage, tones, accessibility, performance, and a live example.
 
 Use `kind: "health-bar"` with required `value`, `max`, and human-readable `label`. Minimum is zero. Clamp finite values to `[0, max]`; non-finite values or non-finite/nonpositive maxima display empty. Unknown/indeterminate loading progress is unsupported; screen ProgressBar has its own loading behavior.
 

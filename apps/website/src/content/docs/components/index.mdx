@@ -17,8 +17,18 @@ sidebar:
 | [PlayerList](/components/player-list/)   | `@game-ui/react` | Lobby rosters, ready checks, and party lists |
 | [Scoreboard](/components/scoreboard/)    | `@game-ui/react` | Match results and live standings             |
 
+## World UI concepts
+
+These are TypeScript contracts in `@game-ui/world-ui`, drawn by your game's renderer rather than shipped as React components.
+
+| Concept                                    | Package             | Use it for                                    |
+| ------------------------------------------ | ------------------- | --------------------------------------------- |
+| [FloatingLabel](/world-ui/floating-label/) | `@game-ui/world-ui` | Place names and short-lived world feedback    |
+| [Nameplate](/world-ui/nameplate/)          | `@game-ui/world-ui` | Names, status, and selection above characters |
+| [HealthBar](/world-ui/health-bar/)         | `@game-ui/world-ui` | Health above characters and objects           |
+
+See [World UI and state](/getting-started/world-ui-and-state/) for implementing them.
+
 ## Planned
 
-Specifications and TypeScript contracts for FloatingLabel, Nameplate, and HealthBar are available in [world UI](/world-ui/). Games implement these concepts in their own renderer; they are not shipped React components or framework renderers.
-
-Compose available screen components and implement world UI in your game using its renderer. The contracts document conventions for those implementations.
+Toast, Lobby, HUDLayout, DamageNumber, InteractionPrompt, and ObjectiveMarker are candidates, extracted only when real games show a reusable API. Until then, compose the components above.

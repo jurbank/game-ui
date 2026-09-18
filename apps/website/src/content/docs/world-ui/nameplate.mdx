@@ -1,0 +1,119 @@
+---
+title: Nameplate
+description: A name, optional status, and selection cue above a character, drawn by your game's renderer.
+sidebar:
+  order: 4
+---
+
+import Example from "../../../components/Example.astro";
+import { WorldPreview } from "../../../components/examples/WorldPreview";
+
+A character's identity in the world: name, an optional short status, and whether the player has selected them. Nameplate is a **contract**: `@game-ui/world-ui` defines its data, and your renderer draws it.
+
+<Example theme="tactical">
+  <WorldPreview
+    client:only="react"
+    label="Three nameplates: Nova selected and ready, Rook with a danger-toned Down status, and Wisp with a primary tone and no status."
+    entities={{ nova: { x: -160, y: 20 }, rook: { x: 0, y: 20 }, wisp: { x: 160, y: 20 } }}
+    descriptors={[
+      {
+        kind: "nameplate",
+        id: "name:nova",
+        name: "Nova",
+        status: "Ready",
+        selected: true,
+        anchor: { kind: "entity", dimension: "2d", entityId: "nova" },
+        offset: { space: "screen", x: 0, y: -30 },
+      },
+      {
+        kind: "nameplate",
+        id: "name:rook",
+        name: "Rook",
+        status: "Down",
+        tone: "danger",
+        anchor: { kind: "entity", dimension: "2d", entityId: "rook" },
+        offset: { space: "screen", x: 0, y: -30 },
+      },
+      {
+        kind: "nameplate",
+        id: "name:wisp",
+        name: "Wisp",
+        tone: "primary",
+        anchor: { kind: "entity", dimension: "2d", entityId: "wisp" },
+        offset: { space: "screen", x: 0, y: -30 },
+      },
+    ]}
+  />
+</Example>
+
+This still frame uses the [canvas reference game](/world-ui/canvas/)'s drawing code. The canvas game shows selection changing from both world clicks and React controls.
+
+## When to use
+
+- Names above players, allies, NPCs, or units.
+- Short state tied to that character: "Ready", "Down", "AFK".
+- Showing which character is selected.
+
+## When not to use
+
+- Ranked or tabular data: use [Scoreboard](/components/scoreboard/) in screen UI.
+- Rosters: use [PlayerList](/components/player-list/).
+- Health: pair the nameplate with a [HealthBar](/world-ui/health-bar/) on the same anchor.
+- Text about a place or object: use [FloatingLabel](/world-ui/floating-label/).
+
+## Usage
+
+```ts
+import type { Nameplate } from "@game-ui/world-ui";
+
+const nameplate: Nameplate<"3d"> = {
+  kind: "nameplate",
+  id: `name:${player.id}`,
+  name: player.displayName,
+  status: player.health === 0 ? "Down" : undefined,
+  selected: player.id === selectedId,
+  anchor: {
+    kind: "entity",
+    dimension: "3d",
+    entityId: player.id,
+    localOffset: { x: 0, y: 1.8, z: 0 },
+  },
+  offset: { space: "screen", x: 0, y: -12 },
+  occlusion: "hide", // only if your renderer supports it
+};
+```
+
+## Configuration
+
+| Field      | Type          | Default  | Meaning                                                       |
+| ---------- | ------------- | -------- | ------------------------------------------------------------- |
+| `kind`     | `"nameplate"` | required | Discriminates the descriptor.                                 |
+| `name`     | `string`      | required | Plain display name.                                           |
+| `status`   | `string`      | none     | Short plain-text state. Omitted shows no status.              |
+| `selected` | `boolean`     | `false`  | Whether to draw a selection cue that does not rely on colour. |
+
+Plus the shared fields: `id`, `anchor`, `offset`, `tone`, `visible`, `missingAnchor`, `lifetimeMs`, and the optional capabilities `occlusion` and `maxDistance`. [Shared configuration](/world-ui/contracts/#shared-configuration) defines their defaults and units.
+
+Don't infer team, rank, or status from the anchor's entity id. Put everything the nameplate shows in its fields.
+
+## Tones
+
+Tones colour the text with `--game-text` (default) or `--game-{primary,success,warning,danger}-text`. The game chooses what each tone means, for example `primary` for allies and `danger` for enemies or downed players. The reference game draws selection as a `◆` prefix with a `--game-primary` ring around the marker, on a `--game-panel` backing.
+
+## Accessibility
+
+- Give selection a shape or text cue, not only a colour change.
+- World text is invisible to assistive technology. Provide the same identities and status in screen UI, such as a [PlayerList](/components/player-list/), and make selection possible from there with keyboard controls.
+- Long names need a layout policy in your renderer: truncate, shrink, or wrap. The contract does not choose one.
+
+## Performance
+
+- Create the text object once per character and rebuild it only when `name`, `status`, `selected`, or `tone` changes. Subscribe to those values, not to positions.
+- Update only the transform every frame. Crowded scenes may need overlap avoidance or distance culling (`maxDistance`); measure before adding them.
+
+## Agent guidance
+
+- Use one nameplate per character, with a stable `id` derived from the entity id.
+- Use the same player identity and display name as the screen UI entries for that player.
+- Derive `selected` from game state so world clicks and screen controls stay in sync.
+- Reject `occlusion` and `maxDistance` requests your renderer doesn't implement, rather than ignoring them.

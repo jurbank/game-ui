@@ -97,6 +97,12 @@ Uses `--game-panel`, `--game-surface`, `--game-text`, `--game-text-muted`, `--ga
 
 Opening and closing fade and scale over `--game-duration-normal`. With reduced motion, the duration is `0ms`.
 
+## Performance
+
+While closed, Modal renders only a hidden anchor element; the dialog, backdrop, and focus trap mount when it opens. On each open it reads the computed `--game-*` tokens once from where it is declared, so the portaled dialog matches that region's theme. It does not read styles again while open.
+
+Opening and closing animates `opacity` and `scale` over `--game-duration-normal`, which is `0ms` under reduced motion. Keep modal content independent of per-frame game state; pausing is the usual reason to open one.
+
 ## Accessibility
 
 - Renders `role="dialog"` named by `title` and described by `description`.

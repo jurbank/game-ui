@@ -99,6 +99,12 @@ Rows carry `data-game-part="row"`, `data-row-id`, and `data-self` or `data-highl
 
 Uses `--game-panel`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-primary-text`, `--game-success-text`, `--game-warning-text`, `--game-danger-text`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, and `--game-space-*`.
 
+## Performance
+
+Scoreboard renders every row on each render, keyed by `id`, with no virtualization or sorting of its own. It scans `rows` once per render to decide which optional columns to show. That suits match and team sizes; for very large leaderboards, paginate or window rows in game code.
+
+Rank and sort rows when scores change, not every frame, and memoize the derived rows if the parent re-renders often for unrelated reasons.
+
 ## Accessibility
 
 - Renders a real `<table>`, so screen readers can navigate it by row and column.

@@ -101,6 +101,12 @@ Uses `--game-text`, `--game-text-muted`, `--game-warning-text`, `--game-danger-t
 
 Digits use `tabular-nums` so the reading does not shift as numbers change.
 
+## Performance
+
+Timer has no clock of its own: no interval, timeout, or animation frame. It formats `value` on each render, so its cost is set by how often you change the value.
+
+Update at the precision you display. For `precision="seconds"`, a few updates per second are enough; the [walkthrough](/getting-started/walkthrough/) ticks its store every 250 ms. Updating from a 60 Hz loop re-renders the Timer and every component subscribed to the same state 60 times a second for no visible change. Keep the Timer in a component that subscribes only to the time value.
+
 ## Accessibility
 
 - The reading has `role="timer"`, which names it without announcing every tick.

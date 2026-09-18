@@ -1,0 +1,128 @@
+---
+title: FloatingLabel
+description: Contextual plain text attached to an entity or world position, drawn by your game's renderer.
+sidebar:
+  order: 3
+---
+
+import Example from "../../../components/Example.astro";
+import { WorldPreview } from "../../../components/examples/WorldPreview";
+
+Short text that belongs to a place or thing in the world: a zone name, a relay marker, or a brief "+10 HP" after a health change. FloatingLabel is a **contract**: `@game-ui/world-ui` defines its data, and your renderer draws it.
+
+<Example theme="tactical">
+  <WorldPreview
+    client:only="react"
+    label="Floating labels in each tone: a default zone name, a primary objective, a success heal, a warning, and a danger damage number."
+    entities={{ medic: { x: -140, y: 30 }, target: { x: 140, y: 30 } }}
+    descriptors={[
+      {
+        kind: "floating-label",
+        id: "zone",
+        text: "SECTOR 03",
+        anchor: { kind: "position", dimension: "2d", position: { x: 0, y: -50 } },
+      },
+      {
+        kind: "floating-label",
+        id: "objective",
+        text: "Relay",
+        tone: "primary",
+        anchor: { kind: "position", dimension: "2d", position: { x: 0, y: 0 } },
+      },
+      {
+        kind: "floating-label",
+        id: "heal",
+        text: "+10 HP",
+        tone: "success",
+        anchor: { kind: "entity", dimension: "2d", entityId: "medic" },
+        offset: { space: "screen", x: 0, y: -26 },
+      },
+      {
+        kind: "floating-label",
+        id: "low",
+        text: "Low ammo",
+        tone: "warning",
+        anchor: { kind: "position", dimension: "2d", position: { x: 0, y: 50 } },
+      },
+      {
+        kind: "floating-label",
+        id: "hit",
+        text: "-25 HP",
+        tone: "danger",
+        anchor: { kind: "entity", dimension: "2d", entityId: "target" },
+        offset: { space: "screen", x: 0, y: -26 },
+      },
+    ]}
+  />
+</Example>
+
+This still frame uses the [canvas reference game](/world-ui/canvas/)'s drawing code. The canvas game shows labels following moving entities and expiring on schedule.
+
+## When to use
+
+- Names of places and objects: zones, relays, pickups, doors.
+- Short-lived feedback at a location, such as a health change, using `lifetimeMs`.
+
+## When not to use
+
+- Messages about the whole screen, such as "Round starting": compose text in a [Panel](/components/panel/) or a Modal.
+- A character's identity or status: use [Nameplate](/world-ui/nameplate/).
+- A value in a range: use [HealthBar](/world-ui/health-bar/).
+- Rich or interactive content. Text is always plain, never markup, and the contract defines no input.
+
+## Usage
+
+```ts
+import type { FloatingLabel } from "@game-ui/world-ui";
+
+const damage: FloatingLabel<"2d"> = {
+  kind: "floating-label",
+  id: `damage:${eventId}`, // a new id per event starts a new lifetime
+  text: "-25 HP",
+  tone: "danger",
+  anchor: { kind: "entity", dimension: "2d", entityId: target.id },
+  offset: { space: "screen", x: 0, y: -40 },
+  lifetimeMs: 1000,
+  missingAnchor: "dispose", // stop showing it if the target is removed
+};
+```
+
+## Configuration
+
+| Field  | Type               | Default  | Meaning                                                           |
+| ------ | ------------------ | -------- | ----------------------------------------------------------------- |
+| `kind` | `"floating-label"` | required | Discriminates the descriptor.                                     |
+| `text` | `string`           | required | Plain text. Updating it replaces the content; `""` draws nothing. |
+
+Plus the shared fields: `id`, `anchor`, `offset`, `tone`, `visible`, `missingAnchor`, `lifetimeMs`, and the optional capabilities `occlusion` and `maxDistance`. [Shared configuration](/world-ui/contracts/#shared-configuration) defines their defaults and units.
+
+## Tones
+
+| Tone      | Use for                           | Text token            |
+| --------- | --------------------------------- | --------------------- |
+| `default` | Ordinary place names              | `--game-text`         |
+| `primary` | Objectives and points of interest | `--game-primary-text` |
+| `success` | Healing, gains, completion        | `--game-success-text` |
+| `warning` | Cautions                          | `--game-warning-text` |
+| `danger`  | Damage and threats                | `--game-danger-text`  |
+
+The font maps from `--game-font-body`, and the reference game draws a `--game-panel` backing behind the text for legibility. Resolve these once in your [presentation mapping](/world-ui/integration/#semantic-presentation-mapping).
+
+## Accessibility
+
+- Canvas and engine text is invisible to assistive technology. Put anything the player must know, such as an objective, in screen UI as well.
+- Don't rely on tone colour alone: "+10" and "-25" carry meaning in the text itself.
+- Don't announce every transient label to screen readers. Summarise important events in screen UI instead.
+
+## Performance
+
+- Create a native text object when the label appears and update it only when `text` or `tone` changes. Measure text on change, not every frame.
+- Transient labels are the usual reason to consider pooling. Profile first: the reference game allocates one descriptor per health event and draws 1,001 descriptors in about 2 ms on the recorded hardware.
+- Stacking, trajectories, and fade-outs are game mechanics. Add them in your renderer; the contract implies no animation.
+
+## Agent guidance
+
+- Use FloatingLabel for world-attached text before inventing a new world UI type.
+- Give each one-shot event a new `id`; reuse an `id` only to update a persistent label.
+- Set `lifetimeMs` for transient text and `missingAnchor: "dispose"` when the text should die with its entity.
+- A full damage-number system (stacking, crits, motion) is not part of this contract. Build it in the game on top of FloatingLabel.

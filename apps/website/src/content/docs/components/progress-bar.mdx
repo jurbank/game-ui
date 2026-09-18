@@ -103,6 +103,12 @@ Uses `--game-primary`, `--game-success`, `--game-warning`, `--game-danger`, `--g
 
 The fill animates over `--game-duration-normal`, which is `0ms` under reduced motion.
 
+## Performance
+
+ProgressBar has no internal timers or animation loop. It renders once per prop change, and the fill's `width` transitions over `--game-duration-normal` (instant under reduced motion).
+
+A width transition triggers layout. That is negligible for a HUD's handful of bars, but do not drive dozens of bars from per-frame values: publish health from the game when it changes, not every frame. For bars above many characters, implement the world UI [HealthBar](/world-ui/health-bar/) in your renderer instead.
+
 ## Accessibility
 
 - Renders `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and `aria-valuetext`.

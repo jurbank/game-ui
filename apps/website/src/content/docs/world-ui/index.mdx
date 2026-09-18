@@ -26,12 +26,13 @@ Add the workspace package to your game alongside the screen/theme packages you n
 
 ## What is available
 
-| Artifact                                            | Status                                                  |
-| --------------------------------------------------- | ------------------------------------------------------- |
-| [Specifications and types](/world-ui/contracts/)    | Shared public contract                                  |
-| [Canvas game and React bindings](/world-ui/canvas/) | Working game-owned reference example                    |
-| [3D integration recipe](/world-ui/3d-recipe/)       | Guidance; no tested 3D renderer or engine support claim |
-| [React components](/components/)                    | Shipped screen UI                                       |
+| Artifact                                                                                                          | Status                                                  |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [Specifications and types](/world-ui/contracts/)                                                                  | Shared public contract                                  |
+| [FloatingLabel](/world-ui/floating-label/), [Nameplate](/world-ui/nameplate/), [HealthBar](/world-ui/health-bar/) | Per-concept reference with live examples                |
+| [Canvas game and React bindings](/world-ui/canvas/)                                                               | Working game-owned reference example                    |
+| [3D integration recipe](/world-ui/3d-recipe/)                                                                     | Guidance; no tested 3D renderer or engine support claim |
+| [React components](/components/)                                                                                  | Shipped screen UI                                       |
 
 Your game owns render objects, entity resolution, projection, visibility, animation, updates, batching, pooling, and disposal. Use stable descriptors and native objects; update content when state changes and read spatial data directly in your game loop. Do not allocate descriptors, parse schemas, or resolve CSS values every frame.
 

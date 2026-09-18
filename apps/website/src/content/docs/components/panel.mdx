@@ -63,6 +63,10 @@ With a `title`, Panel renders a `<section>` labelled by its heading. Without one
 
 Also uses `--game-border`, `--game-border-width`, `--game-radius-lg`, `--game-text`, `--game-font-body`, `--game-font-display`, `--game-font-size-lg`, and `--game-space-*`.
 
+## Performance
+
+Panel is a single `<section>` or `<div>` with no state, effects, or subscriptions. It re-renders when its parent does. Put fast-changing readouts, such as a Timer, in their own small components so a tick does not re-render the whole panel's children.
+
 ## Accessibility
 
 - A titled panel is a named region, so screen reader users can find it by its title.

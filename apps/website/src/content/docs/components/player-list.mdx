@@ -96,6 +96,12 @@ The root element has `data-size`, and `data-empty` when there are no players. Ea
 
 Uses `--game-panel`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-sm`, `--game-text`, `--game-text-muted`, `--game-primary-text`, `--game-success-text`, `--game-warning-text`, `--game-danger-text`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, and `--game-space-*`.
 
+## Performance
+
+PlayerList renders every entry on each render, keyed by `id`, with no virtualization. Stable ids let React reuse rows when players join, leave, or reorder. It suits lobby and squad sizes; for hundreds of rows, render a window of them yourself.
+
+Build `players` from game state when that state changes, not every frame, and keep `actions` content light: each row renders it.
+
 ## Accessibility
 
 - Renders a `<ul>`, so screen readers announce how many players are in the list.

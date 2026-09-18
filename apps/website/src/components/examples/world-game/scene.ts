@@ -1,7 +1,8 @@
 import type { FloatingLabel, WorldDescriptor } from "@game-ui/world-ui";
 import { healthTone, type DemoGame } from "./game";
 import type { CanvasPresentation } from "./presentation";
-import { assertSupported, healthFraction, project } from "./spatial";
+import { drawDescriptor } from "./draw";
+import { assertSupported, project } from "./spatial";
 
 interface RenderEntry {
   descriptor: WorldDescriptor<"2d">;
@@ -189,29 +190,6 @@ export function createScene(
   }
   canvas.addEventListener("pointerdown", onPointer);
 
-  function drawEntry(descriptor: WorldDescriptor<"2d">) {
-    const { x, y } = projected;
-    const tone = descriptor.tone ?? "default";
-    if (descriptor.kind === "health-bar") {
-      ctx.fillStyle = theme.panel;
-      ctx.fillRect(x - 36, y - 4, 72, 8);
-      ctx.fillStyle = theme.fillTones[tone];
-      ctx.fillRect(x - 36, y - 4, 72 * healthFraction(descriptor.value, descriptor.max), 8);
-      ctx.strokeStyle = theme.border;
-      ctx.strokeRect(x - 36, y - 4, 72, 8);
-    } else {
-      const text =
-        descriptor.kind === "nameplate"
-          ? `${descriptor.selected ? "◆ " : ""}${descriptor.name}${descriptor.status ? ` · ${descriptor.status}` : ""}`
-          : descriptor.text;
-      const textWidth = ctx.measureText(text).width;
-      ctx.fillStyle = theme.panel;
-      ctx.fillRect(x - textWidth / 2 - 5, y - 10, textWidth + 10, 20);
-      ctx.fillStyle = theme.textTones[tone];
-      ctx.fillText(text, x, y);
-    }
-  }
-
   function draw() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = theme.background;
@@ -269,7 +247,7 @@ export function createScene(
       }
       if (descriptor.visible === false) continue;
       // Canvas clips at viewport bounds. No depth, overlap, or distance culling in this example.
-      drawEntry(descriptor);
+      drawDescriptor(ctx, theme, descriptor, projected.x, projected.y);
     }
   }
 

@@ -68,6 +68,10 @@ Button accepts every native `<button>` prop, including `ref`, plus:
 
 Also uses `--game-border`, `--game-border-width`, `--game-radius-md`, `--game-shadow`, `--game-font-display`, `--game-space-*`, `--game-font-size-*`, `--game-duration-fast`, `--game-ease`, and `--game-focus-ring`.
 
+## Performance
+
+Button is a single native element with no state, effects, or subscriptions, so it costs what a `<button>` costs. Its hover and press feedback animates only `filter`, `translate`, and `box-shadow` over `--game-duration-fast`.
+
 ## Accessibility
 
 - Renders a native button, so Enter and Space activate it and it joins the tab order.

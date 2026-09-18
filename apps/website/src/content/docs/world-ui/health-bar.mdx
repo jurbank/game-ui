@@ -1,0 +1,140 @@
+---
+title: HealthBar
+description: Determinate health above an entity, drawn by your game's renderer from the same value as screen UI.
+sidebar:
+  order: 5
+---
+
+import Example from "../../../components/Example.astro";
+import { WorldPreview } from "../../../components/examples/WorldPreview";
+
+A bar showing an entity's current health against its maximum. HealthBar is a **contract**: `@game-ui/world-ui` defines its data, and your renderer draws it.
+
+<Example theme="tactical">
+  <WorldPreview
+    client:only="react"
+    label="Health bars at 84 of 100 in success tone, 35 of 100 in warning tone, 10 of 100 in danger tone, and 60 of 100 in primary tone."
+    entities={{
+      a: { x: -210, y: 20 },
+      b: { x: -70, y: 20 },
+      c: { x: 70, y: 20 },
+      d: { x: 210, y: 20 },
+    }}
+    descriptors={[
+      {
+        kind: "health-bar",
+        id: "a",
+        label: "Healthy",
+        value: 84,
+        max: 100,
+        tone: "success",
+        anchor: { kind: "entity", dimension: "2d", entityId: "a" },
+        offset: { space: "screen", x: 0, y: -24 },
+      },
+      {
+        kind: "health-bar",
+        id: "b",
+        label: "Hurt",
+        value: 35,
+        max: 100,
+        tone: "warning",
+        anchor: { kind: "entity", dimension: "2d", entityId: "b" },
+        offset: { space: "screen", x: 0, y: -24 },
+      },
+      {
+        kind: "health-bar",
+        id: "c",
+        label: "Critical",
+        value: 10,
+        max: 100,
+        tone: "danger",
+        anchor: { kind: "entity", dimension: "2d", entityId: "c" },
+        offset: { space: "screen", x: 0, y: -24 },
+      },
+      {
+        kind: "health-bar",
+        id: "d",
+        label: "Shield",
+        value: 60,
+        max: 100,
+        tone: "primary",
+        anchor: { kind: "entity", dimension: "2d", entityId: "d" },
+        offset: { space: "screen", x: 0, y: -24 },
+      },
+    ]}
+  />
+</Example>
+
+This still frame uses the [canvas reference game](/world-ui/canvas/)'s drawing code. The canvas game shows the same health value driving a world bar and a React [ProgressBar](/components/progress-bar/).
+
+## When to use
+
+- Health, shields, or armour of a character or object in the world.
+- Any determinate value from zero to a maximum that belongs to an entity.
+
+## When not to use
+
+- Meters fixed to the screen, such as the player's own health in the HUD: use [ProgressBar](/components/progress-bar/).
+- Unknown or loading progress: HealthBar has no indeterminate state.
+- Task or capture progress that isn't an entity's health: use ProgressBar in screen UI, or a FloatingLabel with the percentage.
+
+## Usage
+
+```ts
+import type { HealthBar } from "@game-ui/world-ui";
+
+const health: HealthBar<"2d"> = {
+  kind: "health-bar",
+  id: `health:${unit.id}`,
+  label: `${unit.name} health`,
+  value: unit.health,
+  max: unit.maxHealth,
+  tone: unit.health > 50 ? "success" : unit.health > 20 ? "warning" : "danger",
+  anchor: { kind: "entity", dimension: "2d", entityId: unit.id },
+  offset: { space: "screen", x: 0, y: -24 },
+};
+```
+
+Feed the same value to a screen ProgressBar when the HUD shows it too, rather than keeping a second copy.
+
+## Configuration
+
+| Field   | Type           | Default  | Meaning                                                                 |
+| ------- | -------------- | -------- | ----------------------------------------------------------------------- |
+| `kind`  | `"health-bar"` | required | Discriminates the descriptor.                                           |
+| `value` | `number`       | required | Current health. Clamped to `[0, max]`.                                  |
+| `max`   | `number`       | required | Maximum health. The minimum is always zero.                             |
+| `label` | `string`       | required | Human-readable meaning, also used for the accessible screen equivalent. |
+
+Plus the shared fields: `id`, `anchor`, `offset`, `tone`, `visible`, `missingAnchor`, `lifetimeMs`, and the optional capabilities `occlusion` and `maxDistance`. [Shared configuration](/world-ui/contracts/#shared-configuration) defines their defaults and units.
+
+### Values
+
+| Case                                | Display                  |
+| ----------------------------------- | ------------------------ |
+| `value` between 0 and `max`         | Proportional fill        |
+| `value` above `max` or below 0      | Clamped to full or empty |
+| `value` not finite                  | Empty                    |
+| `max` zero, negative, or not finite | Empty                    |
+
+## Tones
+
+The fill maps `default` and `primary` to `--game-primary`, and `success`, `warning`, and `danger` to `--game-success`, `--game-warning`, and `--game-danger`. Health thresholds are the game's choice; use the same function for the world bar and the screen ProgressBar. The reference game draws the track with `--game-panel` and outlines it with `--game-border`.
+
+## Accessibility
+
+- A world health bar has no accessible name or value. Show important health, such as the selected unit's, in a screen [ProgressBar](/components/progress-bar/) using the same `label`.
+- Don't rely on tone alone to show critical health; the fill length carries the value.
+
+## Performance
+
+- Update the bar's fill when `value`, `max`, or `tone` changes, and only its transform every frame.
+- Draw bars with simple primitives. In the reference game, 500 entities with a nameplate and bar each draw in about 2 ms on the recorded hardware; see the [measurements](/world-ui/canvas/#recorded-baseline-2026-09-17).
+- Don't render one React ProgressBar per world entity. React is for screen UI; world bars belong in the renderer.
+
+## Agent guidance
+
+- Use HealthBar for entity health in the world, and ProgressBar for the same value on screen.
+- Keep the stable `id` per entity so fill updates don't recreate render objects.
+- Share one threshold function between world and screen tones.
+- Treat an invalid `max` as a game bug; the bar renders empty rather than failing.
