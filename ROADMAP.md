@@ -134,11 +134,13 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 - [x] Document how the example's typed state/actions bind to controlled component props, and how a consumer can replace Zustand without changing framework components or world contracts.
 - [x] Finish getting-started instructions covering package installation, CSS imports, theme selection, token overrides, React use, game-owned world UI implementation, theme mapping, and state/subscription lifecycle integration.
 - [x] Document every shipped component/concept with purpose, when to use and avoid it, props/configuration, variants, tokens, accessibility, relevant performance notes, live examples, and agent guidance.
-- [ ] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
+- [x] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
 - [x] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
 - [ ] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
 - [ ] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
 - [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+
+**Agent guide status (2026-09-18):** done. `/agent-guide/` now distinguishes shipped components, contracts, game-owned examples, untested recipes, and planned items; gives a viewport-versus-world decision rule; maps common game UI needs (including unshipped ones such as toasts, damage numbers, and interaction prompts) to existing primitives or compositions; requires checking variants, composition, and token overrides before adding a primitive; and ends with a completion checklist. The `@game-ui/react` and `@game-ui/world-ui` READMEs, which ship in the packages, carry a condensed version for agents working in a consumer's `node_modules`.
 
 **Component and concept docs status (2026-09-18):** done. All seven component pages now include performance notes grounded in the implementations (no internal clocks or loops, what re-renders, which properties animate, no list virtualization). FloatingLabel, Nameplate, and HealthBar have their own pages with purpose, use/avoid, configuration, tones and tokens, accessibility, performance, agent guidance, and a live still-frame preview drawn by the reference game's shared `drawDescriptor`. The component index lists the world concepts and the real planned candidates.
 

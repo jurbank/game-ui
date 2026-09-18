@@ -5,62 +5,115 @@ sidebar:
   order: 1
 ---
 
-These rules help coding agents build game UI consistently with the framework.
+These rules help coding agents build game UI consistently with the framework. Follow them in order: choose the layer, find an existing primitive, check its variants and composition, and only then consider building something new.
 
-## Before creating UI
+## What exists
 
-1. Search the [component list](/components/) for an existing primitive.
-2. Check its documented variants and props.
-3. Check whether composing existing components solves the need.
-4. Create a new shared primitive only when the need is genuinely different.
-5. Implement world UI in the game using the documented conventions; world concepts do not imply a shipped renderer.
+Know what kind of thing you are using before you use it.
 
-## Map needs to primitives
+| Kind                     | What it is                                                                  | Examples                                                                       |
+| ------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Shipped React components | Import and render them. Styled, accessible, tested.                         | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard               |
+| World UI contracts       | Types only. **You** draw them in the game's renderer.                       | FloatingLabel, Nameplate, HealthBar                                            |
+| Game-owned examples      | Reference code in the docs site, not a package. Copy patterns, not imports. | [Canvas game](/world-ui/canvas/), [walkthrough](/getting-started/walkthrough/) |
+| Untested recipes         | Guidance only. Verify in the target engine before claiming support.         | [3D integration recipe](/world-ui/3d-recipe/)                                  |
+| Planned                  | Not available. Compose existing pieces instead.                             | Toast, InteractionPrompt, DamageNumber, ObjectiveMarker                        |
 
-| Need                          | Use                                                                    |
-| ----------------------------- | ---------------------------------------------------------------------- |
-| A clickable action            | `Button` with a variant chosen by intent                               |
-| A destructive action          | `Button variant="danger"`                                              |
-| A grouped HUD or menu section | `Panel` with a `title`                                                 |
-| A nested group in a panel     | `Panel variant="inset"`                                                |
-| A name above a character      | World UI `Nameplate` contract                                          |
-| A game timer or player list   | [Timer](/components/timer/) and [PlayerList](/components/player-list/) |
+Never import from a package's `src` or from the website's example files. Use the public exports: `@game-ui/react`, `@game-ui/themes`, `@game-ui/world-ui`, and `@game-ui/core`.
 
-## Use semantic styling
+## Step 1: Choose the layer
 
-Do not hardcode game-specific visual values in shared components.
+Ask one question: **does this belong to the viewport, or to something in the world?**
+
+- **Viewport** (it stays put when the camera moves): **screen UI**, using React components. HUD readouts, menus, scoreboards, lobbies, dialogs.
+- **An entity or world position** (it moves with a character or place): **world UI**, drawn by the game's renderer from the contracts. Names above heads, health above units, labels on places.
+
+If the same information appears in both, for example the selected unit's health, keep **one** game-owned value and render it twice: a HealthBar in the world and a ProgressBar on screen. Never render many world-attached labels through React, and never put per-frame positions in React state.
+
+## Step 2: Map the need to a primitive
+
+| Need                                                  | Use                                                                                                    |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| A clickable action                                    | [`Button`](/components/button/), variant by intent: `primary`, `secondary`, `danger`                   |
+| A toggle, such as ready or mute                       | `Button` with `aria-pressed`                                                                           |
+| A grouped HUD section or menu                         | [`Panel`](/components/panel/) with a `title`                                                           |
+| A nested group, or a floating card                    | `Panel variant="inset"` or `variant="raised"`                                                          |
+| Pause menu, confirmation, match found, round over     | [`Modal`](/components/modal/); `dismissible={false}` when the player must choose                       |
+| Health, shield, ammo, XP, loading, capture progress   | [`ProgressBar`](/components/progress-bar/); `value={null}` when genuinely unknown                      |
+| Match clock, round timer, cooldown, respawn countdown | [`Timer`](/components/timer/), with the value from the game's clock                                    |
+| Lobby roster, party, squad, ready check               | [`PlayerList`](/components/player-list/); per-row controls in `actions`                                |
+| Standings, results, leaderboard, team scores          | [`Scoreboard`](/components/scoreboard/); extra stats in `columns`                                      |
+| A name, status, or selection above a character        | World [`Nameplate`](/world-ui/nameplate/)                                                              |
+| Health above a character or object                    | World [`HealthBar`](/world-ui/health-bar/)                                                             |
+| A place name, or text at a world position             | World [`FloatingLabel`](/world-ui/floating-label/)                                                     |
+| A damage or heal number at a target                   | World `FloatingLabel` with `lifetimeMs`, a new `id` per event, and a tone                              |
+| "Press E to open" above an object                     | World `FloatingLabel` near the object, plus the key in screen UI for accessibility                     |
+| A notification or toast                               | `Panel` with text, positioned and timed by the game (Toast is planned, not shipped)                    |
+| A settings or loadout screen                          | `Panel`s containing native form controls and `Button`s                                                 |
+| A full HUD                                            | Compose the above; see the [HUD demo](/patterns/hud/) and [walkthrough](/getting-started/walkthrough/) |
+
+## Step 3: Check variants and composition before building
+
+Before writing any new component:
+
+1. **Read the primitive's page.** Check its variants, sizes, and props. Many "new component" needs are a `variant`, `size`, `status`, `columns`, or `actions` prop away.
+2. **Try composition.** Panel plus Timer plus ProgressBar is a HUD block; Modal plus Scoreboard is a results screen; PlayerList with `actions` is a lobby with kick buttons.
+3. **Try token overrides.** If the need is visual identity, override `--game-*` tokens on a region. Never fork a component to change colours, radii, or fonts.
+4. **Put game-specific pieces in the game.** One-off artwork, game mechanics, and layout belong in game code that composes framework components.
+5. **Add a shared primitive only when the need is genuinely different** and more than one game would reuse it. Say why the existing primitives don't fit.
+
+For example, a "kill feed" is not a new component: it is a Panel of text lines the game appends and expires. A "team scoreboard" is Scoreboard with team rows and a status column, ranked by the game.
+
+## Styling
+
+Use semantic tokens, never raw visual values.
 
 ```text
-Avoid:   bg-blue-600  text-yellow-400  rounded-xl  color="#ffff00"
+Avoid:   bg-blue-600  text-yellow-400  rounded-xl  style={{ color: "#ffff00" }}
 Prefer:  bg-game-primary  text-game-text  rounded-game-md  variant="danger"
 ```
 
-To change a game's look, override `--game-*` tokens. Do not fork or restyle shared components.
+- Choose a component's look through `variant`, `size`, and `tone`, not `className` colour overrides.
+- Change a game's identity by overriding `--game-*` tokens in CSS after the framework imports. When changing a colour, also set its `-contrast` and `-text` partners. See [Theming](/themes/).
+- Use `className` for layout (spacing, grid placement, width), not to restyle a component.
+- In world renderers, resolve tokens once at startup and on theme change, never every frame.
 
-## Choose the correct layer
+## State and game rules
 
-- Screen UI belongs to the viewport and uses React components.
-- World UI belongs to an entity or world position and uses the game renderer.
-- Do not render many world-attached labels through React.
+- Shared components are controlled. Pass values and callbacks through props; they own no game state and decide no rules.
+- The game decides who wins, rank order, ties, thresholds (when health turns `danger`), team membership, and match lifecycle.
+- Keep store bindings in game-owned code. A small hook that maps state to props is the only place that should know which state library is used.
+- World and screen interactions call the same game actions. Keep authority in the game or server.
+- Keep positions, camera, and animation in the game loop. Update React state when displayed values change, at display precision.
+- Use the game's existing state library. Don't add a provider, signal runtime, or store migration without a measured need.
+
+See [World UI and state](/getting-started/world-ui-and-state/) for the full pattern.
+
+## Accessibility
+
+- Name every ProgressBar, Timer, PlayerList, and Scoreboard with `label`, `caption`, or `aria-label`.
+- Give icon-only Buttons an `aria-label`.
+- World UI is invisible to assistive technology. Anything the player needs must also appear in screen UI, with keyboard-reachable controls for world interactions such as selection.
+- Don't carry meaning by colour alone: keep text labels, values, and selection cues.
+- Let components handle focus and keyboard behavior. Bind game shortcuts, such as **P** to pause, in game code.
 
 ## Extending the framework
 
-When adding a shared screen UI component:
+When a new shared screen component is justified:
 
 - Use native HTML when it provides the behavior, as Button does with `<button>`.
-- Build components with complex interaction behavior, such as dialogs, menus, selects, tabs, sliders, and toasts, on [Base UI](https://base-ui.com)'s unstyled primitives. Do not reimplement focus trapping or keyboard navigation.
-- Do not base components on shadcn/ui or other styled component libraries. Style everything with semantic `game-*` utilities.
-- Expose Game UI props, not Base UI's API.
+- Build complex interaction behavior (dialogs, menus, selects, tabs, sliders, toasts) on [Base UI](https://base-ui.com)'s unstyled primitives. Don't reimplement focus trapping or keyboard navigation.
+- Don't base components on shadcn/ui or other styled libraries. Style everything with semantic `game-*` utilities.
+- Expose Game UI props, not Base UI's API. Keep components controlled.
+- Document it like the existing pages: purpose, when to use and avoid, props, variants, tokens, accessibility, performance, a live example, and agent guidance. Add tests for behavior and boundary values.
 
-## Keep game rules outside shared packages
+When a new world concept is justified, add a type to `@game-ui/world-ui` together with its first game-owned implementation. Don't add a framework renderer.
 
-Shared components receive content and state through props. The game decides content, team rules, scoring, and match lifecycle.
+## Before you finish
 
-## Bind state in the game
-
-- Keep store bindings in game-owned wrappers; pass values and callbacks to shared components.
-- Let world and screen interactions call the same game actions and observe game-owned state.
-- Keep gameplay authority in the game or server and per-frame transforms in the game loop.
-- Subscribe narrowly and dispose subscriptions on scene or UI teardown.
-- Use the existing state library. The canvas example's Zustand binding is game-owned, not a framework dependency; do not add a provider, signal runtime, or store migration without a demonstrated need.
-- Follow [world implementation guidance](/world-ui/integration/) for native implementations and related screen components. Resolve semantic theme values when initializing or changing themes, not every frame.
+- [ ] Every screen element uses a framework component or is composed from them.
+- [ ] No raw colours, radii, fonts, or shadows; only tokens, variants, and overrides.
+- [ ] Game rules and state live in the game; components receive props and callbacks.
+- [ ] World UI is drawn in the renderer from the contracts, with screen equivalents for important information.
+- [ ] Subscriptions, listeners, intervals, and animation frames are released on teardown.
+- [ ] Imports use public package exports only.

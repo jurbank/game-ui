@@ -23,4 +23,12 @@ Public types and defaults are in [src/index.ts](./src/index.ts). The [full speci
 - [State/presentation integration](../../apps/website/src/content/docs/world-ui/integration.mdx): game-owned Zustand bindings and theme mapping.
 - [3D recipe](../../apps/website/src/content/docs/world-ui/3d-recipe.mdx): guidance, not a tested engine integration.
 
+## For coding agents
+
+- These are types, not components. Draw descriptors in the game's renderer; this package renders nothing.
+- Use Nameplate for names/status/selection above characters, HealthBar for entity health, and FloatingLabel for place names and short-lived world text such as damage numbers (`lifetimeMs`, a new `id` per event).
+- Keep one game-owned value for anything shown in both layers, such as health in a HealthBar and a screen ProgressBar.
+- Reject optional capabilities your renderer doesn't support (`occlusion: "hide"`, `maxDistance`, 3D anchors) with an error at creation. Never ignore them silently.
+- Resolve theme tokens at startup and on theme change, never per frame. World text is invisible to assistive technology, so mirror important information in screen UI.
+
 Build with `vp run @game-ui/world-ui#build`; validate with `vp check` and `vp run @game-ui/world-ui#test`. This package publishes `dist` with explicit exports following the workspace template.

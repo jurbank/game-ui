@@ -19,6 +19,26 @@ Import the component styles along with a theme. See the [styling contract](../th
 
 React 19 and React DOM 19 are peer dependencies. Components receive game state through props and never own global game state.
 
+## For coding agents
+
+Before creating screen UI, map the need to an existing component and check its variants:
+
+| Need                        | Component                                                 |
+| --------------------------- | --------------------------------------------------------- |
+| Action or toggle            | `Button` (`primary`, `secondary`, `danger`)               |
+| HUD section, menu, card     | `Panel` (`default`, `raised`, `inset`)                    |
+| Pause, confirm, results     | `Modal` (`dismissible={false}` to force a choice)         |
+| Health, shield, XP, loading | `ProgressBar` (`primary`, `success`, `warning`, `danger`) |
+| Match clock, cooldown       | `Timer`, fed from the game's clock                        |
+| Roster, party, ready check  | `PlayerList`, row controls in `actions`                   |
+| Standings, results          | `Scoreboard`, extra stats in `columns`                    |
+
+- Compose these before writing a new component. Change the look with `--game-*` token overrides, not raw colours or forked components.
+- Components are controlled: pass game state through props and handle callbacks in game code. The game decides ranking, winners, thresholds, and lifecycle.
+- UI attached to characters or world positions is not React: implement `@game-ui/world-ui` contracts in the game's renderer.
+
+The full agent guide is at `apps/website/src/content/docs/agent-guide/index.mdx` in the Game UI repository.
+
 ## Development
 
 Components with complex interaction behavior are built on [Base UI](https://base-ui.com)'s unstyled primitives, which provide accessibility and keyboard behavior; this package supplies all styling. Base UI is an internal dependency: expose Game UI props rather than Base UI's API, and prefer native HTML where it is sufficient. See [behavior primitives](../../ARCHITECTURE.md#behavior-primitives).
