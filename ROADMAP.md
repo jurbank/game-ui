@@ -132,13 +132,15 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 
 - [x] Extend the M3 game-owned canvas example into a consumer walkthrough with a React HUD, scoreboard, and modal. A complete game or networking backend is unnecessary.
 - [x] Document how the example's typed state/actions bind to controlled component props, and how a consumer can replace Zustand without changing framework components or world contracts.
-- [ ] Finish getting-started instructions covering package installation, CSS imports, theme selection, token overrides, React use, game-owned world UI implementation, theme mapping, and state/subscription lifecycle integration.
+- [x] Finish getting-started instructions covering package installation, CSS imports, theme selection, token overrides, React use, game-owned world UI implementation, theme mapping, and state/subscription lifecycle integration.
 - [ ] Document every shipped component/concept with purpose, when to use and avoid it, props/configuration, variants, tokens, accessibility, relevant performance notes, live examples, and agent guidance.
 - [ ] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
 - [x] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
 - [ ] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
 - [ ] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
 - [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+
+**Getting-started status (2026-09-18):** done. Installation now covers every package and its dependencies, installing packed tarballs from outside the repository (commands verified), the tested version combination, CSS imports, theme selection, token overrides, and React use. A new World UI and state page covers descriptors, renderer responsibilities, token-to-renderer mapping, shared state, and scene lifecycle, linking to the contracts, integration guide, and walkthrough. `.tarballs/` is gitignored for the documented pack step.
 
 **Walkthrough status (2026-09-18):** done. `/getting-started/walkthrough/` runs the canvas reference game with a React Timer, PlayerList, ProgressBar, Scoreboard, and pause/round-over Modals, all bound to one game-owned store. The store gained a match clock, pause, scores, and reset; the scene freezes movement, label lifetimes, and world input while paused. `SquadHud` takes only props and callbacks, and `useSquadHud` is the sole Zustand-aware binding. Tests render the HUD from plain React state to prove the store is replaceable, and cover clock/pause/round-over behavior and unmount cleanup.
 

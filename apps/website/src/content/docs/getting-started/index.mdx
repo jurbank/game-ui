@@ -1,29 +1,55 @@
 ---
 title: Installation
-description: Add Game UI packages, import styles, select a theme, and render your first components.
+description: Add Game UI packages, import styles, select a theme, override tokens, and render your first components.
 sidebar:
   order: 1
 ---
 
 Game UI is split into small packages so a game installs only the layers it uses.
 
-| Package           | Use it for                                              |
-| ----------------- | ------------------------------------------------------- |
-| `@game-ui/themes` | Token values, starting themes, and the Tailwind mapping |
-| `@game-ui/react`  | Screen UI components such as Button and Panel           |
-| `@game-ui/core`   | Token names and shared types for code outside React     |
+| Package             | Use it for                                                        | Depends on                         |
+| ------------------- | ----------------------------------------------------------------- | ---------------------------------- |
+| `@game-ui/themes`   | Token values, the three starting themes, and the Tailwind mapping | Nothing                            |
+| `@game-ui/react`    | Screen UI components such as Button, Panel, and Modal             | core, themes, Base UI; React peers |
+| `@game-ui/core`     | Token names and helpers for code outside React, such as a canvas  | Nothing                            |
+| `@game-ui/world-ui` | Type-only contracts for world UI you draw in your own renderer    | Nothing at runtime                 |
 
-:::note
-Packages are not published to a registry yet. Inside this repository, add them with `workspace:*`.
-:::
+A game with only React screen UI needs `@game-ui/react` and `@game-ui/themes`. Add `@game-ui/world-ui` and `@game-ui/core` when you draw world labels or health bars in your game's renderer.
 
 ## Install
 
 ```bash
 pnpm add @game-ui/react @game-ui/themes react react-dom
+# Optional, for world UI drawn by your game:
+pnpm add @game-ui/world-ui @game-ui/core
 ```
 
-`@game-ui/react` requires React 19 as a peer dependency, so your game controls the React version.
+`@game-ui/react` requires React 19 as a peer dependency, so your game controls the React version. All packages are ESM-only and ship TypeScript declarations. Use a bundler such as Vite, with `"moduleResolution": "bundler"` (or `node16`/`nodenext`) in `tsconfig.json`.
+
+:::caution[Not on a registry yet]
+Packages are not published yet. Inside this repository, depend on them with `workspace:*`. From another project, build and pack them, then install the tarballs:
+
+```bash
+# In the Game UI repository
+vp run -r build
+for p in core themes react world-ui; do (cd packages/$p && pnpm pack --pack-destination ../../.tarballs); done
+```
+
+`@game-ui/react` depends on core and themes by version, so point those at the tarballs too. With pnpm, in your project's `pnpm-workspace.yaml`:
+
+```yaml
+overrides:
+  "@game-ui/core": "file:../game-ui/.tarballs/game-ui-core-0.0.0.tgz"
+  "@game-ui/themes": "file:../game-ui/.tarballs/game-ui-themes-0.0.0.tgz"
+  "@game-ui/world-ui": "file:../game-ui/.tarballs/game-ui-world-ui-0.0.0.tgz"
+```
+
+`examples/consumer` in the repository is a working setup of exactly this, verified by `vp run verify-consumer`.
+:::
+
+### Tested versions
+
+The consumer fixture builds and type checks against React and react-dom 19.3, TypeScript 5.9 with `skipLibCheck: false`, Vite 7.3, and Tailwind CSS 4.3, on Node 24. Other versions within the peer ranges are expected to work but are not tested.
 
 ## Import styles
 
@@ -55,26 +81,48 @@ Component styles are precompiled, so your Tailwind setup does not need to scan G
 
 ## Select a theme
 
-Set `data-game-theme` on the element that contains your game UI, usually the root:
+Set `data-game-theme` to `arcade`, `tactical`, or `playful` on the element that contains your game UI, usually the root:
 
 ```html
 <html data-game-theme="arcade"></html>
 ```
 
-See [Themes](/themes/) for the available themes and how to override tokens.
+A theme applies to everything inside the element, so different regions can use different themes. Modals render in a portal but still use the theme of the region they were opened from. See [Theming](/themes/) for what each theme is designed for.
+
+## Override tokens
+
+Your game's identity comes from overriding `--game-*` custom properties, not from editing components. Put overrides after the framework imports, scoped to the theme root or any region:
+
+```css title="src/styles.css"
+[data-game-theme="arcade"] {
+  --game-primary: #7cf29a;
+  --game-primary-contrast: #062611;
+  --game-primary-text: #7cf29a;
+  --game-radius-md: 0;
+}
+```
+
+Framework styles are layered, so these win without higher specificity. When you change a colour, also set its `-contrast` and `-text` partners. [Theming](/themes/#tokens) lists every token.
 
 ## Render components
 
 ```tsx
-import { Button, Panel } from "@game-ui/react";
+import { Button, Panel, ProgressBar } from "@game-ui/react";
 
-export function PauseMenu({ onResume }: { onResume: () => void }) {
+export function PauseMenu({ health, onResume }: { health: number; onResume: () => void }) {
   return (
     <Panel title="Paused" variant="raised">
+      <ProgressBar label="Health" value={health} showValue />
       <Button onClick={onResume}>Resume</Button>
     </Panel>
   );
 }
 ```
 
-Components receive game state through props. Keep your game loop, match rules, and state store in your game.
+Components are controlled: they render the values you pass and report requests through callbacks. Keep your game loop, match rules, and state store in your game. [Components](/components/) documents each one.
+
+## Next steps
+
+- [World UI and state](/getting-started/world-ui-and-state/): draw world labels in your renderer, map theme values to it, and share state with React.
+- [Consumer walkthrough](/getting-started/walkthrough/): a complete example combining a canvas scene, HUD, standings, and pause menu.
+- [Agent guide](/agent-guide/): how coding agents should use these packages.

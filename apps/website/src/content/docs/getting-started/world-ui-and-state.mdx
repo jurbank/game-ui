@@ -1,0 +1,122 @@
+---
+title: World UI and state
+description: Draw world UI in your own renderer, map theme tokens to it, and share game state with React screen UI.
+sidebar:
+  order: 2
+---
+
+Screen UI is React components you install. World UI, such as names and health bars above characters, is drawn by **your game's renderer** from typed contracts. Game UI ships no world renderer, so this page covers the pieces you write: descriptors, a scene that draws them, theme mapping, and the state both layers share.
+
+The [canvas reference game](/world-ui/canvas/) implements everything here in Canvas2D, and the [consumer walkthrough](/getting-started/walkthrough/) adds a React HUD to it.
+
+## 1. Describe world UI with the contracts
+
+`@game-ui/world-ui` exports types only. Build plain descriptors for FloatingLabel, Nameplate, and HealthBar, anchored to a game entity id or a world position:
+
+```ts
+import type { HealthBar, Nameplate } from "@game-ui/world-ui";
+
+const anchor = { kind: "entity", dimension: "2d", entityId: pilot.id } as const;
+
+const nameplate: Nameplate<"2d"> = {
+  kind: "nameplate",
+  id: `name:${pilot.id}`,
+  anchor,
+  name: pilot.name,
+  selected: pilot.id === selectedId,
+  offset: { space: "screen", x: 0, y: -44 }, // CSS pixels after projection
+};
+
+const health: HealthBar<"2d"> = {
+  kind: "health-bar",
+  id: `health:${pilot.id}`,
+  anchor,
+  label: `${pilot.name} health`,
+  value: pilot.health,
+  max: pilot.max,
+  tone: pilot.health > 50 ? "success" : "danger", // thresholds are your game's policy
+};
+```
+
+Entity ids are your own stable strings, never engine objects. Units, axes, and camera conventions are yours to choose and document. [Contracts and spatial conventions](/world-ui/contracts/) defines every field, default, and unit.
+
+## 2. Draw them in your renderer
+
+Your scene owns rendering, the update loop, culling, and pooling. The usual shape:
+
+- **Setup:** validate descriptors, create native objects (sprites, text meshes, canvas state), and reject capabilities you don't support, such as `occlusion: "hide"`, with a clear error.
+- **State change:** rebuild or update only the affected descriptors. Keep the same `id` so the instance keeps its creation time.
+- **Every frame:** resolve anchors to current entity positions, project to the screen, apply offsets, and draw. Don't validate descriptors, read CSS, or update React state in the frame loop.
+- **Teardown:** cancel the loop, remove input handlers, unsubscribe from state, and release native objects. Make it safe to call twice.
+
+[Anchors and offsets](/world-ui/contracts/#anchors-and-offsets) covers projection, clipping, and missing entities, the [implementation checklist](/world-ui/integration/#implementation-checklist-for-agents) lists each step, and the [3D recipe](/world-ui/3d-recipe/) applies the same conventions to 3D engines.
+
+## 3. Map theme tokens to your renderer
+
+Renderers can't read CSS variables, so resolve the tokens your world UI uses once, at startup and whenever the theme changes, and pass plain values to the scene:
+
+```ts
+import { tokenProperty, type GameToken } from "@game-ui/core";
+
+export function readPresentation(element: HTMLElement) {
+  const styles = getComputedStyle(element);
+  const read = (token: GameToken) => styles.getPropertyValue(tokenProperty(token)).trim();
+  return {
+    panel: read("panel"),
+    text: read("text"),
+    font: `14px ${read("font-body")}`,
+    fill: { success: read("success"), warning: read("warning"), danger: read("danger") },
+  };
+}
+```
+
+Pass the element that carries `data-game-theme` so token overrides on that region apply. Canvas accepts CSS colours directly. Engines that need numeric or linear-space colours convert them here, once. Shadows, radii, and motion tokens have no universal native equivalent, so decide per effect whether to convert or leave it out. See [semantic presentation mapping](/world-ui/integration/#semantic-presentation-mapping).
+
+## 4. Share state between world and screen UI
+
+Keep one game-owned state source per match. Both layers read from it and call the same actions; neither keeps its own copy.
+
+| Concern          | Screen UI (React)                              | World UI (your scene)                                  |
+| ---------------- | ---------------------------------------------- | ------------------------------------------------------ |
+| Reads state      | A binding hook maps state to component props   | Subscribes to the slices it draws                      |
+| Changes state    | Callbacks call game actions                    | Input handlers call the same game actions              |
+| One-shot effects | Rarely needed                                  | Subscribe to game events, such as a damage label       |
+| Per-frame data   | Never. No positions or camera in React state   | Positions, camera, and animation stay in the loop      |
+| Cleanup          | React unsubscribes when the component unmounts | Unsubscribe every state and event listener on teardown |
+
+The examples use a vanilla Zustand store with `subscribeWithSelector`, but framework components take only props and callbacks. React state, another store, signals, or server snapshots work the same way. The walkthrough's [Replace Zustand](/getting-started/walkthrough/#6-replace-zustand) section shows the swap.
+
+## 5. Tie the scene to the component lifecycle
+
+Create the scene in an effect and dispose it in the cleanup. Resolve presentation on mount and when the theme changes:
+
+```tsx
+const [game] = useState(createGame); // one store per mounted game
+const root = useRef<HTMLDivElement>(null);
+const canvas = useRef<HTMLCanvasElement>(null);
+const scene = useRef<Scene | null>(null);
+
+useEffect(() => {
+  scene.current = createScene(canvas.current!, game, readPresentation(root.current!));
+  return () => {
+    scene.current?.dispose();
+    scene.current = null;
+  };
+}, [game]);
+
+useEffect(() => {
+  scene.current?.setPresentation(readPresentation(root.current!));
+}, [theme]);
+```
+
+React's StrictMode runs effects twice in development, so a scene that disposes cleanly will be created, disposed, and created again without leaking. Create browser resources inside `createScene`, never at module load, so server rendering does not evaluate them. In Astro, render the island with `client:only`.
+
+A scene that is stopped and recreated should read current state on creation rather than replaying old events. Test it the same way: create and dispose repeatedly, and assert that no frames, listeners, or subscriptions remain.
+
+## Checklist
+
+1. Choose which world concepts, anchors, and optional capabilities your renderer supports, and reject the rest.
+2. Build descriptors from game state; draw them in your loop.
+3. Resolve theme tokens at startup and on theme change only.
+4. Keep one state source; bind React through props and the scene through subscriptions.
+5. Give every scene a `dispose` that releases everything, and create and dispose it with the component.
