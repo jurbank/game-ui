@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "typecheck": "tsc --noEmit",
-    "verify": "node verify.mjs"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@game-ui/core": "file:.tarballs/game-ui-core.tgz",

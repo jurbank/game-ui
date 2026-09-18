@@ -41,6 +41,7 @@ export function createScene(
   let height = 360;
   let dpr = 1;
   let selectedId = game.store.getState().selectedId;
+  let paused = game.store.getState().paused;
   const camera = { x: 0, y: 0, zoom: 1 };
   const projected = { x: 0, y: 0 };
   const positions = new Map<
@@ -141,6 +142,13 @@ export function createScene(
       syncPilots();
     },
   );
+  // Pausing is game state: it freezes movement, label lifetimes, and world input.
+  const unsubscribePaused = game.store.subscribe(
+    (state) => state.paused,
+    (next) => {
+      paused = next;
+    },
+  );
   let eventId = 0;
   const unsubscribeEvents = game.onHealthChange(({ entityId, delta }) => {
     const descriptor: FloatingLabel<"2d"> = {
@@ -170,7 +178,7 @@ export function createScene(
   resize();
 
   function onPointer(event: PointerEvent) {
-    if (disposed) return;
+    if (disposed || paused) return;
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -270,8 +278,10 @@ export function createScene(
     const interval = previous ? timestamp - previous : 0;
     previous = timestamp;
     const delta = Math.max(0, Math.min(100, interval));
-    time += delta;
-    if (motion) animationTime += delta;
+    if (!paused) {
+      time += delta;
+      if (motion) animationTime += delta;
+    }
     const started = performance.now();
     draw();
     if (measure && interval > 0) {
@@ -319,6 +329,7 @@ export function createScene(
       canvas.removeEventListener("pointerdown", onPointer);
       unsubscribePilots();
       unsubscribeSelection();
+      unsubscribePaused();
       unsubscribeEvents();
       entries.clear();
       positions.clear();

@@ -1,0 +1,164 @@
+---
+title: Consumer walkthrough
+description: Combine a game-owned canvas scene with a React HUD, scoreboard, and pause menu that share one store.
+sidebar:
+  order: 2
+---
+
+import { SquadMatch } from "../../../components/examples/SquadMatch";
+
+This walkthrough extends the [canvas reference game](/world-ui/canvas/) into a small match: world labels on the canvas, and a React HUD with a clock, squad list, standings, and pause and round-over menus. Every value on screen comes from one game-owned store.
+
+Click a pilot to select them and deal damage, or use the Squad panel. Press **P** or **Pause** to freeze the clock, movement, and world input. Let the clock run out to see final standings.
+
+<SquadMatch client:only="react" />
+
+The code is in `apps/website/src/components/examples/SquadMatch.tsx`, `squad-match/`, and `world-game/`. It is a game-owned example that imports only public framework APIs, not a framework feature. Networking, match rules, and a real game loop are outside its scope.
+
+## The layers
+
+| Layer          | Owner     | In this example                                                          |
+| -------------- | --------- | ------------------------------------------------------------------------ |
+| State          | Game      | `createGame()`: pilots, selection, clock, pause, and typed actions       |
+| Binding        | Game      | `useSquadHud(game)`: the only code that knows the store is Zustand       |
+| Screen UI      | Game      | `SquadHud`: composes framework components from props and callbacks       |
+| Components     | Framework | Timer, Panel, PlayerList, ProgressBar, Scoreboard, Modal, Button         |
+| World UI       | Game      | `createScene()`: Canvas2D drawing of FloatingLabel, Nameplate, HealthBar |
+| World contract | Framework | Descriptor types from `@game-ui/world-ui`                                |
+
+The framework owns only the two "Framework" rows. Everything that decides _what happens_ lives in the game.
+
+## 1. Own the state and actions
+
+The game creates one store per match. It holds persistent state the UI displays, and actions that validate every request. Positions, camera, and animation time stay out of it and live in the scene's loop.
+
+```ts title="world-game/game.ts (excerpt)"
+export interface GameState {
+  readonly pilots: readonly Pilot[]; // id, name, health, max, score
+  readonly selectedId: string;
+  readonly remainingMs: number; // the game advances it; the Timer only displays it
+  readonly paused: boolean;
+  selectEntity(id: string): void;
+  changeHealth(id: string, delta: number): void;
+  awardScore(id: string, points: number): void;
+  tick(elapsedMs: number): void; // ignored while paused or at zero
+  setPaused(paused: boolean): void;
+  reset(): void;
+}
+```
+
+Actions reject unknown ids and non-finite numbers, clamp health, and ignore ticks while paused. A networked game would send these as commands and apply the server's result instead.
+
+## 2. Bind state to controlled props
+
+Framework components are controlled: they render the values you pass and report requests through callbacks. A small game-owned hook turns the store into those props.
+
+```ts title="squad-match/bindings.ts"
+export function useSquadHud(game: DemoGame): SquadHudState & { actions: SquadHudActions } {
+  const state = useStore(
+    game.store,
+    useShallow(({ pilots, selectedId, remainingMs, paused }) => ({
+      pilots,
+      selectedId,
+      remainingMs,
+      paused,
+    })),
+  );
+  const actions = useMemo<SquadHudActions>(() => {
+    const act = game.store.getState;
+    return {
+      select: (id) => act().selectEntity(id),
+      changeHealth: (id, delta) => act().changeHealth(id, delta),
+      awardScore: (id, points) => act().awardScore(id, points),
+      setPaused: (paused) => act().setPaused(paused),
+      restart: () => act().reset(),
+    };
+  }, [game]);
+  return { ...state, actions };
+}
+```
+
+The mapping from game state to component props is then plain data:
+
+| Component props                       | Comes from                                                                       |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| `Timer value`, `variant`              | `remainingMs`, with warning/danger thresholds chosen by the game                 |
+| `PlayerList players`                  | `pilots` mapped to `PlayerEntry`, with a Select button in `actions`              |
+| `ProgressBar value`, `max`, `variant` | The selected pilot's `health`, `max`, and the game's `healthTone`                |
+| `Scoreboard rows`                     | `standings(pilots)`: the game sorts, ranks, breaks ties, and picks the highlight |
+| `Modal open`, `onClose`               | `paused && !roundOver` and `setPaused(false)`                                    |
+| `Modal open`, `dismissible={false}`   | `remainingMs === 0`; only **Play again** closes it                               |
+| `Button onClick`                      | One action each: `changeHealth`, `awardScore`, `setPaused`, `restart`            |
+
+## 3. Compose the screen HUD
+
+`SquadHud` receives `SquadHudState` and `SquadHudActions` and nothing else: no store, no context, no reference to the canvas. It is where the game decides layout, labels, thresholds, and ranking.
+
+```tsx title="squad-match/hud.tsx (excerpt)"
+<Timer label="Round 3" value={remainingMs} variant={timeTone} size="lg" />
+<PlayerList aria-label="Squad" players={squad} size="sm" />
+<ProgressBar label={`${selected.name} health`} value={selected.health} max={selected.max} />
+<Scoreboard caption="Live standings" hideCaption rows={standings(pilots)} size="sm" />
+<Modal open={paused && !roundOver} onClose={() => actions.setPaused(false)} title="Paused" />
+```
+
+The Modal is portaled, and still picks up the theme set on the example's root through `data-game-theme`.
+
+## 4. Drive the world scene from the same store
+
+The scene is created in an effect and disposed on cleanup. It subscribes to the slices it draws and to health-change events for damage labels, and calls the same actions on world clicks. Pause is ordinary state: the scene subscribes to `paused` and stops advancing movement and label lifetimes and ignores clicks while it is set.
+
+```ts
+const unsubscribePaused = game.store.subscribe(
+  (state) => state.paused,
+  (next) => {
+    paused = next;
+  },
+);
+```
+
+See [State and presentation integration](/world-ui/integration/) for the subscription and event rules.
+
+## 5. Own the clock and keybindings
+
+The example advances the match clock from a game interval with elapsed `performance.now()` time. The Timer only formats the value. A real game would tick from its loop or apply server time.
+
+The **P** key is bound by the game, not by a framework component. It skips form fields and modifier chords, and does nothing once the round is over. Modal handles its own Escape and focus behavior.
+
+## 6. Replace Zustand
+
+Only `useSquadHud` knows about Zustand. To switch state libraries, write another hook that returns the same `SquadHudState` and `SquadHudActions`. `SquadHud`, the framework components, and the world contracts do not change.
+
+With plain React state:
+
+```tsx
+function useSquadHud(): SquadHudState & { actions: SquadHudActions } {
+  const [state, setState] = useState<SquadHudState>(opening);
+  const actions = useMemo<SquadHudActions>(
+    () => ({
+      select: (selectedId) => setState((s) => ({ ...s, selectedId })),
+      setPaused: (paused) => setState((s) => ({ ...s, paused })),
+      // ...changeHealth, awardScore, restart
+    }),
+    [],
+  );
+  return { ...state, actions };
+}
+```
+
+With any external store that exposes `subscribe` and `getSnapshot`, such as a server snapshot cache, use React's `useSyncExternalStore` and map the snapshot to the same shape.
+
+The native scene needs its own subscription to whichever source you choose. Keep that at the scene boundary: subscribe to the slices it draws, and unsubscribe on disposal. The test suite renders `SquadHud` from plain React state to check that the HUD does not depend on Zustand.
+
+## 7. Clean up
+
+On unmount the example cancels the scene's animation frame, disconnects its ResizeObserver, removes the pointer handler, releases its store and event subscriptions, clears the clock interval, and removes the key listener. Tests mount and unmount the walkthrough and check that none of these remain.
+
+## Checklist for your game
+
+1. Put persistent UI state and validated actions in your game, one instance per match.
+2. Write one binding per state source that returns plain props and callbacks.
+3. Compose framework components in a game-owned HUD that takes only those props.
+4. Implement world UI in your renderer from the [contracts](/world-ui/contracts/), subscribing to the same state.
+5. Keep the clock, keybindings, ranking, thresholds, and pause behavior in the game.
+6. Release subscriptions, listeners, intervals, and animation frames on teardown.

@@ -215,7 +215,7 @@ test("repeated disposal releases subscriptions, listeners, observers, and frames
     expect(measured).not.toHaveBeenCalled();
     game.store.getState().changeHealth("nova", -1);
   }
-  expect(unsubscribeSpies).toHaveLength(15);
+  expect(unsubscribeSpies).toHaveLength(20);
   for (const spy of unsubscribeSpies) expect(spy).toHaveBeenCalledTimes(1);
   const scene = createScene(document.createElement("canvas"), game, theme);
   advance(1);

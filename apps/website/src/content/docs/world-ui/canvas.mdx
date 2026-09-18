@@ -11,24 +11,26 @@ Click a world pilot to select them and deal 10 damage, or use the keyboard-acces
 
 <WorldGame client:only="react" />
 
+The [consumer walkthrough](/getting-started/walkthrough/) extends this scene with a React HUD, standings, and pause menu.
+
 This is a **game-owned reference implementation** in `apps/website/src/components/examples/world-game/` and `WorldGame.tsx`, importing public framework APIs. It is not a reusable framework renderer or complete game.
 
 ## Supported capabilities
 
-| Concern              | This example                                                                                                                                       |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Concepts             | FloatingLabel, Nameplate with status/selection, determinate HealthBar                                                                              |
-| Anchors              | 2D entities and explicit world positions; missing anchors hide or dispose                                                                          |
-| Coordinates          | +x right, +y down; one world unit = one CSS pixel at zoom 1; translation-only entities                                                             |
-| Offsets              | Entity-local and world offsets in world units; screen offsets in CSS pixels                                                                        |
-| Camera               | Orthographic 2D pan/zoom; viewport-centered projection; fixed screen-size labels                                                                   |
-| Lifetime             | Active scene milliseconds; elapsed frame time capped at 100 ms after tab suspension; disabling movement freezes transforms but labels still expire |
-| Visibility           | Explicit visibility and viewport clipping; no depth occlusion, distance cutoff, overlap avoidance, or fading                                       |
-| Unsupported requests | Reject 3D anchors, `occlusion: "hide"`, and any `maxDistance` at creation/update                                                                   |
-| Presentation         | Semantic fill/text colors and font family; fixed CSS-pixel geometry; no shadow, material, radius, or motion-token conversion                       |
-| Interaction          | World marker clicks select/damage one of three pilots; equivalent React selection/damage/heal controls                                             |
-| Reduced motion       | Movement initially disabled when requested; user may toggle it                                                                                     |
-| Disposal             | Cancel rAF, disconnect ResizeObserver, remove pointer handler, unsubscribe state/events, clear descriptors/positions; idempotent                   |
+| Concern              | This example                                                                                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Concepts             | FloatingLabel, Nameplate with status/selection, determinate HealthBar                                                                                                                                               |
+| Anchors              | 2D entities and explicit world positions; missing anchors hide or dispose                                                                                                                                           |
+| Coordinates          | +x right, +y down; one world unit = one CSS pixel at zoom 1; translation-only entities                                                                                                                              |
+| Offsets              | Entity-local and world offsets in world units; screen offsets in CSS pixels                                                                                                                                         |
+| Camera               | Orthographic 2D pan/zoom; viewport-centered projection; fixed screen-size labels                                                                                                                                    |
+| Lifetime             | Active scene milliseconds; elapsed frame time capped at 100 ms after tab suspension; disabling movement freezes transforms but labels still expire; game-owned `paused` state freezes both and ignores world clicks |
+| Visibility           | Explicit visibility and viewport clipping; no depth occlusion, distance cutoff, overlap avoidance, or fading                                                                                                        |
+| Unsupported requests | Reject 3D anchors, `occlusion: "hide"`, and any `maxDistance` at creation/update                                                                                                                                    |
+| Presentation         | Semantic fill/text colors and font family; fixed CSS-pixel geometry; no shadow, material, radius, or motion-token conversion                                                                                        |
+| Interaction          | World marker clicks select/damage one of three pilots; equivalent React selection/damage/heal controls                                                                                                              |
+| Reduced motion       | Movement initially disabled when requested; user may toggle it                                                                                                                                                      |
+| Disposal             | Cancel rAF, disconnect ResizeObserver, remove pointer handler, unsubscribe state/events, clear descriptors/positions; idempotent                                                                                    |
 
 CSS is read only on initialization and explicit theme changes. DPR scales the drawing surface (capped at 2), not descriptor units. System fonts and plain text have backdrops. Production overlap avoidance and long-name layout are outside this example.
 
