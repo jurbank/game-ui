@@ -1,16 +1,33 @@
 {
-  "name": "@game-ui/core",
-  "version": "0.0.0",
+  "name": "@gameui/core",
+  "version": "0.1.0",
   "description": "Renderer-independent types and semantic token contracts for Game UI.",
+  "keywords": [
+    "design-tokens",
+    "game-ui",
+    "gamedev",
+    "typescript"
+  ],
+  "homepage": "https://github.com/jurbank/game-ui/tree/master/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/jurbank/game-ui/issues"
+  },
   "license": "MIT",
+  "author": "John Urbank",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurbank/game-ui.git",
+    "directory": "packages/core"
+  },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "type": "module",
   "sideEffects": false,
   "exports": {
     ".": {
-      "@game-ui/source": "./src/index.ts",
+      "@gameui/source": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"

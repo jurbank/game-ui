@@ -1,4 +1,4 @@
-import type { FloatingLabel } from "@game-ui/world-ui";
+import type { FloatingLabel } from "@gameui/world-ui";
 import { expect, test } from "vite-plus/test";
 import {
   assertSupported,

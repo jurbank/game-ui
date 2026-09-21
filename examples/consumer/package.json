@@ -9,10 +9,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@game-ui/core": "file:.tarballs/game-ui-core.tgz",
-    "@game-ui/react": "file:.tarballs/game-ui-react.tgz",
-    "@game-ui/themes": "file:.tarballs/game-ui-themes.tgz",
-    "@game-ui/world-ui": "file:.tarballs/game-ui-world-ui.tgz",
+    "@gameui/core": "file:.tarballs/gameui-core.tgz",
+    "@gameui/react": "file:.tarballs/gameui-react.tgz",
+    "@gameui/themes": "file:.tarballs/gameui-themes.tgz",
+    "@gameui/world-ui": "file:.tarballs/gameui-world-ui.tgz",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

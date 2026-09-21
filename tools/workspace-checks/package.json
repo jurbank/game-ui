@@ -1,5 +1,5 @@
 {
-  "name": "@game-ui/workspace-checks",
+  "name": "@gameui/workspace-checks",
   "version": "0.0.0",
   "private": true,
   "description": "Repository-wide checks such as package dependency boundaries.",

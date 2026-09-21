@@ -5,7 +5,7 @@
     "moduleDetection": "force",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "customConditions": ["@game-ui/source"],
+    "customConditions": ["@gameui/source"],
     "resolveJsonModule": true,
     "jsx": "react-jsx",
     "types": ["node"],

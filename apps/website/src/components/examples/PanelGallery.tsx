@@ -1,4 +1,4 @@
-import { Panel, type PanelVariant } from "@game-ui/react";
+import { Panel, type PanelVariant } from "@gameui/react";
 
 const variants: { variant: PanelVariant; description: string }[] = [
   { variant: "default", description: "Grouped content on the page background." },

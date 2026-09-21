@@ -1,4 +1,4 @@
-import { Button, Panel, ProgressBar } from "@game-ui/react";
+import { Button, Panel, ProgressBar } from "@gameui/react";
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "zustand";
 import { createGame, healthTone, type DemoGame } from "./world-game/game";

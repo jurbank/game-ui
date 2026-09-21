@@ -9,8 +9,8 @@ import {
   Timer,
   type PlayerEntry,
   type ScoreboardRow,
-} from "@game-ui/react";
-import type { HealthBar, Nameplate, WorldTone } from "@game-ui/world-ui";
+} from "@gameui/react";
+import type { HealthBar, Nameplate, WorldTone } from "@gameui/world-ui";
 
 const THEMES = ["arcade", "tactical", "playful"] as const;
 

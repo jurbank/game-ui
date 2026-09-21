@@ -8,11 +8,11 @@ import { describe, expect, test } from "vite-plus/test";
  * Add a package here when it is introduced.
  */
 const allowedDependencies: Record<string, readonly string[]> = {
-  "@game-ui/core": [],
-  "@game-ui/themes": ["@game-ui/core"],
-  "@game-ui/react": ["@game-ui/core", "@game-ui/themes", "@base-ui/react", "react", "react-dom"],
-  "@game-ui/world-ui": ["@game-ui/core"],
-  "@game-ui/phaser": ["@game-ui/core", "@game-ui/world-ui", "phaser"],
+  "@gameui/core": [],
+  "@gameui/themes": ["@gameui/core"],
+  "@gameui/react": ["@gameui/core", "@gameui/themes", "@base-ui/react", "react", "react-dom"],
+  "@gameui/world-ui": ["@gameui/core"],
+  "@gameui/phaser": ["@gameui/core", "@gameui/world-ui", "phaser"],
 };
 
 /** Renderer and site frameworks that only specific packages may use. */
@@ -79,7 +79,7 @@ describe.each(packages)("$manifest.name", ({ path, manifest }) => {
       // Stylesheets are compiled at build time, so they may import dev dependencies.
       const declared = new Set(file.endsWith(".css") ? buildTime : runtime);
       for (const name of importedPackages(file)) {
-        const isFramework = name.startsWith("@game-ui/") || restrictedModules.includes(name);
+        const isFramework = name.startsWith("@gameui/") || restrictedModules.includes(name);
         if (isFramework) {
           expect(allowed, `${file} must not import ${name}`).toContain(name);
         }

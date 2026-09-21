@@ -1,20 +1,20 @@
-# @game-ui/themes
+# @gameui/themes
 
 Semantic design token values, starting themes, and the Tailwind CSS mapping for Game UI.
 
-CSS custom properties are the theming API. Token names are defined by `@game-ui/core`; this package supplies their values.
+CSS custom properties are the theming API. Token names are defined by `@gameui/core`; this package supplies their values.
 
 ## Exports
 
-| Import                         | Contents                                                        |
-| ------------------------------ | --------------------------------------------------------------- |
-| `@game-ui/themes`              | Default tokens, base styles, and every starting theme           |
-| `@game-ui/themes/tokens.css`   | Neutral default value for every token on `:root`                |
-| `@game-ui/themes/base.css`     | Text color and font for themed regions; reduced-motion handling |
-| `@game-ui/themes/arcade.css`   | Arcade theme, scoped to `[data-game-theme="arcade"]`            |
-| `@game-ui/themes/tactical.css` | Tactical theme, scoped to `[data-game-theme="tactical"]`        |
-| `@game-ui/themes/playful.css`  | Playful theme, scoped to `[data-game-theme="playful"]`          |
-| `@game-ui/themes/tailwind.css` | Tailwind v4 `@theme` mapping from utilities to tokens           |
+| Import                        | Contents                                                        |
+| ----------------------------- | --------------------------------------------------------------- |
+| `@gameui/themes`              | Default tokens, base styles, and every starting theme           |
+| `@gameui/themes/tokens.css`   | Neutral default value for every token on `:root`                |
+| `@gameui/themes/base.css`     | Text color and font for themed regions; reduced-motion handling |
+| `@gameui/themes/arcade.css`   | Arcade theme, scoped to `[data-game-theme="arcade"]`            |
+| `@gameui/themes/tactical.css` | Tactical theme, scoped to `[data-game-theme="tactical"]`        |
+| `@gameui/themes/playful.css`  | Playful theme, scoped to `[data-game-theme="playful"]`          |
+| `@gameui/themes/tailwind.css` | Tailwind v4 `@theme` mapping from utilities to tokens           |
 
 Import only the themes a game uses by combining `tokens.css`, `base.css`, and individual theme files instead of the package root.
 
@@ -30,9 +30,9 @@ With Tailwind CSS v4:
 @layer theme, base, game-ui, components, utilities;
 
 @import "tailwindcss";
-@import "@game-ui/themes";
-@import "@game-ui/react/styles.css";
-@import "@game-ui/themes/tailwind.css";
+@import "@gameui/themes";
+@import "@gameui/react/styles.css";
+@import "@gameui/themes/tailwind.css";
 
 /* game styles and token overrides */
 ```
@@ -42,8 +42,8 @@ This places Game UI above Tailwind's Preflight reset, which would otherwise rese
 Without Tailwind:
 
 ```css
-@import "@game-ui/themes";
-@import "@game-ui/react/styles.css";
+@import "@gameui/themes";
+@import "@gameui/react/styles.css";
 
 /* game styles and token overrides */
 ```
@@ -81,7 +81,7 @@ When changing a color that text sits on, update its `-contrast` partner too.
 
 With Tailwind, use the mapped utilities, such as `bg-game-panel`, `text-game-text`, `border-game-border`, `rounded-game-md`, `shadow-game`, `p-game-md`, `font-game-display`, `text-game-lg`, and `ease-game`. Tokens without a Tailwind namespace use variable shorthand, such as `border-(length:--game-border-width)` and `duration-(--game-duration-fast)`.
 
-Without Tailwind, reference variables directly (`var(--game-panel)`), or use `tokenVar("panel")` from `@game-ui/core`.
+Without Tailwind, reference variables directly (`var(--game-panel)`), or use `tokenVar("panel")` from `@gameui/core`.
 
 The mapping uses `@theme inline`, so utilities read the `--game-*` variables on the element itself. This is what lets a theme or override on any ancestor restyle the utilities inside it.
 

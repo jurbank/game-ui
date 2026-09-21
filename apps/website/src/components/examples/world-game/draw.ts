@@ -1,4 +1,4 @@
-import type { WorldDescriptor } from "@game-ui/world-ui";
+import type { WorldDescriptor } from "@gameui/world-ui";
 import type { CanvasPresentation } from "./presentation";
 import { healthFraction } from "./spatial";
 

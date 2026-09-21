@@ -8,7 +8,7 @@ sidebar:
 import Example from "../../../components/Example.astro";
 import { WorldPreview } from "../../../components/examples/WorldPreview";
 
-Short text that belongs to a place or thing in the world: a zone name, a relay marker, or a brief "+10 HP" after a health change. FloatingLabel is a **contract**: `@game-ui/world-ui` defines its data, and your renderer draws it.
+Short text that belongs to a place or thing in the world: a zone name, a relay marker, or a brief "+10 HP" after a health change. FloatingLabel is a **contract**: `@gameui/world-ui` defines its data, and your renderer draws it.
 
 <Example theme="tactical">
   <WorldPreview
@@ -73,7 +73,7 @@ This still frame uses the [canvas reference game](/world-ui/canvas/)'s drawing c
 ## Usage
 
 ```ts
-import type { FloatingLabel } from "@game-ui/world-ui";
+import type { FloatingLabel } from "@gameui/world-ui";
 
 const damage: FloatingLabel<"2d"> = {
   kind: "floating-label",

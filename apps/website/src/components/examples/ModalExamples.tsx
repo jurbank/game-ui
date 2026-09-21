@@ -1,4 +1,4 @@
-import { Button, Modal } from "@game-ui/react";
+import { Button, Modal } from "@gameui/react";
 import { useState } from "react";
 
 /** Pause menu. Whether the game is paused lives in this example, not in the framework. */

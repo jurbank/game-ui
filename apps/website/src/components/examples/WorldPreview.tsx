@@ -1,4 +1,4 @@
-import type { WorldDescriptor, WorldPoint2D } from "@game-ui/world-ui";
+import type { WorldDescriptor, WorldPoint2D } from "@gameui/world-ui";
 import { useEffect, useRef } from "react";
 import { drawDescriptor } from "./world-game/draw";
 import { readPresentation } from "./world-game/presentation";

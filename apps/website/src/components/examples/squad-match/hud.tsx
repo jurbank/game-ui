@@ -8,7 +8,7 @@ import {
   Timer,
   type PlayerEntry,
   type ScoreboardRow,
-} from "@game-ui/react";
+} from "@gameui/react";
 import { healthTone, type Pilot } from "../world-game/game";
 
 /** The local player. Game policy: which pilot "you" are. */

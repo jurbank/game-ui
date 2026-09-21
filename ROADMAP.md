@@ -10,7 +10,7 @@ Milestones 0–3 are complete. The repository currently contains:
 
 - A pnpm workspace with Vite+ configuration, checks, tests, and build scripts.
 - An Astro/Starlight website with live React component examples.
-- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and `@game-ui/world-ui`.
+- `@gameui/core`, `@gameui/themes`, `@gameui/react`, and `@gameui/world-ui`.
 - Seven initial screen components, three themes, and a composed HUD/menu example.
 
 M3 is finished: the world UI contracts, game-owned canvas integration, documentation, lifecycle tests, browser review, and recorded profiling are all done. No engine renderer package is required. M4 is the next milestone.
@@ -23,7 +23,7 @@ The first useful version is ready when a consumer can install the packages, sele
 
 Required scope:
 
-- `@game-ui/core`, `@game-ui/themes`, `@game-ui/react`, and the `@game-ui/world-ui` contracts package.
+- `@gameui/core`, `@gameui/themes`, `@gameui/react`, and the `@gameui/world-ui` contracts package.
 - Arcade, Tactical, and Playful themes.
 - Button, Panel, Modal, ProgressBar, Timer, PlayerList, and Scoreboard.
 - FloatingLabel, Nameplate, and HealthBar specifications, typed contracts, and game implementation guidance.
@@ -80,7 +80,7 @@ M3 builds on M2's screen components so its example can demonstrate shared health
 **Outcome:** the framework can compose a useful HUD, scoreboard, and menu across all three starting themes.
 
 - [x] Add Tactical and Playful themes and a preview that renders the same component examples in each theme.
-- [x] Add Base UI (`@base-ui/react`) to `@game-ui/react` and the dependency boundary allowlist. Build interactive components on its unstyled primitives, per the behavior primitives section of the architecture.
+- [x] Add Base UI (`@base-ui/react`) to `@gameui/react` and the dependency boundary allowlist. Build interactive components on its unstyled primitives, per the behavior primitives section of the architecture.
 - [x] Build ProgressBar on Base UI Progress with controlled `value` and `max`, accessible labeling, and documented behavior for empty, full, and invalid ranges.
 - [x] Build Timer around a game-provided time value and formatting options. Keep the authoritative clock and match lifecycle in the game.
 - [x] Build Modal on Base UI Dialog with an accessible name, focus management, focus restoration, Escape handling, and a documented dismissal policy. Ensure region-scoped themes reach the portaled dialog.
@@ -96,7 +96,7 @@ M3 builds on M2's screen components so its example can demonstrate shared health
 
 **Outcome:** a developer or agent can implement world UI in a game's chosen renderer and connect it to the same game-owned state and theme intent as the web UI, while retaining control over rendering and performance.
 
-- [x] Create `@game-ui/world-ui` with lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Depend only on shared core types/tokens as needed; require no React, DOM, engine, state library, or world UI runtime.
+- [x] Create `@gameui/world-ui` with lightweight TypeScript contracts for FloatingLabel, Nameplate, and HealthBar. Depend only on shared core types/tokens as needed; require no React, DOM, engine, state library, or world UI runtime.
 - [x] Document each concept's purpose, content, semantic variants, defaults, required semantics, optional capabilities, and unsupported-option handling. Start with typed descriptors and examples; defer JSON Schema until serialized definitions need validation.
 - [x] Define entity-reference and explicit-position anchor conventions suitable for 2D and 3D integrations. Specify coordinate spaces, offset/distance units, lifetime units, and missing-anchor behavior. Keep world-only types in world-ui; do not require native engine objects or per-frame descriptor allocation.
 - [x] Write implementation guidance for projection, visibility, depth/occlusion, updates, lifetime, and disposal. Keep rendering, batching, culling, pooling, animation, and the update loop in the consuming game.
@@ -137,12 +137,14 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 - [x] Publish an agent guide that maps UI needs to primitives, explains screen versus world UI, and requires checking existing variants/composition before creating new components.
 - [x] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
 - [x] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
-- [ ] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
+- [x] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
 - [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+
+**Distribution status (2026-09-18):** done. Packages are renamed to the `@gameui` npm scope (the `@game-ui` organization belongs to someone else) and will be published to npm from a maintainer's machine. Changesets versions all four as a fixed group; the initial changeset produced 0.1.0 and per-package changelogs. Internal dependencies use `workspace:^` and publish as caret ranges. Packages carry repository, homepage, bugs, keywords, author, and an MIT `LICENSE`; tarballs include `CHANGELOG.md`. `vp run release:dry-run` runs the gate plus `pnpm publish --dry-run`, and `RELEASING.md` documents the process. Publishing itself, and creating the `gameui` npm organization, remain a separate step for the maintainer.
 
 **Compatibility status (2026-09-18):** done. `/getting-started/compatibility/` records the tested combinations (consumer fixture, workspace, docs build, and Chrome review), declared requirements, a browser floor inherited from Tailwind CSS v4 (Safari 16.4, Chrome 111, Firefox 128) with only Chrome tested, known limitations for packaging, screen UI, world UI, and performance, and what each reference example does and does not cover. No engine support is claimed.
 
-**Agent guide status (2026-09-18):** done. `/agent-guide/` now distinguishes shipped components, contracts, game-owned examples, untested recipes, and planned items; gives a viewport-versus-world decision rule; maps common game UI needs (including unshipped ones such as toasts, damage numbers, and interaction prompts) to existing primitives or compositions; requires checking variants, composition, and token overrides before adding a primitive; and ends with a completion checklist. The `@game-ui/react` and `@game-ui/world-ui` READMEs, which ship in the packages, carry a condensed version for agents working in a consumer's `node_modules`.
+**Agent guide status (2026-09-18):** done. `/agent-guide/` now distinguishes shipped components, contracts, game-owned examples, untested recipes, and planned items; gives a viewport-versus-world decision rule; maps common game UI needs (including unshipped ones such as toasts, damage numbers, and interaction prompts) to existing primitives or compositions; requires checking variants, composition, and token overrides before adding a primitive; and ends with a completion checklist. The `@gameui/react` and `@gameui/world-ui` READMEs, which ship in the packages, carry a condensed version for agents working in a consumer's `node_modules`.
 
 **Component and concept docs status (2026-09-18):** done. All seven component pages now include performance notes grounded in the implementations (no internal clocks or loops, what re-renders, which properties animate, no list virtualization). FloatingLabel, Nameplate, and HealthBar have their own pages with purpose, use/avoid, configuration, tones and tokens, accessibility, performance, agent guidance, and a live still-frame preview drawn by the reference game's shared `drawDescriptor`. The component index lists the world concepts and the real planned candidates.
 
@@ -150,7 +152,7 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 
 **Walkthrough status (2026-09-18):** done. `/getting-started/walkthrough/` runs the canvas reference game with a React Timer, PlayerList, ProgressBar, Scoreboard, and pause/round-over Modals, all bound to one game-owned store. The store gained a match clock, pause, scores, and reset; the scene freezes movement, label lifetimes, and world input while paused. `SquadHud` takes only props and callbacks, and `useSquadHud` is the sole Zustand-aware binding. Tests render the HUD from plain React state to prove the store is replaceable, and cover clock/pause/round-over behavior and unmount cleanup.
 
-**Consumer fixture status (2026-09-17):** done. `examples/consumer` installs packed tarballs outside the pnpm workspace and is verified by `vp run verify-consumer`, wired into `vp run ready`. The fixture has its own `pnpm-workspace.yaml`, so it never sees the `@game-ui/source` condition that resolves workspace imports to `src`.
+**Consumer fixture status (2026-09-17):** done. `examples/consumer` installs packed tarballs outside the pnpm workspace and is verified by `vp run verify-consumer`, wired into `vp run ready`. The fixture has its own `pnpm-workspace.yaml`, so it never sees the `@gameui/source` condition that resolves workspace imports to `src`.
 
 The gate runs `publint` and `arethetypeswrong` against real tarballs, then installs, type checks, and builds the fixture, then asserts the output. `arethetypeswrong` uses the `esm-only` profile because the packages are deliberately ESM-only; node10 and CJS resolution failures are expected, not defects. Its CSS entry is excluded because that tool resolves only JavaScript and type entries.
 
@@ -158,7 +160,7 @@ Tested combination: Node 24.15/24.21, pnpm 12.4.2 (workspace) and 11.21 (fixture
 
 Two findings worth carrying forward:
 
-- The packed `@game-ui/react` depends on `@game-ui/core` and `@game-ui/themes` by exact version, which pnpm resolves from the registry. Until those versions are published, the fixture needs `overrides` pointing them at the same tarballs. Consider `workspace:^` instead of `workspace:*` when versioning, so consumers can deduplicate.
+- The packed `@gameui/react` depends on `@gameui/core` and `@gameui/themes` by exact version, which pnpm resolves from the registry. Until those versions are published, the fixture needs `overrides` pointing them at the same tarballs. Resolved at 0.1.0: internal dependencies now use `workspace:^` and publish as caret ranges.
 - Browser review of the fixture's production build on macOS 26.5.2 / Chrome 152 confirmed all seven screen components render in all three themes, a local `--game-radius-md` override retheming without touching shared source, and the portaled Modal correctly inheriting a region-scoped theme. No page console errors.
 
 **Acceptance criteria:** the consumer fixture imports only public APIs, builds successfully, and renders with each theme. A developer can follow the guide to select a theme, override a few tokens, and compose screen UI and implement native world UI from the contracts, sharing game-owned state and presentation roles without changing shared package source.

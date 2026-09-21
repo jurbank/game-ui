@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
+  "baseBranch": "master",
+  "access": "public",
+  "format": "auto",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "ignore": [],
+  "fixed": [["@gameui/core", "@gameui/themes", "@gameui/react", "@gameui/world-ui"]],
+  "linked": [],
+  "updateInternalDependencies": "patch",
+  "privatePackages": false
+}

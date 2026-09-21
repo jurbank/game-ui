@@ -1,4 +1,4 @@
-import type { FloatingLabel, WorldDescriptor } from "@game-ui/world-ui";
+import type { FloatingLabel, WorldDescriptor } from "@gameui/world-ui";
 import { healthTone, type DemoGame } from "./game";
 import type { CanvasPresentation } from "./presentation";
 import { drawDescriptor } from "./draw";

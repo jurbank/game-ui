@@ -25,7 +25,7 @@ Recorded 2026-09-18. The first three rows run on every `vp run ready`; browser r
 | React, react-dom | `^19.0.0` (peer dependencies)                     | Only 19.3 is tested. React 18 is not supported.                                                                         |
 | Module format    | ESM only                                          | No CommonJS build. Use a bundler, with TypeScript `moduleResolution` set to `bundler`, `node16`, or `nodenext`.         |
 | TypeScript       | Any version that reads the shipped `.d.mts` files | 5.9 and 7.0 are tested.                                                                                                 |
-| Tailwind CSS     | Optional; v4 for `@game-ui/themes/tailwind.css`   | Component styles are precompiled, so Tailwind is not required. The token utilities mapping uses Tailwind v4's `@theme`. |
+| Tailwind CSS     | Optional; v4 for `@gameui/themes/tailwind.css`    | Component styles are precompiled, so Tailwind is not required. The token utilities mapping uses Tailwind v4's `@theme`. |
 | Node             | `>=22.18.0` to develop this repository            | Consumers need Node only for their own build tooling.                                                                   |
 
 ### Browsers
@@ -37,7 +37,7 @@ Component CSS is compiled by Tailwind CSS v4 and uses cascade layers and registe
 ### Packaging
 
 - Packages are not published to a registry. Install from packed tarballs with `overrides`, as described in [Installation](/getting-started/#install).
-- `@game-ui/react` depends on the exact versions of `@game-ui/core` and `@game-ui/themes`, so a consumer cannot mix versions of them.
+- All four packages are versioned together. `@gameui/react` depends on caret ranges of `@gameui/core` and `@gameui/themes`, so install matching versions of all of them.
 - No CommonJS build and no UMD or CDN bundle.
 
 ### Screen UI
@@ -52,7 +52,7 @@ Component CSS is compiled by Tailwind CSS v4 and uses cascade layers and registe
 
 ### World UI
 
-- `@game-ui/world-ui` is types only. There is no renderer, runtime validation, or JSON Schema. Validate serialized descriptors yourself.
+- `@gameui/world-ui` is types only. There is no renderer, runtime validation, or JSON Schema. Validate serialized descriptors yourself.
 - No engine integration is tested. The [3D recipe](/world-ui/3d-recipe/) is guidance, not a tested integration; Phaser, PixiJS, Three.js, Babylon.js, and others have no support claims.
 - The contracts define no interaction, animation, overlap avoidance, distance fading, or layout priority. Those are game responsibilities.
 - DamageNumber, InteractionPrompt, and ObjectiveMarker are not defined. Use FloatingLabel until they are.

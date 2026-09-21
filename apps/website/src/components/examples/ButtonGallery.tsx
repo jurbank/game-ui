@@ -1,4 +1,4 @@
-import { Button, type ButtonSize, type ButtonVariant } from "@game-ui/react";
+import { Button, type ButtonSize, type ButtonVariant } from "@gameui/react";
 
 const variants: ButtonVariant[] = ["primary", "secondary", "danger"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];

@@ -5,6 +5,6 @@
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
-    "customConditions": ["@game-ui/source"]
+    "customConditions": ["@gameui/source"]
   }
 }

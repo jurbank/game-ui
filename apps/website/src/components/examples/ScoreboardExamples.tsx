@@ -1,4 +1,4 @@
-import { Button, Panel, Scoreboard, type ScoreboardRow } from "@game-ui/react";
+import { Button, Panel, Scoreboard, type ScoreboardRow } from "@gameui/react";
 import { useState } from "react";
 
 interface MatchPlayer {

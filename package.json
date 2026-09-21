@@ -6,9 +6,14 @@
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build && vp run verify-consumer",
     "verify-consumer": "node tools/verify-consumer.mjs",
-    "dev": "vp run @game-ui/website#dev"
+    "dev": "vp run @gameui/website#dev",
+    "changeset": "changeset",
+    "version-packages": "changeset version && vp fmt && vp install",
+    "release:dry-run": "vp run ready && pnpm --filter \"./packages/*\" -r publish --dry-run --no-git-checks",
+    "release": "vp run ready && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },

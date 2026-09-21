@@ -1,4 +1,4 @@
-import { allGameTokens, tokenProperty } from "@game-ui/core";
+import { allGameTokens, tokenProperty } from "@gameui/core";
 import type { CSSProperties } from "react";
 
 /** The theme in effect at a point in the document. */

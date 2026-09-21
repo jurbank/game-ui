@@ -8,6 +8,6 @@
 @layer game-ui.tokens, game-ui.themes, game-ui.base, game-ui.components;
 
 @import "tailwindcss/utilities.css" layer(game-ui.components) source(none);
-@import "@game-ui/themes/tailwind.css";
+@import "@gameui/themes/tailwind.css";
 
 @source "./components";

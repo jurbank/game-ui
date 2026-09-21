@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
-import { allGameTokens } from "@game-ui/core";
+import { allGameTokens } from "@gameui/core";
 import { compile } from "tailwindcss";
 import { describe, expect, test } from "vite-plus/test";
 import packageJson from "../package.json" with { type: "json" };

@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 /**
  * A plain Vite config, like a real game's. It deliberately does not register
- * the workspace's `@game-ui/source` condition, so imports resolve to the
+ * the workspace's `@gameui/source` condition, so imports resolve to the
  * published `dist` output.
  */
 export default defineConfig({

@@ -8,7 +8,7 @@ import {
   Timer,
   type PlayerEntry,
   type ScoreboardRow,
-} from "@game-ui/react";
+} from "@gameui/react";
 import { useEffect, useReducer } from "react";
 
 const ROUND_MS = 120_000;

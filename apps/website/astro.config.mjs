@@ -6,13 +6,13 @@ import { defineConfig } from "astro/config";
 import { defaultClientConditions, defaultServerConditions } from "vite-plus";
 
 /**
- * Resolves workspace `@game-ui/*` packages to source through their public
+ * Resolves workspace `@gameui/*` packages to source through their public
  * exports, so the site runs without building packages first. Applied per Vite
  * environment because Astro builds client, server, and prerender environments.
  * @returns {import("vite").Plugin}
  */
 function gameUiSource() {
-  const sourceCondition = "@game-ui/source";
+  const sourceCondition = "@gameui/source";
   return {
     name: "game-ui-source-condition",
     configEnvironment(name, config) {
@@ -38,8 +38,8 @@ export default defineConfig({
       // them with the source condition; Tailwind's CSS import resolver ignores it.
       customCss: [
         "./src/styles/layers.css",
-        "@game-ui/themes",
-        "@game-ui/react/styles.css",
+        "@gameui/themes",
+        "@gameui/react/styles.css",
         "./src/styles/examples.css",
       ],
       sidebar: [
@@ -54,7 +54,7 @@ export default defineConfig({
     }),
   ],
   vite: {
-    // Tailwind compiles `@game-ui/react/styles.css` from source during development.
+    // Tailwind compiles `@gameui/react/styles.css` from source during development.
     plugins: [gameUiSource(), tailwindcss()],
   },
 });

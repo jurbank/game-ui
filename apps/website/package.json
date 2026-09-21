@@ -1,5 +1,5 @@
 {
-  "name": "@game-ui/website",
+  "name": "@gameui/website",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -14,10 +14,10 @@
   "dependencies": {
     "@astrojs/react": "catalog:",
     "@astrojs/starlight": "^0.42.1",
-    "@game-ui/core": "workspace:*",
-    "@game-ui/react": "workspace:*",
-    "@game-ui/themes": "workspace:*",
-    "@game-ui/world-ui": "workspace:*",
+    "@gameui/core": "workspace:*",
+    "@gameui/react": "workspace:*",
+    "@gameui/themes": "workspace:*",
+    "@gameui/world-ui": "workspace:*",
     "astro": "^7.2.10",
     "react": "catalog:",
     "react-dom": "catalog:",

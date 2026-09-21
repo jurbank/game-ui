@@ -7,24 +7,24 @@ sidebar:
 
 Game UI is split into small packages so a game installs only the layers it uses.
 
-| Package             | Use it for                                                        | Depends on                         |
-| ------------------- | ----------------------------------------------------------------- | ---------------------------------- |
-| `@game-ui/themes`   | Token values, the three starting themes, and the Tailwind mapping | Nothing                            |
-| `@game-ui/react`    | Screen UI components such as Button, Panel, and Modal             | core, themes, Base UI; React peers |
-| `@game-ui/core`     | Token names and helpers for code outside React, such as a canvas  | Nothing                            |
-| `@game-ui/world-ui` | Type-only contracts for world UI you draw in your own renderer    | Nothing at runtime                 |
+| Package            | Use it for                                                        | Depends on                         |
+| ------------------ | ----------------------------------------------------------------- | ---------------------------------- |
+| `@gameui/themes`   | Token values, the three starting themes, and the Tailwind mapping | Nothing                            |
+| `@gameui/react`    | Screen UI components such as Button, Panel, and Modal             | core, themes, Base UI; React peers |
+| `@gameui/core`     | Token names and helpers for code outside React, such as a canvas  | Nothing                            |
+| `@gameui/world-ui` | Type-only contracts for world UI you draw in your own renderer    | Nothing at runtime                 |
 
-A game with only React screen UI needs `@game-ui/react` and `@game-ui/themes`. Add `@game-ui/world-ui` and `@game-ui/core` when you draw world labels or health bars in your game's renderer.
+A game with only React screen UI needs `@gameui/react` and `@gameui/themes`. Add `@gameui/world-ui` and `@gameui/core` when you draw world labels or health bars in your game's renderer.
 
 ## Install
 
 ```bash
-pnpm add @game-ui/react @game-ui/themes react react-dom
+pnpm add @gameui/react @gameui/themes react react-dom
 # Optional, for world UI drawn by your game:
-pnpm add @game-ui/world-ui @game-ui/core
+pnpm add @gameui/world-ui @gameui/core
 ```
 
-`@game-ui/react` requires React 19 as a peer dependency, so your game controls the React version. All packages are ESM-only and ship TypeScript declarations. Use a bundler such as Vite, with `"moduleResolution": "bundler"` (or `node16`/`nodenext`) in `tsconfig.json`.
+`@gameui/react` requires React 19 as a peer dependency, so your game controls the React version. All packages are ESM-only and ship TypeScript declarations. Use a bundler such as Vite, with `"moduleResolution": "bundler"` (or `node16`/`nodenext`) in `tsconfig.json`.
 
 :::caution[Not on a registry yet]
 Packages are not published yet. Inside this repository, depend on them with `workspace:*`. From another project, build and pack them, then install the tarballs:
@@ -35,13 +35,13 @@ vp run -r build
 for p in core themes react world-ui; do (cd packages/$p && pnpm pack --pack-destination ../../.tarballs); done
 ```
 
-`@game-ui/react` depends on core and themes by version, so point those at the tarballs too. With pnpm, in your project's `pnpm-workspace.yaml`:
+`@gameui/react` depends on version ranges of core and themes, which pnpm would look up on the registry, so point those at the tarballs too. With pnpm, in your project's `pnpm-workspace.yaml`:
 
 ```yaml
 overrides:
-  "@game-ui/core": "file:../game-ui/.tarballs/game-ui-core-0.0.0.tgz"
-  "@game-ui/themes": "file:../game-ui/.tarballs/game-ui-themes-0.0.0.tgz"
-  "@game-ui/world-ui": "file:../game-ui/.tarballs/game-ui-world-ui-0.0.0.tgz"
+  "@gameui/core": "file:../game-ui/.tarballs/gameui-core-0.1.0.tgz"
+  "@gameui/themes": "file:../game-ui/.tarballs/gameui-themes-0.1.0.tgz"
+  "@gameui/world-ui": "file:../game-ui/.tarballs/gameui-world-ui-0.1.0.tgz"
 ```
 
 `examples/consumer` in the repository is a working setup of exactly this, verified by `vp run verify-consumer`.
@@ -61,9 +61,9 @@ With Tailwind CSS v4:
 @layer theme, base, game-ui, components, utilities;
 
 @import "tailwindcss";
-@import "@game-ui/themes";
-@import "@game-ui/react/styles.css";
-@import "@game-ui/themes/tailwind.css";
+@import "@gameui/themes";
+@import "@gameui/react/styles.css";
+@import "@gameui/themes/tailwind.css";
 
 /* Your game styles and token overrides */
 ```
@@ -71,8 +71,8 @@ With Tailwind CSS v4:
 Without Tailwind:
 
 ```css title="src/styles.css"
-@import "@game-ui/themes";
-@import "@game-ui/react/styles.css";
+@import "@gameui/themes";
+@import "@gameui/react/styles.css";
 
 /* Your game styles and token overrides */
 ```
@@ -107,7 +107,7 @@ Framework styles are layered, so these win without higher specificity. When you 
 ## Render components
 
 ```tsx
-import { Button, Panel, ProgressBar } from "@game-ui/react";
+import { Button, Panel, ProgressBar } from "@gameui/react";
 
 export function PauseMenu({ health, onResume }: { health: number; onResume: () => void }) {
   return (

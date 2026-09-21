@@ -2,8 +2,8 @@
 /**
  * Verifies the built packages the way a consumer receives them.
  *
- * Workspace checks, tests, and the website all resolve `@game-ui/*` to source
- * through the `@game-ui/source` export condition, so none of them can catch a
+ * Workspace checks, tests, and the website all resolve `@gameui/*` to source
+ * through the `@gameui/source` export condition, so none of them can catch a
  * broken `dist` output, export map, or CSS entry. This script packs real
  * tarballs, installs them into `examples/consumer` (which is outside the pnpm
  * workspace and has no access to that condition), then type checks and builds.
@@ -46,16 +46,16 @@ for (const name of PACKAGES) {
   const dir = join(root, "packages", name);
   run("pnpm", ["pack", "--pack-destination", tarballs], dir);
   const packed = readdirSync(tarballs).find(
-    (file) => file.startsWith(`game-ui-${name}-`) && file.endsWith(".tgz"),
+    (file) => file.startsWith(`gameui-${name}-`) && file.endsWith(".tgz"),
   );
   if (!packed) throw new Error(`pnpm pack produced no tarball for ${name}`);
-  copyFileSync(join(tarballs, packed), join(tarballs, `game-ui-${name}.tgz`));
+  copyFileSync(join(tarballs, packed), join(tarballs, `gameui-${name}.tgz`));
 }
 
 // 2. Static export-map and type-resolution checks against the real tarballs.
 step("Linting published package shape (publint)");
 for (const name of PACKAGES) {
-  run("pnpm", ["dlx", "publint@0.3.24", join(tarballs, `game-ui-${name}.tgz`)], root);
+  run("pnpm", ["dlx", "publint@0.3.24", join(tarballs, `gameui-${name}.tgz`)], root);
 }
 
 step("Checking type resolution (arethetypeswrong)");
@@ -66,7 +66,7 @@ for (const name of ["core", "react", "world-ui"]) {
       "dlx",
       "@arethetypeswrong/cli@0.18.5",
       "--pack",
-      join(tarballs, `game-ui-${name}.tgz`),
+      join(tarballs, `gameui-${name}.tgz`),
       // The packages are ESM-only by design, so CJS and node10 resolution
       // failures are expected rather than defects.
       "--profile",

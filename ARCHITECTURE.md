@@ -74,13 +74,13 @@ game-ui/
 ## Package Dependency Direction
 
 ```text
-@game-ui/react    ──→ @game-ui/core + @game-ui/themes
-@game-ui/world-ui ──→ @game-ui/core (shared types/tokens as needed)
-@game-ui/themes   ──→ @game-ui/core (development-time token checks)
+@gameui/react    ──→ @gameui/core + @gameui/themes
+@gameui/world-ui ──→ @gameui/core (shared types/tokens as needed)
+@gameui/themes   ──→ @gameui/core (development-time token checks)
 
 Consuming game / website example
-    ├── React bindings ──→ @game-ui/react
-    └── Native world UI implementation ──→ @game-ui/world-ui contracts
+    ├── React bindings ──→ @gameui/react
+    └── Native world UI implementation ──→ @gameui/world-ui contracts
 ```
 
 Arrows point from consumers to their dependencies. Shared packages never depend on individual games. The world UI contracts introduce no required rendering or state runtime.
@@ -308,7 +308,7 @@ Shared components can then use:
 
 The mapping must use `@theme inline` so utilities read the `--game-*` variables where they are applied; otherwise Tailwind resolves them once on `:root` and scoped themes or overrides do not reach the utilities.
 
-Framework CSS lives in the `game-ui` cascade layer (`game-ui.tokens`, `game-ui.themes`, `game-ui.base`, `game-ui.components`). Consumers declare its position after resets and before utilities, such as `@layer theme, base, game-ui, components, utilities;` with Tailwind, so resets like Preflight do not override components and utilities and unlayered game CSS take precedence. React component styles are precompiled with Tailwind into `@game-ui/react/styles.css` without Tailwind's default theme, so only static and semantic `game-*` utilities generate CSS. The full styling contract is documented in [`packages/themes/README.md`](./packages/themes/README.md).
+Framework CSS lives in the `game-ui` cascade layer (`game-ui.tokens`, `game-ui.themes`, `game-ui.base`, `game-ui.components`). Consumers declare its position after resets and before utilities, such as `@layer theme, base, game-ui, components, utilities;` with Tailwind, so resets like Preflight do not override components and utilities and unlayered game CSS take precedence. React component styles are precompiled with Tailwind into `@gameui/react/styles.css` without Tailwind's default theme, so only static and semantic `game-*` utilities generate CSS. The full styling contract is documented in [`packages/themes/README.md`](./packages/themes/README.md).
 
 Avoid shared component styles such as:
 
@@ -465,19 +465,19 @@ Consumers should not import from deep internal paths.
 Bad:
 
 ```ts
-import { Button } from "@game-ui/react/src/components/Button/Button";
+import { Button } from "@gameui/react/src/components/Button/Button";
 ```
 
 Good:
 
 ```ts
-import { Button } from "@game-ui/react";
+import { Button } from "@gameui/react";
 ```
 
 or:
 
 ```ts
-import { Button } from "@game-ui/react/button";
+import { Button } from "@gameui/react/button";
 ```
 
 Use explicit package exports when useful.
@@ -486,12 +486,12 @@ Use explicit package exports when useful.
 
 Each framework package follows the same template:
 
-- Package name `@game-ui/<name>`, `"type": "module"`, and an explicit `exports` map. Only exported paths are public.
+- Package name `@gameui/<name>`, `"type": "module"`, and an explicit `exports` map. Only exported paths are public.
 - TypeScript packages build with `vp pack` to `dist/` with declaration files, and publish only `dist`. CSS-only packages publish their stylesheets unbuilt.
-- TypeScript entry points also export a `@game-ui/source` condition pointing at `src`, with the plain `dist` map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while published packages expose only `dist`.
+- TypeScript entry points also export a `@gameui/source` condition pointing at `src`, with the plain `dist` map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while published packages expose only `dist`.
 - Tests live in `tests/` and run through the package `test` script, so `vp run ready` includes them.
 - Framework runtimes (`react`, `react-dom`) are `peerDependencies`, also listed in `devDependencies` for local development. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.
-- Internal `@game-ui/*` packages a package needs at runtime are regular `dependencies` using `workspace:*`, which is rewritten to a version when packed.
+- Internal `@gameui/*` packages a package needs at runtime are regular `dependencies` using `workspace:^`, which is rewritten to a caret range (such as `^0.1.0`) when packed, so consumers can deduplicate. The published packages version together; see `RELEASING.md`.
 - Implementation libraries that consumers never import directly, such as `@base-ui/react`, are regular `dependencies`. They stay external in the build, so a consumer's bundler deduplicates them.
 
 The allowed dependency direction is enforced by `tools/workspace-checks`, which fails when a package declares or imports a dependency outside its allowed set. Register each new package there when it is introduced.
@@ -603,11 +603,11 @@ A game must be able to establish its own visual identity without editing shared 
 
 ```text
 Game-owned state and actions
-   ├── Game React bindings ──→ @game-ui/react
-   └── Game-native world UI (follows @game-ui/world-ui contracts)
+   ├── Game React bindings ──→ @gameui/react
+   └── Game-native world UI (follows @gameui/world-ui contracts)
 
 Shared presentation vocabulary
-   ├── @game-ui/themes CSS tokens ──→ screen styling
+   ├── @gameui/themes CSS tokens ──→ screen styling
    └── Game-resolved semantic values ──→ native world styling
 ```
 
