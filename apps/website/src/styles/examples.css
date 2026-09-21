@@ -189,3 +189,28 @@
   gap: var(--game-space-xs);
   width: 12rem;
 }
+
+/* Touch controls example: a dot the stick moves around the arena. */
+.touch-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-sm);
+}
+
+.touch-demo-arena {
+  overflow: hidden;
+  cursor: default;
+}
+
+.touch-demo-dot {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--game-primary);
+  box-shadow: var(--game-shadow);
+}
+
+.touch-demo-readout {
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}

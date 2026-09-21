@@ -11,13 +11,13 @@ These rules help coding agents build game UI consistently with the framework. Fo
 
 Know what kind of thing you are using before you use it.
 
-| Kind                     | What it is                                                                  | Examples                                                                                                                                     |
-| ------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Shipped React components | Import and render them. Styled, accessible, tested.                         | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard, Slider, Switch, Tabs, HudLayer, TextField, Badge, Announcement, Toast, Kbd |
-| World UI contracts       | Types only. **You** draw them in the game's renderer.                       | FloatingLabel, Nameplate, HealthBar                                                                                                          |
-| Game-owned examples      | Reference code in the docs site, not a package. Copy patterns, not imports. | [Canvas game](/world-ui/canvas/), [walkthrough](/getting-started/walkthrough/)                                                               |
-| Untested recipes         | Guidance only. Verify in the target engine before claiming support.         | [3D integration recipe](/world-ui/3d-recipe/)                                                                                                |
-| Planned                  | Not available. Compose existing pieces instead.                             | Toast, InteractionPrompt, DamageNumber, ObjectiveMarker                                                                                      |
+| Kind                     | What it is                                                                  | Examples                                                                                                                                                                               |
+| ------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shipped React components | Import and render them. Styled, accessible, tested.                         | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard, Slider, Switch, Tabs, HudLayer, TextField, Badge, Announcement, Toast, Kbd, VirtualStick, TouchButton, TouchControls |
+| World UI contracts       | Types only. **You** draw them in the game's renderer.                       | FloatingLabel, Nameplate, HealthBar                                                                                                                                                    |
+| Game-owned examples      | Reference code in the docs site, not a package. Copy patterns, not imports. | [Canvas game](/world-ui/canvas/), [walkthrough](/getting-started/walkthrough/)                                                                                                         |
+| Untested recipes         | Guidance only. Verify in the target engine before claiming support.         | [3D integration recipe](/world-ui/3d-recipe/)                                                                                                                                          |
+| Planned                  | Not available. Compose existing pieces instead.                             | Toast, InteractionPrompt, DamageNumber, ObjectiveMarker                                                                                                                                |
 
 Never import from a package's `src` or from the website's example files. Use the public exports: `@gameui/ui/react` for components, `@gameui/ui` for token helpers and world contracts, and the CSS subpaths such as `@gameui/ui/themes.css` and `@gameui/ui/styles.css`.
 
@@ -59,6 +59,7 @@ If the same information appears in both, for example the selected unit's health,
 | A settings or loadout screen                          | `Panel` with `Tabs`, `Slider`s, and `Switch`es; see the [Slider example](/components/slider/)          |
 | Positioning HUD content over the game                 | [`HudLayer`](/components/hud-layer/) with `HudSlot`s; never hand-written fixed positioning             |
 | Game keys vs focused HUD controls                     | [`uiOwnsKeyboard` and `releaseFocusOnGameKeys`](/patterns/game-input/) from `@gameui/ui/input`         |
+| Movement and action controls on a phone               | [`VirtualStick` and `TouchButton`](/components/touch-controls/) in `TouchControls`, polled by the game |
 | A full HUD                                            | Compose the above; see the [HUD demo](/patterns/hud/) and [walkthrough](/getting-started/walkthrough/) |
 
 ## Step 3: Check variants and composition before building

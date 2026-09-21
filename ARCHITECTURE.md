@@ -70,7 +70,7 @@ src/react  ──→ src/tokens + src/css, React, Base UI
 src/world  ──→ nothing at runtime (types only)
 src/tokens ──→ nothing
 src/css    ──→ nothing (tests check it against src/tokens)
-src/input  ──→ the DOM only (keyboard ownership between game and UI)
+src/input  ──→ the DOM only (keyboard ownership; touch stick and button controllers)
 
 Consuming game / website example
     ├── React bindings ──→ @gameui/ui/react

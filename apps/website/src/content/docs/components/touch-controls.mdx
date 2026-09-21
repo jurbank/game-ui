@@ -1,0 +1,142 @@
+---
+title: Touch controls
+description: An on-screen virtual stick and action buttons for touch play, which the game polls on its own tick.
+sidebar:
+  order: 17
+---
+
+import Example from "../../../components/Example.astro";
+import { TouchArena } from "../../../components/examples/TouchControlsExamples.tsx";
+
+On-screen controls for phones and tablets: `VirtualStick` for movement and `TouchButton` for actions, shown by `TouchControls` while the player uses touch. Drag the stick with a finger or the mouse.
+
+<Example>
+  <TouchArena client:load />
+</Example>
+
+## When to use
+
+- Any game with keyboard or gamepad movement that should also play on a phone.
+- Twin-stick layouts: a movement stick on the left, an aim stick on the right.
+
+## When not to use
+
+- Games played by tapping or dragging in the world itself, such as a puzzle or a card game: read pointer input in the game.
+- Menu and HUD actions such as Pause or Invite: those are a [`Button`](/components/button/).
+
+## How it fits together
+
+Each control is two parts:
+
+- **A controller** from `@gameui/ui/input` (`createStick`, `createTouchButton`) holds the input state. It has no React and no engine. The game polls it wherever it reads keys.
+- **A view** from `@gameui/ui/react` (`VirtualStick`, `TouchButton`) turns pointer input into controller updates and draws the control. It moves the knob directly, so dragging never re-renders React.
+
+Create controllers once, outside React, and hand them to both sides:
+
+```ts
+// controls.ts
+import { createStick, createTouchButton } from "@gameui/ui/input";
+
+export const moveStick = createStick({ deadzone: 0.15 });
+export const dashButton = createTouchButton();
+```
+
+```tsx
+// Hud.tsx
+import { HudLayer, HudSlot, TouchButton, TouchControls, VirtualStick } from "@gameui/ui/react";
+import { dashButton, moveStick } from "./controls.ts";
+
+<HudLayer>
+  <TouchControls>
+    <VirtualStick control={moveStick} mode="dynamic" area="left" />
+    <HudSlot placement="bottom-right">
+      <TouchButton control={dashButton}>Dash</TouchButton>
+    </HudSlot>
+  </TouchControls>
+</HudLayer>;
+```
+
+```ts
+// In the game's fixed tick, next to the keyboard
+const stick = moveStick.read();
+const input = {
+  x: keys.x || stick.x,
+  y: keys.y || stick.y,
+  dash: keys.dash || dashButton.held || dashButton.consumePress(),
+};
+```
+
+## Reading the stick
+
+`read()` returns `{ x, y, magnitude, active }`. `x` and `y` run from -1 to 1, with `y` positive downward like the screen, and `magnitude` is the length of `(x, y)`. `active` is true while a finger is on the stick, even inside the dead zone.
+
+- **Dead zone:** `createStick({ deadzone })` sets how far the thumb moves, as a fraction of the stick's travel, before input starts. Output ramps from 0 there to 1 at the rim, so there is no jump. The default is 0.15.
+- **Snapping:** `snap: "4way"` or `"8way"` snaps the direction and keeps the magnitude. For a game with digital movement (-1, 0, or 1 per axis), use `Math.sign(stick.x)`.
+
+## Reading buttons
+
+`held` is true while the button is down. `consumePress()` returns true once for each press, even a tap that starts and ends between two game ticks, which `held` alone misses. Use `held` for actions that last while held and `consumePress()` for one-shot actions.
+
+## Placement
+
+- A **static** stick (the default) sits where you put it, in a `HudSlot`. Touches must start on it.
+- A **dynamic** stick appears wherever a thumb lands in its `area` (`left`, `right`, or `full`) and hides when released. Place it directly inside `HudLayer`, not in a slot: it covers that part of the layer beneath the slots, so HUD buttons there stay tappable. Players rarely look at the stick, so dynamic suits phones best.
+- Put `TouchButton`s in the bottom corner opposite the stick, within thumb reach.
+
+Every control tracks its own finger, so the player can steer and hold buttons at the same time.
+
+### Twin sticks
+
+Use two sticks, one per half of the screen:
+
+```tsx
+<TouchControls>
+  <VirtualStick control={moveStick} mode="dynamic" area="left" />
+  <VirtualStick control={aimStick} mode="dynamic" area="right" />
+</TouchControls>
+```
+
+A common scheme fires while the aim stick is held: with `const aim = aimStick.read()`, `if (aim.active && aim.magnitude > 0) fire(Math.atan2(aim.y, aim.x))`. The stick returns to zero on release, so keep the last aim angle in the game if the player should keep facing that way.
+
+## Showing the controls
+
+`TouchControls` renders its children only while they are wanted. It adds no element, so its children can be slots or a dynamic stick.
+
+| `show`   | Behavior                                                                            |
+| -------- | ----------------------------------------------------------------------------------- |
+| `auto`   | Shown on a touch screen, or after a touch. Hidden after a mouse click or key press. |
+| `always` | For touch-only games, and for testing on a desktop.                                 |
+| `never`  | For a "Hide touch controls" setting.                                                |
+
+In `auto`, key presses typed into a text field don't hide the controls, so a phone's on-screen keyboard can enter a name. The same detection is available without React as `watchTouchInput(listener)` from `@gameui/ui/input`, for example to swap `Kbd` hints for touch hints.
+
+When controls hide or unmount mid-press, they release their controller, so the game never keeps a held direction. Call `release()` yourself to drop input, for example when the game pauses.
+
+## Props
+
+`VirtualStick` accepts native `<div>` props, plus:
+
+| Prop      | Type                          | Default    |
+| --------- | ----------------------------- | ---------- |
+| `control` | `Stick` (from `createStick`)  | required   |
+| `mode`    | `"static" \| "dynamic"`       | `"static"` |
+| `area`    | `"left" \| "right" \| "full"` | `"left"`   |
+| `size`    | `"md" \| "lg"`                | `"md"`     |
+
+`TouchButton` accepts native `<div>` props, including `children` for its label, plus:
+
+| Prop      | Type                                            | Default     |
+| --------- | ----------------------------------------------- | ----------- |
+| `control` | `TouchButtonControl` (from `createTouchButton`) | required    |
+| `variant` | `"primary" \| "secondary" \| "danger"`          | `"primary"` |
+| `size`    | `"md" \| "lg"`                                  | `"md"`      |
+
+Pointer handlers you pass run first; call `preventDefault()` in `onPointerDown` to stop the control from taking that press. The stick has `data-mode`, `data-size`, and `data-active` while held (on the base for a dynamic stick); the button has `data-variant`, `data-size`, and `data-pressed` while held.
+
+## Theme tokens
+
+The stick's base uses `--game-surface` at partial opacity and `--game-border`; its knob uses `--game-primary`. Buttons use the variant's color and `-contrast` tokens, `--game-font-display`, and `--game-shadow`. Both use `--game-border-width`, and the press feedback is timed by the motion tokens.
+
+## Accessibility
+
+Touch controls duplicate keyboard controls for touch screens, so they are `aria-hidden` and never take focus. Every action must also be reachable from the keyboard. They stop the browser from scrolling, zooming, selecting text, or opening a context menu under a thumb, so a long press or a double tap on a control does nothing but play.

@@ -19,6 +19,8 @@ import * as tabsStyles from "../src/react/components/Tabs/Tabs.styles.ts";
 import * as textFieldStyles from "../src/react/components/TextField/TextField.styles.ts";
 import * as toastStyles from "../src/react/components/Toast/Toast.styles.ts";
 import * as timerStyles from "../src/react/components/Timer/Timer.styles.ts";
+import * as touchButtonStyles from "../src/react/components/TouchButton/TouchButton.styles.ts";
+import * as virtualStickStyles from "../src/react/components/VirtualStick/VirtualStick.styles.ts";
 
 const stylesPath = fileURLToPath(new URL("../src/react/styles.css", import.meta.url));
 
@@ -39,6 +41,8 @@ const styleModules: Record<string, string | Record<string, string>>[] = [
   kbdStyles,
   announcementStyles,
   toastStyles,
+  virtualStickStyles,
+  touchButtonStyles,
 ];
 
 const classStrings = styleModules.flatMap((styles) =>

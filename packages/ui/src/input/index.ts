@@ -77,3 +77,15 @@ export function releaseFocusOnGameKeys({
   target.addEventListener("keydown", onKeyDown, true);
   return () => target.removeEventListener("keydown", onKeyDown, true);
 }
+
+export {
+  createStick,
+  createTouchButton,
+  watchTouchInput,
+  type Stick,
+  type StickOptions,
+  type StickSnap,
+  type StickState,
+  type TouchButtonControl,
+  type WatchTouchInputOptions,
+} from "./touch.ts";

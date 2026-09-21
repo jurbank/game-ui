@@ -83,3 +83,21 @@ export {
   type ToastRegionProps,
   type ToastTone,
 } from "./components/Toast/index.ts";
+export {
+  VirtualStick,
+  type VirtualStickArea,
+  type VirtualStickMode,
+  type VirtualStickProps,
+  type VirtualStickSize,
+} from "./components/VirtualStick/index.ts";
+export {
+  TouchButton,
+  type TouchButtonProps,
+  type TouchButtonSize,
+  type TouchButtonVariant,
+} from "./components/TouchButton/index.ts";
+export {
+  TouchControls,
+  type TouchControlsProps,
+  type TouchControlsShow,
+} from "./components/TouchControls/index.ts";
