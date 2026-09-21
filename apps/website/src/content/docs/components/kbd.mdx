@@ -1,0 +1,48 @@
+---
+title: Kbd
+description: A key cap for control hints, such as "Dash Space" or "Press E to open".
+sidebar:
+  order: 16
+---
+
+import Example from "../../../components/Example.astro";
+import { KbdExamples } from "../../../components/examples/FeedbackExamples.tsx";
+
+One key, drawn as a key cap.
+
+<Example>
+  <KbdExamples client:load />
+</Example>
+
+## When to use
+
+- Control hints in HUDs, menus, tutorials, and interaction prompts.
+
+## Usage
+
+```tsx
+import { Kbd } from "@gameui/ui/react";
+
+<p>
+  Dash <Kbd>Space</Kbd>
+</p>;
+```
+
+Use one `Kbd` per key and compose them for alternatives (`W A S D`) and chords (`Ctrl + S`). Show the key the player actually has bound; the game owns key bindings.
+
+## Props
+
+Kbd accepts native `<kbd>` props, including `ref`, plus `size` (`"sm"` or `"md"`, default `"sm"`). It has `data-size`.
+
+## Theme tokens
+
+Uses `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-sm`, `--game-text`, `--game-font-display`, and `--game-font-size-sm` or `--game-font-size-md`.
+
+## Accessibility
+
+- Renders a native `<kbd>`, which screen readers treat as keyboard input.
+- Spell keys the way players read them ("Space", "Esc"), not as symbols alone.
+
+## Agent guidance
+
+- Use Kbd for every key shown in UI, instead of plain text or styled spans.

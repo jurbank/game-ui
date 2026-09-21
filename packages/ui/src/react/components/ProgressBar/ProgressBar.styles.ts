@@ -8,7 +8,7 @@ export const progressHeader =
 export const progressValue = "tabular-nums text-game-text-muted";
 
 export const progressTrack =
-  "relative w-full overflow-hidden bg-game-surface border-(length:--game-border-width) border-game-border rounded-game-sm";
+  "relative box-border w-full overflow-hidden bg-game-surface border-(length:--game-border-width) border-game-border rounded-game-sm";
 
 export const progressTrackSizes: Record<ProgressBarSize, string> = {
   sm: "h-game-sm",

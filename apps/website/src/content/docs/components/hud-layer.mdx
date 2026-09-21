@@ -1,0 +1,87 @@
+---
+title: HudLayer
+description: A layer over the game with nine anchored slots for screen UI, which passes the pointer through to the game everywhere else.
+sidebar:
+  order: 11
+---
+
+import Example from "../../../components/Example.astro";
+import { HudOverGame } from "../../../components/examples/HudLayerExamples.tsx";
+
+A layer that sits over the game canvas and places HUD content in its corners, edges, and center. Empty areas let the pointer through, so the game keeps its mouse and touch input.
+
+<Example>
+  <HudOverGame client:load />
+</Example>
+
+## When to use
+
+- The root of any in-game HUD: timers, vitals, scoreboards, minimaps, prompts, and menu buttons.
+- Any screen UI drawn over a canvas that also needs pointer input.
+
+## When not to use
+
+- Full-screen menus with no game underneath, such as a title screen: lay those out normally.
+- UI attached to a character or world position: that is [world UI](/world-ui/), drawn by the game.
+
+## Usage
+
+```tsx
+import { HudLayer, HudSlot, Panel, Timer } from "@gameui/ui/react";
+
+<HudLayer>
+  <HudSlot placement="top-left">
+    <Panel variant="raised" padding="sm">
+      <Timer label="Time left" value={timeLeft} />
+    </Panel>
+  </HudSlot>
+  <HudSlot placement="top-right">
+    <Scoreboard rows={rows} caption="Standings" hideCaption size="sm" />
+  </HudSlot>
+</HudLayer>;
+```
+
+Mount it once, over the game. By default it covers the viewport (`position="fixed"`). To cover only the game's container, give that container `position: relative` and use `position="absolute"`, as the example above does.
+
+Several children in one slot stack vertically with the theme's spacing. Content aligns toward the slot's edge: right-hand slots align right, the center column centers.
+
+## Placements
+
+```text
+top-left      top       top-right
+left          center    right
+bottom-left   bottom    bottom-right
+```
+
+## Pointer input
+
+The layer and its slots have `pointer-events: none`; each slot's direct children have `pointer-events: auto`. A click on empty space, or between two panels in a slot, reaches the game. A click on a panel or button stays in the UI. Stop propagation in handlers if the game also listens on an ancestor, as the example's Pause button does.
+
+## Props
+
+`HudLayer` accepts native `<div>` props, including `ref`, plus:
+
+| Prop       | Type                             | Default   |
+| ---------- | -------------------------------- | --------- |
+| `position` | `"fixed" \| "absolute"`          | `"fixed"` |
+| `inset`    | `"none" \| "sm" \| "md" \| "lg"` | `"md"`    |
+
+`HudSlot` accepts native `<div>` props, including `ref`, plus a required `placement`.
+
+The layer has `data-position`; each slot has `data-placement`. The layer uses `z-index: 1`; override with `className` if your page stacks other layers.
+
+## Theme tokens
+
+Uses `--game-space-*` for insets and gaps, plus `--game-text` and `--game-font-body` as the layer's inherited text defaults.
+
+## Accessibility and safe areas
+
+- Insets never go below the device safe area (`env(safe-area-inset-*)`), so content clears notches and home indicators. Add `viewport-fit=cover` to your viewport meta tag for the insets to take effect on those devices.
+- The layer adds no landmark. Pass `aria-label` or `role="region"` if the HUD should be announced as a region.
+- Pair it with the [keyboard helpers](/patterns/game-input/) so HUD controls and game keys do not fight over focus.
+
+## Agent guidance
+
+- Put every HUD element in a `HudSlot` instead of writing fixed or absolute positioning CSS.
+- Keep one `HudLayer` per game view. Modals portal out of it on their own.
+- Do not wrap the game canvas in the layer; the layer goes over the canvas.

@@ -182,3 +182,19 @@ test("follows standings the game reorders", () => {
   expect(first?.dataset.highlight).toBe("");
   expect(within(first!).getByRole("cell", { name: "1600" })).toBeTruthy();
 });
+
+test("long names truncate so score and status columns stay inside a narrow panel", () => {
+  render(
+    <Scoreboard
+      caption="Standings"
+      rows={[{ id: "a", name: "An extremely long player name", score: 3, status: "Reconnecting" }]}
+    />,
+  );
+  const nameCell = screen.getByRole("rowheader");
+  // The name column absorbs spare width and may shrink to nothing; its text truncates.
+  expect(nameCell.className).toContain("max-w-[0]");
+  expect(nameCell.className).toContain("w-full");
+  expect(nameCell.firstElementChild?.className).toContain("truncate");
+  const nameHeader = screen.getByRole("columnheader", { name: "Player" });
+  expect(nameHeader.className).toContain("max-w-[0]");
+});

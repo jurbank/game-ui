@@ -14,6 +14,7 @@ Game UI is one package, `@gameui/ui`, with separate entry points so a game loads
 | `@gameui/ui/styles.css`   | Precompiled component styles for `@gameui/ui/react`                        | No          |
 | `@gameui/ui/tailwind.css` | Tailwind CSS v4 mapping from utilities to tokens                           | No          |
 | `@gameui/ui`              | Token names and helpers, and type-only world UI contracts for any renderer | No          |
+| `@gameui/ui/input`        | Keyboard ownership between the game and focused HUD controls               | No          |
 
 A game with React screen UI uses `@gameui/ui/react` plus the stylesheets. A game that draws everything in its own renderer, such as a canvas or three.js game without React, can use `@gameui/ui` and the theme CSS alone.
 

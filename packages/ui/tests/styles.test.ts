@@ -3,7 +3,11 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { compile } from "@tailwindcss/node";
 import { expect, test } from "vite-plus/test";
+import * as announcementStyles from "../src/react/components/Announcement/Announcement.styles.ts";
+import * as badgeStyles from "../src/react/components/Badge/Badge.styles.ts";
 import * as buttonStyles from "../src/react/components/Button/Button.styles.ts";
+import * as hudLayerStyles from "../src/react/components/HudLayer/HudLayer.styles.ts";
+import * as kbdStyles from "../src/react/components/Kbd/Kbd.styles.ts";
 import * as modalStyles from "../src/react/components/Modal/Modal.styles.ts";
 import * as panelStyles from "../src/react/components/Panel/Panel.styles.ts";
 import * as playerListStyles from "../src/react/components/PlayerList/PlayerList.styles.ts";
@@ -12,6 +16,8 @@ import * as scoreboardStyles from "../src/react/components/Scoreboard/Scoreboard
 import * as sliderStyles from "../src/react/components/Slider/Slider.styles.ts";
 import * as switchStyles from "../src/react/components/Switch/Switch.styles.ts";
 import * as tabsStyles from "../src/react/components/Tabs/Tabs.styles.ts";
+import * as textFieldStyles from "../src/react/components/TextField/TextField.styles.ts";
+import * as toastStyles from "../src/react/components/Toast/Toast.styles.ts";
 import * as timerStyles from "../src/react/components/Timer/Timer.styles.ts";
 
 const stylesPath = fileURLToPath(new URL("../src/react/styles.css", import.meta.url));
@@ -27,6 +33,12 @@ const styleModules: Record<string, string | Record<string, string>>[] = [
   sliderStyles,
   switchStyles,
   tabsStyles,
+  hudLayerStyles,
+  badgeStyles,
+  textFieldStyles,
+  kbdStyles,
+  announcementStyles,
+  toastStyles,
 ];
 
 const classStrings = styleModules.flatMap((styles) =>
@@ -50,6 +62,18 @@ test("animated components time themselves with motion tokens", () => {
   for (const name of classNames.filter((name) => name.startsWith("ease-"))) {
     expect(name).toBe("ease-game");
   }
+});
+
+test("full-width elements with a border or padding size as border-box", () => {
+  // Consumers without a CSS reset default to content-box, where \`w-full\` plus a
+  // border or padding overflows the container (and a Modal overflows a phone).
+  const offenders = classStrings.filter((value) => {
+    const names = value.split(/\s+/);
+    const fullWidth = names.includes("w-full");
+    const boxed = names.some((name) => /^(border-\(|p-|px-|pl-|pr-)/.test(name));
+    return fullWidth && boxed && !names.includes("box-border");
+  });
+  expect(offenders).toEqual([]);
 });
 
 test("every component class generates CSS", async () => {

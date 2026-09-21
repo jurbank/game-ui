@@ -11,7 +11,7 @@ export const sliderControl =
   "flex items-center w-full py-game-sm touch-none select-none cursor-pointer data-disabled:cursor-not-allowed data-disabled:opacity-50";
 
 export const sliderTrack =
-  "relative w-full bg-game-surface border-(length:--game-border-width) border-game-border rounded-game-sm";
+  "relative box-border w-full bg-game-surface border-(length:--game-border-width) border-game-border rounded-game-sm";
 
 export const sliderTrackSizes: Record<SliderSize, string> = {
   sm: "h-game-xs",

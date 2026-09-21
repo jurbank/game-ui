@@ -1,0 +1,79 @@
+---
+title: TextField
+description: A themed, labelled text input for player names, room codes, and chat, with game-owned validation.
+sidebar:
+  order: 12
+---
+
+import Example from "../../../components/Example.astro";
+import { NameEntry, TextFieldStates } from "../../../components/examples/FormExamples.tsx";
+
+A labelled single-line text input.
+
+<Example>
+  <NameEntry client:load />
+</Example>
+
+## When to use
+
+- Player names, room or invite codes, lobby names, search, and chat input.
+
+## When not to use
+
+- Numbers the player tunes by feel, such as sensitivity: use [Slider](/components/slider/).
+- A choice from a known list: use [Tabs](/components/tabs/) or Buttons.
+
+## Usage
+
+```tsx
+import { TextField } from "@gameui/ui/react";
+
+<TextField
+  label="Player name"
+  description="Up to 16 characters"
+  value={name}
+  onValueChange={setName}
+  error={nameError}
+  maxLength={16}
+/>;
+```
+
+TextField is controlled with `value` and `onValueChange`, or uncontrolled with `defaultValue`. The game owns validation: compute `error` from your own rules and pass it in. While `error` is set, the field is invalid, shows the message, and announces it.
+
+Native input props such as `maxLength`, `placeholder`, `autoComplete`, `type`, and `onKeyDown` go to the input.
+
+<Example>
+  <TextFieldStates client:load />
+</Example>
+
+## Props
+
+TextField accepts native `<input>` props, including `ref` (the input), plus:
+
+| Prop            | Type                      | Default |
+| --------------- | ------------------------- | ------- |
+| `label`         | `ReactNode`               | none    |
+| `description`   | `ReactNode`               | none    |
+| `error`         | `ReactNode`               | none    |
+| `value`         | `string`                  | none    |
+| `defaultValue`  | `string`                  | none    |
+| `onValueChange` | `(value: string) => void` | none    |
+| `disabled`      | `boolean`                 | `false` |
+| `size`          | `"sm" \| "md"`            | `"md"`  |
+
+`className` applies to the field wrapper, so it positions the label, input, and messages together. The input has `data-invalid` while `error` is set.
+
+## Theme tokens
+
+Uses `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-md`, `--game-danger`, `--game-danger-text`, `--game-focus-ring`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-size-sm`, `--game-font-size-md`, `--game-space-*`, `--game-duration-fast`, and `--game-ease`.
+
+## Accessibility
+
+- `label` names the input and `description` describes it. Without a `label`, pass `aria-label`.
+- An `error` sets `aria-invalid` and is linked to the input, so screen readers announce it.
+- Game keys typed into a focused field belong to the field: [`uiOwnsKeyboard()`](/patterns/game-input/) returns true for text inputs.
+
+## Agent guidance
+
+- Keep validation rules in game code and pass the message as `error`; do not re-implement error styling.
+- Gate game input on `uiOwnsKeyboard()` so typing a name never moves the player.

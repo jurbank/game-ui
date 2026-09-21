@@ -1,0 +1,75 @@
+---
+title: Toast
+description: Short-lived event messages, such as joins, pickups, and warnings, posted from anywhere in game code.
+sidebar:
+  order: 15
+---
+
+import Example from "../../../components/Example.astro";
+import { ToastDemo } from "../../../components/examples/FeedbackExamples.tsx";
+
+A feed of brief messages that close on their own.
+
+<Example>
+  <ToastDemo client:load />
+</Example>
+
+## When to use
+
+- Events the player should notice but not act on: joins and leaves, pickups, achievements, "reconnecting", server notices.
+- Kill feeds and activity feeds.
+
+## When not to use
+
+- A single big moment such as "Go!": use [Announcement](/components/announcement/).
+- Anything the player must answer: use [Modal](/components/modal/).
+- Persistent status, such as connection state: use a [Badge](/components/badge/).
+
+## Usage
+
+Create a manager once and pass it to a `ToastRegion`. Post from anywhere, including outside React, such as a network or engine callback.
+
+```tsx
+import { createToastManager, HudSlot, ToastRegion } from "@gameui/ui/react";
+
+export const toasts = createToastManager();
+
+// In the HUD:
+<HudSlot placement="bottom-left">
+  <ToastRegion manager={toasts} />
+</HudSlot>;
+
+// In game code:
+toasts.show({ title: `${name} joined`, tone: "primary" });
+```
+
+Toasts stack in normal flow, newest last, so the region fits any HudSlot. Beyond `limit`, older toasts wait until newer ones close.
+
+## API
+
+`createToastManager()` returns:
+
+| Method                | Does                                                                   |
+| --------------------- | ---------------------------------------------------------------------- |
+| `show(options)`       | Shows a toast and returns its id. Reusing an `id` replaces that toast. |
+| `update(id, options)` | Changes an open toast, for example to count repeated events.           |
+| `close(id?)`          | Closes one toast, or all of them.                                      |
+
+`ToastOptions`: `title` (required), `description`, `tone` (`default`, `primary`, `success`, `warning`, `danger`), `timeout` in milliseconds (0 stays open), `priority` (`high` interrupts screen readers), and `id`.
+
+`ToastRegion` accepts native `<div>` props plus `manager` (required), `timeout` (default `4000`), and `limit` (default `4`). Each toast has `data-tone`.
+
+## Theme tokens
+
+Uses `--game-panel`, `--game-border`, `--game-border-width`, `--game-radius-md`, `--game-shadow`, the tone colours for the accent edge, `--game-text`, `--game-text-muted`, `--game-font-display`, `--game-font-body`, `--game-font-size-sm`, `--game-font-size-md`, `--game-space-*`, `--game-duration-normal`, and `--game-ease`.
+
+## Accessibility
+
+- The region is announced as a live region; `priority: "high"` makes a toast interrupt.
+- Toasts close on their own, so never put the only copy of important information in one.
+- The tone is an accent edge; the title text carries the meaning.
+
+## Agent guidance
+
+- Create one manager per game view and import it where events happen; do not keep toasts in React state.
+- Coalesce bursts: update one toast ("+5 coins") rather than posting one per event.

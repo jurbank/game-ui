@@ -44,6 +44,10 @@
       "@gameui/source": "./src/react/index.ts",
       "default": "./dist/react.mjs"
     },
+    "./input": {
+      "@gameui/source": "./src/input/index.ts",
+      "default": "./dist/input.mjs"
+    },
     "./styles.css": {
       "@gameui/source": "./src/react/styles.css",
       "default": "./dist/styles.css"
@@ -61,6 +65,7 @@
     "exports": {
       ".": "./dist/index.mjs",
       "./react": "./dist/react.mjs",
+      "./input": "./dist/input.mjs",
       "./styles.css": "./dist/styles.css",
       "./themes.css": "./src/css/index.css",
       "./tokens.css": "./src/css/tokens.css",

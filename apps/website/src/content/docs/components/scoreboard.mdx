@@ -75,6 +75,10 @@ Statistic columns are right-aligned for numbers. Pass `align: "start"` for text 
 
 With no rows, Scoreboard renders a message instead of an empty table, and the root element gets `data-empty`. The default is "No results yet"; pass `empty` to fit the moment, as the example does for a match that has not started.
 
+## Narrow panels
+
+The name column takes whatever width is left and truncates long names, so rank, score, extra columns, and status always stay visible. In a narrow HUD panel, keep `status` text short (for example "Away" rather than "Reconnecting") so names have room.
+
 ## Props
 
 Scoreboard accepts native `<div>` props, including `ref`, plus:

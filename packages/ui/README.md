@@ -21,18 +21,19 @@ import { Button, Panel } from "@gameui/ui/react";
 
 ## Entry points
 
-| Import                           | Contents                                                                               | Loads React |
-| -------------------------------- | -------------------------------------------------------------------------------------- | ----------- |
-| `@gameui/ui/react`               | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard, Slider, Switch, Tabs | Yes         |
-| `@gameui/ui`                     | Token names and helpers; type-only world UI contracts                                  | No          |
-| `@gameui/ui/styles.css`          | Precompiled component styles for `@gameui/ui/react`                                    | No          |
-| `@gameui/ui/themes.css`          | Default tokens, base styles, and every starting theme                                  | No          |
-| `@gameui/ui/tokens.css`          | Neutral default value for every token on `:root`                                       | No          |
-| `@gameui/ui/base.css`            | Text color and font for themed regions; reduced-motion handling                        | No          |
-| `@gameui/ui/themes/arcade.css`   | Arcade theme, scoped to `[data-game-theme="arcade"]`                                   | No          |
-| `@gameui/ui/themes/tactical.css` | Tactical theme, scoped to `[data-game-theme="tactical"]`                               | No          |
-| `@gameui/ui/themes/playful.css`  | Playful theme, scoped to `[data-game-theme="playful"]`                                 | No          |
-| `@gameui/ui/tailwind.css`        | Tailwind v4 `@theme` mapping from utilities to tokens                                  | No          |
+| Import                           | Contents                                                                                                                                     | Loads React |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@gameui/ui/react`               | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard, Slider, Switch, Tabs, HudLayer, TextField, Badge, Announcement, Toast, Kbd | Yes         |
+| `@gameui/ui`                     | Token names and helpers; type-only world UI contracts                                                                                        | No          |
+| `@gameui/ui/input`               | Keyboard ownership between the game and focused HUD controls                                                                                 | No          |
+| `@gameui/ui/styles.css`          | Precompiled component styles for `@gameui/ui/react`                                                                                          | No          |
+| `@gameui/ui/themes.css`          | Default tokens, base styles, and every starting theme                                                                                        | No          |
+| `@gameui/ui/tokens.css`          | Neutral default value for every token on `:root`                                                                                             | No          |
+| `@gameui/ui/base.css`            | Text color and font for themed regions; reduced-motion handling                                                                              | No          |
+| `@gameui/ui/themes/arcade.css`   | Arcade theme, scoped to `[data-game-theme="arcade"]`                                                                                         | No          |
+| `@gameui/ui/themes/tactical.css` | Tactical theme, scoped to `[data-game-theme="tactical"]`                                                                                     | No          |
+| `@gameui/ui/themes/playful.css`  | Playful theme, scoped to `[data-game-theme="playful"]`                                                                                       | No          |
+| `@gameui/ui/tailwind.css`        | Tailwind v4 `@theme` mapping from utilities to tokens                                                                                        | No          |
 
 React 19 and React DOM 19 are optional peer dependencies, needed only for `@gameui/ui/react`. A game without React screen UI, such as a canvas or three.js game, can use `@gameui/ui` and the theme CSS alone. To load only the themes a game uses, combine `tokens.css`, `base.css`, and individual theme files instead of `themes.css`.
 
@@ -162,6 +163,13 @@ Before creating screen UI, map the need to an existing component and check its v
 | Volume, sensitivity, FOV    | `Slider`; save in `onValueCommitted`                      |
 | On/off setting              | `Switch` (in-match toggles use `Button aria-pressed`)     |
 | Sections of a screen        | `Tabs`                                                    |
+| Placing HUD over the game   | `HudLayer` + `HudSlot`, not hand-written positioning      |
+| Name, room code, chat       | `TextField`; validation in game code, passed as `error`   |
+| Role or status label        | `Badge` (roster rows use their own `status`)              |
+| Countdown, "Go!", round end | `Announcement` in a `center` HudSlot                      |
+| Joins, pickups, notices     | `createToastManager()` + `ToastRegion`                    |
+| Key hints                   | `Kbd`, one per key                                        |
+| Game keys vs HUD focus      | `uiOwnsKeyboard`, `releaseFocusOnGameKeys` (`/input`)     |
 
 - Compose these before writing a new component. Change the look with `--game-*` token overrides, not raw colours or forked components.
 - Components are controlled: pass game state through props and handle callbacks in game code. The game decides ranking, winners, thresholds, and lifecycle.

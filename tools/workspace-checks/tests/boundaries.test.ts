@@ -18,7 +18,7 @@ const allowedDependencies: Record<string, readonly string[]> = {
  * is what keeps `@gameui/ui`'s root entry usable by games without React.
  */
 const rendererFreeSources: Record<string, readonly string[]> = {
-  "@gameui/ui": ["src/index.ts", "src/tokens", "src/world", "src/css"],
+  "@gameui/ui": ["src/index.ts", "src/tokens", "src/world", "src/css", "src/input"],
 };
 
 /** Renderer and site frameworks that only specific packages may use. */

@@ -9,6 +9,7 @@ import {
   scoreboardEmpty,
   scoreboardHeaderCell,
   scoreboardName,
+  scoreboardNameHeader,
   scoreboardNameText,
   scoreboardRank,
   scoreboardRoot,
@@ -81,7 +82,10 @@ export function Scoreboard({
                   {rankHeader}
                 </th>
               )}
-              <th scope="col" className={[scoreboardHeaderCell, cellSize].join(" ")}>
+              <th
+                scope="col"
+                className={[scoreboardHeaderCell, cellSize, scoreboardNameHeader].join(" ")}
+              >
                 {nameHeader}
               </th>
               {columns.map((column) => (

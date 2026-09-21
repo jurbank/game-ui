@@ -6,7 +6,7 @@ export const modalBackdrop =
 export const modalViewport = "fixed inset-[0] flex items-center justify-center p-game-lg";
 
 export const modalPopup =
-  "flex flex-col gap-game-md w-full max-h-full overflow-y-auto text-game-text font-game-body bg-game-panel border-(length:--game-border-width) border-game-border rounded-game-lg shadow-game p-game-lg outline-none transition-[opacity,scale] duration-(--game-duration-normal) ease-game data-starting-style:opacity-0 data-starting-style:scale-95 data-ending-style:opacity-0 data-ending-style:scale-95";
+  "box-border flex flex-col gap-game-md w-full max-h-full overflow-y-auto text-game-text font-game-body bg-game-panel border-(length:--game-border-width) border-game-border rounded-game-lg shadow-game p-game-lg outline-none transition-[opacity,scale] duration-(--game-duration-normal) ease-game data-starting-style:opacity-0 data-starting-style:scale-95 data-ending-style:opacity-0 data-ending-style:scale-95";
 
 export const modalSizes: Record<ModalSize, string> = {
   sm: "max-w-[22rem]",

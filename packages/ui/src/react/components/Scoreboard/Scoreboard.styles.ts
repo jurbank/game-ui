@@ -28,9 +28,17 @@ export const scoreboardAlignments: Record<ScoreboardAlign, string> = {
 
 export const scoreboardRank = "tabular-nums text-game-text-muted";
 
-export const scoreboardName = "[font-weight:400]";
+/**
+ * The name column takes the leftover width and may shrink to nothing, so long
+ * names truncate instead of pushing score and status columns out of a narrow
+ * panel (a table cell otherwise grows to fit its unwrapped text).
+ */
+export const scoreboardName = "w-full max-w-[0] [font-weight:400]";
 
-export const scoreboardNameText = "block max-w-[16rem] truncate";
+export const scoreboardNameText = "block truncate";
+
+/** The header sets the column's minimum width too, so it shrinks and truncates the same way. */
+export const scoreboardNameHeader = "w-full max-w-[0] truncate";
 
 export const scoreboardScore =
   "tabular-nums font-game-display group-data-highlight:text-game-primary-text";

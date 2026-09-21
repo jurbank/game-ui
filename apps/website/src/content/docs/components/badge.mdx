@@ -1,0 +1,64 @@
+---
+title: Badge
+description: A small themed label for a status or role, such as Host, Ready, Online, or Reconnecting.
+sidebar:
+  order: 13
+---
+
+import Example from "../../../components/Example.astro";
+import { BadgeTones } from "../../../components/examples/FormExamples.tsx";
+
+A short label that marks a status or role.
+
+<Example>
+  <BadgeTones client:load />
+</Example>
+
+## When to use
+
+- Roles and states next to names or in panels: Host, Ready, Spectator, Eliminated.
+- Connection and match status: Online, Reconnecting, Ranked, a latency readout.
+
+## When not to use
+
+- A status inside a roster or standings: use the `status` and `statusTone` of [PlayerList](/components/player-list/) or [Scoreboard](/components/scoreboard/) rows.
+- Anything the player clicks: use [Button](/components/button/).
+- Long messages: use a Panel with text.
+
+## Usage
+
+```tsx
+import { Badge } from "@gameui/ui/react";
+
+<Badge tone="warning" dot>
+  Reconnecting
+</Badge>;
+```
+
+The game decides what each tone means. A `dot` suits live states that can change, such as connection status.
+
+## Props
+
+Badge accepts native `<span>` props, including `ref`, plus:
+
+| Prop   | Type                                                           | Default     |
+| ------ | -------------------------------------------------------------- | ----------- |
+| `tone` | `"default" \| "primary" \| "success" \| "warning" \| "danger"` | `"default"` |
+| `size` | `"sm" \| "md"`                                                 | `"sm"`      |
+| `dot`  | `boolean`                                                      | `false`     |
+
+The badge has `data-tone` and `data-size`; the dot has `data-game-part="dot"`.
+
+## Theme tokens
+
+Text uses each tone's text-safe value (`--game-primary-text`, `--game-success-text`, `--game-warning-text`, `--game-danger-text`, or `--game-text-muted`) on `--game-surface`, the same pairs the theme contrast tests check. Borders and dots use the tone colour. Also uses `--game-font-display`, `--game-font-size-sm`, `--game-font-size-md`, `--game-radius-sm`, `--game-border-width`, and `--game-space-*`.
+
+## Accessibility
+
+- The text carries the meaning; tone colour and the dot are supplementary, and the dot is hidden from assistive technology.
+- A badge whose text changes during play, such as connection status, is not announced by itself. Put it in an `aria-live` region if the change matters to the player.
+
+## Agent guidance
+
+- Use Badge for standalone status or role labels before styling a custom span.
+- Choose the tone from game state; do not restyle colours with `className`.

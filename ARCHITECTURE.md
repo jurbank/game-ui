@@ -70,6 +70,7 @@ src/react  ──→ src/tokens + src/css, React, Base UI
 src/world  ──→ nothing at runtime (types only)
 src/tokens ──→ nothing
 src/css    ──→ nothing (tests check it against src/tokens)
+src/input  ──→ the DOM only (keyboard ownership between game and UI)
 
 Consuming game / website example
     ├── React bindings ──→ @gameui/ui/react
@@ -78,7 +79,7 @@ Consuming game / website example
 
 Arrows point from consumers to their dependencies. The package never depends on individual games. The world UI contracts introduce no required rendering or state runtime.
 
-`src/index.ts`, `src/tokens`, `src/world`, and `src/css` are renderer-free: they must not import React, Base UI, an engine, or anything under `src/react`. This keeps the `@gameui/ui` root entry usable by games without React. `tools/workspace-checks` enforces it on source, and `vp run verify-consumer` enforces it on the published `dist`.
+`src/index.ts`, `src/tokens`, `src/world`, `src/css`, and `src/input` are renderer-free: they must not import React, Base UI, an engine, or anything under `src/react`. This keeps the `@gameui/ui` root and `@gameui/ui/input` entries usable by games without React. `tools/workspace-checks` enforces it on source, and `vp run verify-consumer` enforces it on the published `dist`.
 
 ## Tokens (`src/tokens`)
 
@@ -119,7 +120,7 @@ Screen-space UI rendered with React and normal DOM/CSS.
 - Scoreboard
 - Toast
 - Lobby
-- HUDLayout
+- HudLayer
 
 ### May depend on
 
@@ -470,12 +471,12 @@ import { Button } from "@gameui/ui/react";
 import { tokenVar, type HealthBar } from "@gameui/ui";
 ```
 
-Only paths in the `exports` map are public: `.`, `./react`, `./styles.css`, `./themes.css`, `./tokens.css`, `./base.css`, `./tailwind.css`, and `./themes/<name>.css`. Add a subpath only when a consumer needs to load something separately.
+Only paths in the `exports` map are public: `.`, `./react`, `./input`, `./styles.css`, `./themes.css`, `./tokens.css`, `./base.css`, `./tailwind.css`, and `./themes/<name>.css`. Add a subpath only when a consumer needs to load something separately.
 
 ## Package Conventions
 
 - One published package, `@gameui/ui`, with `"type": "module"` and an explicit `exports` map. Split out another package only for a genuinely separate dependency, such as an engine adapter; register it in `tools/workspace-checks` when it is introduced.
-- TypeScript entries (`src/index.ts`, `src/react/index.ts`) build with `vp pack` to `dist/` with declaration files. Theme CSS publishes unbuilt from `src/css`; `src/react/styles.css` is compiled to `dist/styles.css`.
+- TypeScript entries (`src/index.ts`, `src/react/index.ts`, `src/input/index.ts`) build with `vp pack` to `dist/` with declaration files. Theme CSS publishes unbuilt from `src/css`; `src/react/styles.css` is compiled to `dist/styles.css`.
 - TypeScript and compiled CSS entries also export a `@gameui/source` condition pointing at `src`, with the plain map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while the published package exposes only built files.
 - Tests live in `tests/` and run through the package `test` script, so `vp run ready` includes them.
 - `react` and `react-dom` are optional `peerDependencies`, also listed in `devDependencies` for local development. They are required only by `@gameui/ui/react`. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.

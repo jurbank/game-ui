@@ -1,0 +1,58 @@
+---
+title: Game input
+description: Deciding whether the game or the HUD owns the keyboard, so game keys and focused UI controls don't fight.
+sidebar:
+  order: 3
+---
+
+Games usually read keys globally, while screen UI reads keys from whatever has focus. Without a rule, they collide: arrow keys move both a volume slider and the player, and Space presses the last clicked button as well as jumping. `@gameui/ui/input` provides the rule. It uses the DOM only, with no React and no engine, so any renderer can use it.
+
+```ts
+import { releaseFocusOnGameKeys, uiOwnsKeyboard } from "@gameui/ui/input";
+```
+
+## The rule
+
+- **The UI owns the keyboard** while focus is inside a control that uses keys: text fields, dialogs, sliders, tabs, menus, listboxes, radio groups, and anything marked `data-game-ui-keyboard`.
+- **The game owns it** otherwise, including when a plain button has focus. `releaseFocusOnGameKeys` then takes focus off that button when a game key is pressed, so Space jumps instead of clicking "Invite" again.
+
+## Reading input
+
+Check `uiOwnsKeyboard()` wherever the game samples input. It is cheap enough to call every frame.
+
+```ts
+const input = uiOwnsKeyboard() ? IDLE_INPUT : readKeys();
+```
+
+## Releasing focus
+
+Call once at startup with the key codes the game uses:
+
+```ts
+releaseFocusOnGameKeys({ keys: ["KeyW", "KeyA", "KeyS", "KeyD", "Space"] });
+```
+
+It never calls `preventDefault`. Engines such as Phaser ignore key events that are already default-prevented, so a page-level listener that prevents defaults silently disables the game's keyboard.
+
+## Engine key capture
+
+Engines that stop game keys from scrolling the page must stop doing so while the UI owns the keyboard, or arrow keys stop working in sliders and menus. With Phaser, capture keys when adding them and toggle capture from `update()`:
+
+```ts
+update() {
+  const gameOwnsKeys = !uiOwnsKeyboard();
+  if (gameOwnsKeys !== this.capturing) {
+    if (gameOwnsKeys) this.input.keyboard!.enableGlobalCapture();
+    else this.input.keyboard!.disableGlobalCapture();
+    this.capturing = gameOwnsKeys;
+  }
+}
+```
+
+With Three.js or a custom loop, check `uiOwnsKeyboard()` in your own key listeners before calling `preventDefault`.
+
+## Agent guidance
+
+- Gate all game keyboard input on `uiOwnsKeyboard()`; do not write a separate focus check per game.
+- Never `preventDefault` game keys in a listener that runs before the engine's.
+- Mark custom widgets that consume keys with `data-game-ui-keyboard`.

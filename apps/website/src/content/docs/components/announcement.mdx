@@ -1,0 +1,64 @@
+---
+title: Announcement
+description: A big, brief message for a moment in the match, such as a countdown, "Go!", or "Round over".
+sidebar:
+  order: 14
+---
+
+import Example from "../../../components/Example.astro";
+import { CountdownDemo } from "../../../components/examples/FeedbackExamples.tsx";
+
+A large centered message for a moment the player should not miss.
+
+<Example>
+  <CountdownDemo client:load />
+</Example>
+
+## When to use
+
+- Countdowns, "Go!", "Round over", "Overtime", "Victory", and wave or level starts.
+
+## When not to use
+
+- Ongoing information, such as time left: use [Timer](/components/timer/).
+- A stream of small events, such as joins or pickups: use [Toast](/components/toast/).
+- Anything the player must respond to: use [Modal](/components/modal/).
+
+## Usage
+
+```tsx
+import { Announcement, HudSlot } from "@gameui/ui/react";
+
+<HudSlot placement="center">
+  <Announcement title={countdown > 0 ? countdown : undefined} />
+</HudSlot>;
+```
+
+The game sets `title` for as long as the moment lasts and clears it afterwards. A new string or number title animates in again, so each beat of a countdown gets its own entrance. The announcement never takes the pointer, so it can sit over the middle of the game.
+
+## Props
+
+Announcement accepts native `<div>` props, including `ref`, plus:
+
+| Prop         | Type                                                           | Default     |
+| ------------ | -------------------------------------------------------------- | ----------- |
+| `title`      | `ReactNode`                                                    | none        |
+| `detail`     | `ReactNode`                                                    | none        |
+| `tone`       | `"default" \| "primary" \| "success" \| "warning" \| "danger"` | `"default"` |
+| `size`       | `"md" \| "lg"`                                                 | `"lg"`      |
+| `politeness` | `"polite" \| "assertive"`                                      | `"polite"`  |
+
+## Theme tokens
+
+Uses `--game-panel`, `--game-border`, `--game-border-width`, `--game-radius-lg`, `--game-shadow`, the tone text tokens, `--game-font-display`, `--game-font-size-xl` (doubled at `lg`), `--game-font-size-md`, `--game-space-*`, `--game-duration-normal`, and `--game-ease`. The entrance is instant under reduced motion.
+
+## Accessibility
+
+- The live region is always mounted, so screen readers announce each new title.
+- Use `politeness="assertive"` only for urgent moments; it interrupts whatever is being read.
+- Keep titles short. Do not announce every tick of a long countdown; announce the last few.
+
+## Agent guidance
+
+- Put Announcement in a `center` HudSlot; do not position it by hand.
+- Drive `title` from game state and clear it when the moment ends.

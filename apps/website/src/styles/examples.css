@@ -164,3 +164,28 @@
   outline: 2px solid var(--game-focus-ring);
   outline-offset: 3px;
 }
+
+/* HudLayer example: a positioned stand-in for a game canvas. */
+.hud-demo-arena {
+  position: relative;
+  height: 22rem;
+  display: grid;
+  place-items: center;
+  border: var(--game-border-width) dashed var(--game-border);
+  border-radius: var(--game-radius-md);
+  background: var(--game-surface);
+  cursor: crosshair;
+}
+
+.hud-demo-hint {
+  margin: 0;
+  color: var(--game-text-muted);
+  font-size: var(--game-font-size-sm);
+}
+
+.hud-demo-vitals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--game-space-xs);
+  width: 12rem;
+}
