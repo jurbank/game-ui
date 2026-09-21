@@ -6,14 +6,18 @@ Start with a working themed React example in the documentation site, then expand
 
 ## Current Baseline
 
-Milestones 0–3 are complete. The repository currently contains:
+Milestones 0–4 are complete, so the initial milestone's scope is finished. The repository currently contains:
 
 - A pnpm workspace with Vite+ configuration, checks, tests, and build scripts.
 - An Astro/Starlight website with live React component examples.
 - `@gameui/core`, `@gameui/themes`, `@gameui/react`, and `@gameui/world-ui`.
 - Seven initial screen components, three themes, and a composed HUD/menu example.
+- A game-owned canvas reference game, a consumer walkthrough, and a consumer fixture built from packed tarballs.
+- Complete documentation: getting started, per-component and per-concept reference, compatibility, and an agent guide.
 
-M3 is finished: the world UI contracts, game-owned canvas integration, documentation, lifecycle tests, browser review, and recorded profiling are all done. No engine renderer package is required. M4 is the next milestone.
+M4 is finished: consumer readiness, documentation, compatibility records, and release preparation are all done. The packages are versioned at 0.1.0 as a fixed Changesets group and pass `vp run release:dry-run`. No engine renderer package is required.
+
+The only remaining step is the release itself, which is deliberately outside the milestone: create the `gameui` npm organization, then follow `RELEASING.md`. After publishing, remove the consumer fixture's `overrides` and simplify the unpublished-install note in the getting-started documentation.
 
 Use the existing Vite+ task runner. Keep the planning documents at the root and maintain consistent summaries in the website documentation.
 
@@ -177,7 +181,7 @@ The foundation was organized around these reviewable results:
 2. **Establish core and theme packaging.** Replace the sample utils package, add the first semantic tokens and Arcade CSS, and verify public JavaScript/type/CSS exports. Document the styling contract.
 3. **Render Button and Panel in the website.** Add the React package and Astro integration, build the two components, and ship their interactive docs with a token-override example.
 
-These foundation milestones are complete, as is M3 and its validation. M4 is the next milestone.
+All milestones through M4 are complete. Choose the next work from the section below, driven by real game integrations.
 
 ## Validation Gate
 
