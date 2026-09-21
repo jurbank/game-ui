@@ -1,6 +1,6 @@
 {
   "name": "@gameui/ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Themeable UI for browser games: semantic tokens and themes, screen-space React components, and engine-independent world UI contracts.",
   "keywords": [
     "accessibility",

@@ -9,9 +9,8 @@
     "dev": "vp run @gameui/website#dev",
     "changeset": "changeset",
     "version-packages": "changeset version && vp fmt && vp install",
-    "release:dry-run": "vp run ready && pnpm --filter \"./packages/*\" -r publish --dry-run --no-git-checks",
-    "release": "vp run ready && changeset publish",
-    "publish-packages": "changeset publish"
+    "release:dry-run": "node tools/publish.mjs --dry-run",
+    "release": "node tools/publish.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",

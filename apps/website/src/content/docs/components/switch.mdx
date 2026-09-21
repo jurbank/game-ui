@@ -1,0 +1,75 @@
+---
+title: Switch
+description: A themed on/off control for settings such as subtitles, damage numbers, or crossplay.
+sidebar:
+  order: 9
+---
+
+import Example from "../../../components/Example.astro";
+import { SettingsScreen, SwitchExamples } from "../../../components/examples/SettingsExamples.tsx";
+
+A control that turns a setting on or off immediately.
+
+<Example>
+  <SwitchExamples client:load />
+</Example>
+
+## When to use
+
+- Settings that take effect at once: subtitles, damage numbers, screen shake, crossplay, notifications.
+
+## When not to use
+
+- An action the player confirms, or a state tied to a moment in the match, such as "ready": use a [Button](/components/button/) with `aria-pressed`.
+- A setting with more than two values: use [Tabs](/components/tabs/), Buttons, or a [Slider](/components/slider/).
+
+## Usage
+
+```tsx
+import { Switch } from "@gameui/ui/react";
+
+<Switch
+  label="Subtitles"
+  checked={settings.subtitles}
+  onCheckedChange={(subtitles) => setSettings({ ...settings, subtitles })}
+/>;
+```
+
+Switch is controlled with `checked` and `onCheckedChange`, or uncontrolled with `defaultChecked`. With a `label`, the switch and its text sit inside a `<label>`, so clicking the text toggles it too.
+
+The Gameplay tab of this settings screen uses switches:
+
+<Example>
+  <SettingsScreen client:load />
+</Example>
+
+## Props
+
+Switch accepts native `<span>` props, including `ref` (the switch element), plus:
+
+| Prop              | Type                         | Default |
+| ----------------- | ---------------------------- | ------- |
+| `checked`         | `boolean`                    | none    |
+| `defaultChecked`  | `boolean`                    | `false` |
+| `onCheckedChange` | `(checked: boolean) => void` | none    |
+| `label`           | `ReactNode`                  | none    |
+| `disabled`        | `boolean`                    | `false` |
+| `name`            | `string`                     | none    |
+| `size`            | `"sm" \| "md"`               | `"md"`  |
+
+With a `label`, `className` applies to the wrapping `<label>`, so it positions the whole row; without one, it applies to the switch. The switch has `data-size`, plus `data-checked` or `data-unchecked`.
+
+## Theme tokens
+
+Uses `--game-primary`, `--game-primary-contrast`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-md`, `--game-radius-lg`, `--game-shadow`, `--game-focus-ring`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-size-md`, `--game-space-sm`, `--game-duration-fast`, and `--game-ease`.
+
+## Accessibility
+
+- Renders `role="switch"` with `aria-checked`. Space toggles it.
+- `label` names the switch. Without a `label`, pass `aria-label`.
+- The on state changes both colour and thumb position, so it does not rely on colour alone.
+
+## Agent guidance
+
+- Use Switch for on/off settings, and Button with `aria-pressed` for in-match toggles such as ready.
+- Keep the value in game settings state and apply it immediately; a switch should not need a Save button.

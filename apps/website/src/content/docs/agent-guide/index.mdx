@@ -11,13 +11,13 @@ These rules help coding agents build game UI consistently with the framework. Fo
 
 Know what kind of thing you are using before you use it.
 
-| Kind                     | What it is                                                                  | Examples                                                                       |
-| ------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Shipped React components | Import and render them. Styled, accessible, tested.                         | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard               |
-| World UI contracts       | Types only. **You** draw them in the game's renderer.                       | FloatingLabel, Nameplate, HealthBar                                            |
-| Game-owned examples      | Reference code in the docs site, not a package. Copy patterns, not imports. | [Canvas game](/world-ui/canvas/), [walkthrough](/getting-started/walkthrough/) |
-| Untested recipes         | Guidance only. Verify in the target engine before claiming support.         | [3D integration recipe](/world-ui/3d-recipe/)                                  |
-| Planned                  | Not available. Compose existing pieces instead.                             | Toast, InteractionPrompt, DamageNumber, ObjectiveMarker                        |
+| Kind                     | What it is                                                                  | Examples                                                                               |
+| ------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Shipped React components | Import and render them. Styled, accessible, tested.                         | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard, Slider, Switch, Tabs |
+| World UI contracts       | Types only. **You** draw them in the game's renderer.                       | FloatingLabel, Nameplate, HealthBar                                                    |
+| Game-owned examples      | Reference code in the docs site, not a package. Copy patterns, not imports. | [Canvas game](/world-ui/canvas/), [walkthrough](/getting-started/walkthrough/)         |
+| Untested recipes         | Guidance only. Verify in the target engine before claiming support.         | [3D integration recipe](/world-ui/3d-recipe/)                                          |
+| Planned                  | Not available. Compose existing pieces instead.                             | Toast, InteractionPrompt, DamageNumber, ObjectiveMarker                                |
 
 Never import from a package's `src` or from the website's example files. Use the public exports: `@gameui/ui/react` for components, `@gameui/ui` for token helpers and world contracts, and the CSS subpaths such as `@gameui/ui/themes.css` and `@gameui/ui/styles.css`.
 
@@ -35,7 +35,10 @@ If the same information appears in both, for example the selected unit's health,
 | Need                                                  | Use                                                                                                    |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | A clickable action                                    | [`Button`](/components/button/), variant by intent: `primary`, `secondary`, `danger`                   |
-| A toggle, such as ready or mute                       | `Button` with `aria-pressed`                                                                           |
+| An in-match toggle, such as ready                     | `Button` with `aria-pressed`                                                                           |
+| An on/off setting, such as subtitles or mute          | [`Switch`](/components/switch/)                                                                        |
+| A tuned setting, such as volume or sensitivity        | [`Slider`](/components/slider/); save in `onValueCommitted`                                            |
+| Sections within one screen, such as settings tabs     | [`Tabs`](/components/tabs/)                                                                            |
 | A grouped HUD section or menu                         | [`Panel`](/components/panel/) with a `title`                                                           |
 | A nested group, or a floating card                    | `Panel variant="inset"` or `variant="raised"`                                                          |
 | Pause menu, confirmation, match found, round over     | [`Modal`](/components/modal/); `dismissible={false}` when the player must choose                       |
@@ -49,7 +52,7 @@ If the same information appears in both, for example the selected unit's health,
 | A damage or heal number at a target                   | World `FloatingLabel` with `lifetimeMs`, a new `id` per event, and a tone                              |
 | "Press E to open" above an object                     | World `FloatingLabel` near the object, plus the key in screen UI for accessibility                     |
 | A notification or toast                               | `Panel` with text, positioned and timed by the game (Toast is planned, not shipped)                    |
-| A settings or loadout screen                          | `Panel`s containing native form controls and `Button`s                                                 |
+| A settings or loadout screen                          | `Panel` with `Tabs`, `Slider`s, and `Switch`es; see the [Slider example](/components/slider/)          |
 | A full HUD                                            | Compose the above; see the [HUD demo](/patterns/hud/) and [walkthrough](/getting-started/walkthrough/) |
 
 ## Step 3: Check variants and composition before building

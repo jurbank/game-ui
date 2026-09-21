@@ -9,6 +9,9 @@ import * as panelStyles from "../src/react/components/Panel/Panel.styles.ts";
 import * as playerListStyles from "../src/react/components/PlayerList/PlayerList.styles.ts";
 import * as progressBarStyles from "../src/react/components/ProgressBar/ProgressBar.styles.ts";
 import * as scoreboardStyles from "../src/react/components/Scoreboard/Scoreboard.styles.ts";
+import * as sliderStyles from "../src/react/components/Slider/Slider.styles.ts";
+import * as switchStyles from "../src/react/components/Switch/Switch.styles.ts";
+import * as tabsStyles from "../src/react/components/Tabs/Tabs.styles.ts";
 import * as timerStyles from "../src/react/components/Timer/Timer.styles.ts";
 
 const stylesPath = fileURLToPath(new URL("../src/react/styles.css", import.meta.url));
@@ -21,6 +24,9 @@ const styleModules: Record<string, string | Record<string, string>>[] = [
   scoreboardStyles,
   progressBarStyles,
   timerStyles,
+  sliderStyles,
+  switchStyles,
+  tabsStyles,
 ];
 
 const classStrings = styleModules.flatMap((styles) =>

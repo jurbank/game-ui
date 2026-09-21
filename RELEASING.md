@@ -33,34 +33,21 @@ While the version is `0.x`, use `minor` for breaking changes and `patch` for eve
 
 2. Review the version and changelog diff, then commit it as `chore: release vX.Y.Z`.
 
-3. Check what would be published. This runs the full validation gate (including the consumer fixture against packed tarballs) and an npm dry run:
+3. Check what would be published. This runs the full validation gate (including the consumer fixture against packed tarballs), packs the package, and runs an npm dry run:
 
    ```bash
-   vp run release:dry-run
+   pnpm run release:dry-run
    ```
 
    Confirm the tarball contains `dist`, `src/css`, `README.md`, `LICENSE`, `CHANGELOG.md`, and `package.json`.
 
-4. Publish from your machine.
-
-   npm requires two-factor authentication to publish, so enable it on your account first (npm profile → Two-Factor Authentication, with an authenticator app). You also need publish rights to the `@gameui` organization.
-
-   Log in from **outside this repository**. Its `devEngines` field requires pnpm, and the npm CLI refuses to run in a directory that declares another package manager:
+4. Publish from a terminal. You need publish rights to the `@gameui` organization and to be logged in (`cd ~ && npm login`; npm refuses to run inside this repository because its `devEngines` requires pnpm).
 
    ```bash
-   cd ~ && npm login && npm whoami
+   pnpm run release                # or: pnpm run release --skip-checks
    ```
 
-   A one-time code expires in about 30 seconds, which is shorter than the validation gate takes. So run the gate first, then publish with a fresh code:
-
-   ```bash
-   vp run ready
-   NPM_CONFIG_OTP=123456 vp run publish-packages
-   ```
-
-   This publishes the version if it is not yet on the registry and creates a git tag for it. `vp run release` does both steps in one command, but only works without 2FA or with a granular access token that has "bypass 2FA" enabled.
-
-   If a publish fails partway, re-run it with a new code. Already-published versions are skipped.
+   `tools/publish.mjs` runs `vp run ready`, packs with pnpm (which rewrites `exports` to `dist`; `npm pack` does not) into a temporary directory, runs `npm publish` from there, and creates the `@gameui/ui@<version>` git tag. npm prompts for your passkey or one-time code, so run it directly in a terminal rather than through `vp run` or a non-interactive shell. It refuses to run if the version is already on npm.
 
 5. Push the release commit and tags:
 

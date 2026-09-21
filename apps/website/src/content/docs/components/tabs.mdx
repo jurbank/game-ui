@@ -1,0 +1,86 @@
+---
+title: Tabs
+description: Themed tabs for switching between sections, such as settings categories or loadout pages.
+sidebar:
+  order: 10
+---
+
+import Example from "../../../components/Example.astro";
+import { SettingsScreen, TabsSizes } from "../../../components/examples/SettingsExamples.tsx";
+
+A row of tabs that shows one panel at a time.
+
+<Example>
+  <SettingsScreen client:load />
+</Example>
+
+## When to use
+
+- Splitting a screen into sections the player moves between: settings categories, loadout pages, lobby views, stat breakdowns.
+
+## When not to use
+
+- Navigation between whole screens or game states: that is game flow, owned by the game.
+- Content the player needs to compare side by side: show it together in [Panels](/components/panel/).
+
+## Usage
+
+```tsx
+import { Tabs } from "@gameui/ui/react";
+
+<Tabs
+  listLabel="Settings sections"
+  tabs={[
+    { value: "audio", label: "Audio", content: <AudioSettings /> },
+    { value: "video", label: "Video", content: <VideoSettings /> },
+    { value: "online", label: "Online", content: null, disabled: true },
+  ]}
+/>;
+```
+
+Tabs are uncontrolled by default and start on the first enabled tab, or `defaultValue`. Pass `value` and `onValueChange` to control the selected tab from game state, for example to reopen settings on the last section.
+
+Only the selected panel is rendered. Pass `keepMounted` to keep the others in the DOM, hidden, when a panel holds state that should survive switching.
+
+<Example>
+  <TabsSizes client:load />
+</Example>
+
+## Keyboard
+
+| Key           | Action                                |
+| ------------- | ------------------------------------- |
+| Left / Right  | Move between tabs                     |
+| Enter / Space | Select the focused tab                |
+| Tab           | Move from the tab list into the panel |
+
+## Props
+
+Tabs accepts native `<div>` props, including `ref`, plus:
+
+| Prop            | Type                      | Default           |
+| --------------- | ------------------------- | ----------------- |
+| `tabs`          | `readonly TabItem[]`      | required          |
+| `value`         | `string`                  | none              |
+| `defaultValue`  | `string`                  | first enabled tab |
+| `onValueChange` | `(value: string) => void` | none              |
+| `listLabel`     | `string`                  | none              |
+| `keepMounted`   | `boolean`                 | `false`           |
+| `size`          | `"sm" \| "md"`            | `"md"`            |
+
+Each `TabItem` has `value` (unique string), `label`, `content`, and optional `disabled`. The selected tab has `data-active`.
+
+## Theme tokens
+
+Uses `--game-primary`, `--game-primary-contrast`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-sm`, `--game-radius-md`, `--game-focus-ring`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-display`, `--game-font-size-*`, `--game-space-*`, `--game-duration-fast`, and `--game-ease`.
+
+## Accessibility
+
+- Renders `role="tablist"`, `role="tab"`, and `role="tabpanel"`, with each panel named by its tab.
+- Pass `listLabel` to name the tab list when the screen has more than one.
+- Disabled tabs stay visible but cannot be selected.
+
+## Agent guidance
+
+- Use Tabs for sections within one screen, not for moving between game states.
+- Keep tab `value`s stable strings; control `value` only when the game needs to remember or change the section.

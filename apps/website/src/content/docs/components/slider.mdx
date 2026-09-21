@@ -1,0 +1,94 @@
+---
+title: Slider
+description: A themed control for choosing a number in a range, such as volume, sensitivity, or field of view.
+sidebar:
+  order: 8
+---
+
+import Example from "../../../components/Example.astro";
+import { SettingsScreen, SliderExamples } from "../../../components/examples/SettingsExamples.tsx";
+
+A control the player drags or steps with the keyboard to choose a number in a range.
+
+<Example>
+  <SettingsScreen client:load />
+</Example>
+
+## When to use
+
+- Settings the player tunes by feel: volume, mouse or stick sensitivity, field of view, brightness, UI scale.
+- Any number where the approximate position matters more than typing an exact value.
+
+## When not to use
+
+- A value the player only reads, such as health or loading: use [ProgressBar](/components/progress-bar/).
+- On/off settings: use [Switch](/components/switch/).
+- A handful of named choices, such as difficulty: use [Tabs](/components/tabs/) or Buttons, not a slider with labelled stops.
+
+## Usage
+
+```tsx
+import { Slider } from "@gameui/ui/react";
+
+<Slider
+  label="Music volume"
+  value={settings.music}
+  onValueChange={(music) => setSettings({ ...settings, music })}
+  onValueCommitted={saveSettings}
+  showValue
+/>;
+```
+
+Slider is controlled with `value` and `onValueChange`, or uncontrolled with `defaultValue`. `onValueChange` fires continuously while dragging, so apply cheap changes there, such as a live volume. `onValueCommitted` fires once when the player lets go or finishes a key press: save settings or play a sample sound there.
+
+<Example>
+  <SliderExamples client:load />
+</Example>
+
+## Keyboard
+
+| Key                                 | Action                |
+| ----------------------------------- | --------------------- |
+| Arrow keys                          | Change by `step`      |
+| Page Up / Page Down, Shift + arrows | Change by `largeStep` |
+| Home / End                          | Jump to `min` / `max` |
+
+## Props
+
+Slider accepts native `<div>` props, including `ref`, plus:
+
+| Prop               | Type                       | Default       |
+| ------------------ | -------------------------- | ------------- |
+| `value`            | `number`                   | none          |
+| `defaultValue`     | `number`                   | none          |
+| `onValueChange`    | `(value: number) => void`  | none          |
+| `onValueCommitted` | `(value: number) => void`  | none          |
+| `min`              | `number`                   | `0`           |
+| `max`              | `number`                   | `100`         |
+| `step`             | `number`                   | `1`           |
+| `largeStep`        | `number`                   | `10`          |
+| `label`            | `ReactNode`                | none          |
+| `showValue`        | `boolean`                  | `false`       |
+| `format`           | `Intl.NumberFormatOptions` | plain number  |
+| `locale`           | `Intl.LocalesArgument`     | the runtime's |
+| `disabled`         | `boolean`                  | `false`       |
+| `name`             | `string`                   | none          |
+| `size`             | `"sm" \| "md"`             | `"md"`        |
+
+`format` sets both the displayed and the announced value. The root has `data-size`, plus `data-dragging` and `data-disabled` while those apply. The fill and thumb have `data-game-part="indicator"` and `data-game-part="thumb"`.
+
+## Theme tokens
+
+Uses `--game-primary`, `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-sm`, `--game-radius-md`, `--game-shadow`, `--game-focus-ring`, `--game-text`, `--game-text-muted`, `--game-font-body`, `--game-font-size-sm`, `--game-space-*`, `--game-duration-fast`, and `--game-ease`.
+
+## Accessibility
+
+- The thumb contains a native range input, so screen readers announce it as a slider with its value.
+- `label` names the slider. Without a `label`, pass `aria-label`.
+- The focus ring appears on the thumb while it has keyboard focus.
+
+## Agent guidance
+
+- Use Slider for any setting the player tunes, before building a custom drag control.
+- Keep the value in game settings state. Do expensive work in `onValueCommitted`, not `onValueChange`.
+- Use `format` for units (degrees, percent) rather than adding text around the slider.

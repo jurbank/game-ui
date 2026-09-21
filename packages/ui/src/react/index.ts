@@ -46,3 +46,6 @@ export {
   type ScoreboardRow,
   type ScoreboardSize,
 } from "./components/Scoreboard/index.ts";
+export { Slider, type SliderProps, type SliderSize } from "./components/Slider/index.ts";
+export { Switch, type SwitchProps, type SwitchSize } from "./components/Switch/index.ts";
+export { Tabs, type TabItem, type TabsProps, type TabsSize } from "./components/Tabs/index.ts";

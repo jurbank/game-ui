@@ -1,5 +1,15 @@
 # @gameui/ui
 
+## 0.2.0
+
+### Minor Changes
+
+- Add `Slider`, `Switch`, and `Tabs` to `@gameui/ui/react`, the first of the settings-and-menus set. All three are built on Base UI and styled with the semantic tokens, so they follow every theme.
+
+  - `Slider`: a single-value range control with `onValueChange` while dragging and `onValueCommitted` once on release, for saving settings or playing a sample sound.
+  - `Switch`: an on/off control; with `label`, the text is clickable too.
+  - `Tabs`: data-driven sections (`tabs={[{ value, label, content }]}`), starting on the first enabled tab.
+
 ## 0.1.0
 
 ### Minor Changes
