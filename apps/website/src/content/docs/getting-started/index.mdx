@@ -35,7 +35,15 @@ vp run -r build
 for p in core themes react world-ui; do (cd packages/$p && pnpm pack --pack-destination ../../.tarballs); done
 ```
 
-`@gameui/react` depends on version ranges of core and themes, which pnpm would look up on the registry, so point those at the tarballs too. With pnpm, in your project's `pnpm-workspace.yaml`:
+Then install the tarballs your game imports directly:
+
+```bash
+# In your game
+pnpm add file:../game-ui/.tarballs/gameui-react-0.1.0.tgz \
+         file:../game-ui/.tarballs/gameui-themes-0.1.0.tgz
+```
+
+`@gameui/react` also depends on version ranges of core and themes, which pnpm would look up on the registry, so point those at the tarballs too. With pnpm, in your project's `pnpm-workspace.yaml`:
 
 ```yaml
 overrides:
@@ -44,7 +52,7 @@ overrides:
   "@gameui/world-ui": "file:../game-ui/.tarballs/gameui-world-ui-0.1.0.tgz"
 ```
 
-`examples/consumer` in the repository is a working setup of exactly this, verified by `vp run verify-consumer`.
+`examples/consumer` in the repository is a working setup of exactly this, verified by `vp run verify-consumer`. Add `@gameui/world-ui` the same way if your game draws world UI.
 :::
 
 ### Tested versions

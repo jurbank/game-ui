@@ -9,14 +9,15 @@ This page records what has actually been tested. Anything not listed as tested m
 
 ## Tested combinations
 
-Recorded 2026-09-18. The first three rows run on every `vp run ready`; browser review is manual.
+Recorded 2026-09-18, with the clean-install walkthrough and browser review repeated 2026-09-21. The first three rows run on every `vp run ready`; the last two are manual.
 
-| Where                                  | What is verified                                                                                                        | Versions                                                                                                                  |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Consumer fixture (`examples/consumer`) | Installs packed tarballs outside the workspace, type checks the shipped declarations, builds, and checks the CSS output | React and react-dom 19.3.0, TypeScript 5.9.3 (`skipLibCheck: false`), Vite 7.3.6, Tailwind CSS 4.3.3, pnpm 11.21, Node 24 |
-| Workspace packages and tests           | Lint, type check, unit and component tests in happy-dom, package builds                                                 | TypeScript 7.0, Vite+ 0.2.9, React 19.3, Base UI 1.8, pnpm 12.4.2, Node 24.15                                             |
-| Documentation site                     | Production build and static prerendering of every example                                                               | Astro 7.2, Starlight 0.42                                                                                                 |
-| Browser review                         | All components in all three themes, keyboard and modal behavior, the canvas game, the walkthrough                       | Chrome 152 on macOS 26.5.2                                                                                                |
+| Where                                  | What is verified                                                                                                                                       | Versions                                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Consumer fixture (`examples/consumer`) | Installs packed tarballs outside the workspace, type checks the shipped declarations, builds, and checks the CSS output                                | React and react-dom 19.3.0, TypeScript 5.9.3 (`skipLibCheck: false`), Vite 7.3.6, Tailwind CSS 4.3.3, pnpm 11.21, Node 24 |
+| Workspace packages and tests           | Lint, type check, unit and component tests in happy-dom, package builds                                                                                | TypeScript 7.0, Vite+ 0.2.9, React 19.3, Base UI 1.8, pnpm 12.4.2, Node 24.15                                             |
+| Documentation site                     | Production build and static prerendering of every example                                                                                              | Astro 7.2, Starlight 0.42                                                                                                 |
+| Clean-install walkthrough              | These installation instructions followed from scratch in a new Vite app, without Tailwind: build, styling, theme, and keyboard behavior in the browser | React 19.2, TypeScript 6.0.3, Vite 8.3, pnpm 11.21, Node 24, no Tailwind                                                  |
+| Browser review                         | All components in all three themes, keyboard and modal behavior, the canvas game, the walkthrough                                                      | Chrome 152 on macOS 26.5.2                                                                                                |
 
 ## Declared requirements
 
@@ -24,7 +25,7 @@ Recorded 2026-09-18. The first three rows run on every `vp run ready`; browser r
 | ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | React, react-dom | `^19.0.0` (peer dependencies)                     | Only 19.3 is tested. React 18 is not supported.                                                                         |
 | Module format    | ESM only                                          | No CommonJS build. Use a bundler, with TypeScript `moduleResolution` set to `bundler`, `node16`, or `nodenext`.         |
-| TypeScript       | Any version that reads the shipped `.d.mts` files | 5.9 and 7.0 are tested.                                                                                                 |
+| TypeScript       | Any version that reads the shipped `.d.mts` files | 5.9, 6.0, and 7.0 are tested.                                                                                           |
 | Tailwind CSS     | Optional; v4 for `@gameui/themes/tailwind.css`    | Component styles are precompiled, so Tailwind is not required. The token utilities mapping uses Tailwind v4's `@theme`. |
 | Node             | `>=22.18.0` to develop this repository            | Consumers need Node only for their own build tooling.                                                                   |
 

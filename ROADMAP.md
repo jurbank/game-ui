@@ -138,7 +138,11 @@ Draw cost scales roughly linearly with descriptor count and stays under 10% of t
 - [x] Test built package artifacts in a minimal consumer fixture outside workspace source resolution. Verify JavaScript, declarations, CSS exports, peer dependencies, and production styling.
 - [x] Record supported runtime/framework versions based on tested combinations, plus known limitations and reference-example capabilities. Do not claim engine support based only on an untested recipe.
 - [x] Choose the initial distribution method and versioning/release process; prepare package metadata and a changelog. Registry publication is a separate release step.
-- [ ] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+- [x] Run the full validation gate and walk through the onboarding instructions from a clean consumer setup.
+
+**Clean-install walkthrough (2026-09-21):** done. The published Installation steps were followed from scratch in a new `pnpm create vite react-ts` app outside the repository: pack commands, tarball install with `overrides`, the non-Tailwind CSS import order, `data-game-theme`, and the documented component snippet. It built and ran on TypeScript 6.0.3 and Vite 8.3 (both newer than the fixture's versions), with all three themes and component utilities in the production CSS, working clicks, correct ARIA values, and a themed focus ring. No console errors.
+
+The walkthrough found one documentation gap: the caution block explained `overrides` for transitive dependencies but never showed installing `@gameui/react` itself from a tarball. Installation now shows the full command, and a second from-scratch app confirmed the corrected steps, including `@gameui/world-ui` types compiling under TypeScript 6.
 
 **Distribution status (2026-09-18):** done. Packages are renamed to the `@gameui` npm scope (the `@game-ui` organization belongs to someone else) and will be published to npm from a maintainer's machine. Changesets versions all four as a fixed group; the initial changeset produced 0.1.0 and per-package changelogs. Internal dependencies use `workspace:^` and publish as caret ranges. Packages carry repository, homepage, bugs, keywords, author, and an MIT `LICENSE`; tarballs include `CHANGELOG.md`. `vp run release:dry-run` runs the gate plus `pnpm publish --dry-run`, and `RELEASING.md` documents the process. Publishing itself, and creating the `gameui` npm organization, remain a separate step for the maintainer.
 
