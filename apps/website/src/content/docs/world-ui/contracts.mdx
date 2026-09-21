@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-Import `FloatingLabel`, `Nameplate`, `HealthBar`, `WorldDescriptor`, `WorldAnchor`, `WorldOffset`, `WorldPoint2D`, `WorldPoint3D`, `WorldDimension`, `WorldPoint`, `WorldPresentation`, and `WorldTone` as types from `@gameui/world-ui`. Use the dimension parameter (`HealthBar<"3d">`) when an integration knows its world dimension. `WorldDescriptor` is a union discriminated by `kind`.
+Import `FloatingLabel`, `Nameplate`, `HealthBar`, `WorldDescriptor`, `WorldAnchor`, `WorldOffset`, `WorldPoint2D`, `WorldPoint3D`, `WorldDimension`, `WorldPoint`, `WorldPresentation`, and `WorldTone` as types from `@gameui/ui`. Use the dimension parameter (`HealthBar<"3d">`) when an integration knows its world dimension. `WorldDescriptor` is a union discriminated by `kind`.
 
 ## Shared configuration
 
@@ -28,7 +28,7 @@ Required behavior includes content updates, tones, visibility, missing anchors, 
 ## Anchors and offsets
 
 ```ts
-import type { WorldAnchor, WorldOffset } from "@gameui/world-ui";
+import type { WorldAnchor, WorldOffset } from "@gameui/ui";
 
 const entity: WorldAnchor<"3d"> = {
   kind: "entity",

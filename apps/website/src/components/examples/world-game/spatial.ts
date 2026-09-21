@@ -1,4 +1,4 @@
-import type { WorldDescriptor, WorldPoint2D } from "@gameui/world-ui";
+import type { WorldDescriptor, WorldPoint2D } from "@gameui/ui";
 
 export interface Camera2D {
   x: number;

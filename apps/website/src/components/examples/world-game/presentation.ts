@@ -1,5 +1,4 @@
-import { tokenProperty, type GameToken } from "@gameui/core";
-import type { WorldTone } from "@gameui/world-ui";
+import { tokenProperty, type GameToken, type WorldTone } from "@gameui/ui";
 
 export interface CanvasPresentation {
   background: string;

@@ -8,7 +8,7 @@ sidebar:
 import Example from "../../../components/Example.astro";
 import { WorldPreview } from "../../../components/examples/WorldPreview";
 
-A bar showing an entity's current health against its maximum. HealthBar is a **contract**: `@gameui/world-ui` defines its data, and your renderer draws it.
+A bar showing an entity's current health against its maximum. HealthBar is a **contract**: `@gameui/ui` defines its data, and your renderer draws it.
 
 <Example theme="tactical">
   <WorldPreview
@@ -81,7 +81,7 @@ This still frame uses the [canvas reference game](/world-ui/canvas/)'s drawing c
 ## Usage
 
 ```ts
-import type { HealthBar } from "@gameui/world-ui";
+import type { HealthBar } from "@gameui/ui";
 
 const health: HealthBar<"2d"> = {
   kind: "health-bar",

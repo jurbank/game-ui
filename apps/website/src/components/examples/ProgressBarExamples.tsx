@@ -1,4 +1,4 @@
-import { Button, Panel, ProgressBar } from "@gameui/react";
+import { Button, Panel, ProgressBar } from "@gameui/ui/react";
 import { useState } from "react";
 
 /** A HUD readout. The match values live in this example, not in the framework. */

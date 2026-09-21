@@ -8,7 +8,7 @@ sidebar:
 import Example from "../../../components/Example.astro";
 import { WorldPreview } from "../../../components/examples/WorldPreview";
 
-A character's identity in the world: name, an optional short status, and whether the player has selected them. Nameplate is a **contract**: `@gameui/world-ui` defines its data, and your renderer draws it.
+A character's identity in the world: name, an optional short status, and whether the player has selected them. Nameplate is a **contract**: `@gameui/ui` defines its data, and your renderer draws it.
 
 <Example theme="tactical">
   <WorldPreview
@@ -64,7 +64,7 @@ This still frame uses the [canvas reference game](/world-ui/canvas/)'s drawing c
 ## Usage
 
 ```ts
-import type { Nameplate } from "@gameui/world-ui";
+import type { Nameplate } from "@gameui/ui";
 
 const nameplate: Nameplate<"3d"> = {
   kind: "nameplate",

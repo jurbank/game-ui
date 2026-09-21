@@ -1,4 +1,4 @@
-import { Button, Panel, Timer } from "@gameui/react";
+import { Button, Panel, Timer } from "@gameui/ui/react";
 import { useEffect, useRef, useState } from "react";
 
 const ROUND_MS = 90_000;

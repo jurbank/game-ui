@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { describe, expect, test } from "vite-plus/test";
 
 /**
@@ -8,15 +8,21 @@ import { describe, expect, test } from "vite-plus/test";
  * Add a package here when it is introduced.
  */
 const allowedDependencies: Record<string, readonly string[]> = {
-  "@gameui/core": [],
-  "@gameui/themes": ["@gameui/core"],
-  "@gameui/react": ["@gameui/core", "@gameui/themes", "@base-ui/react", "react", "react-dom"],
-  "@gameui/world-ui": ["@gameui/core"],
-  "@gameui/phaser": ["@gameui/core", "@gameui/world-ui", "phaser"],
+  "@gameui/ui": ["@base-ui/react", "react", "react-dom"],
+  "@gameui/phaser": ["@gameui/ui", "phaser"],
+};
+
+/**
+ * Source paths, relative to a package, that must stay renderer-free: they may
+ * not import renderer frameworks or reach into the package's React code. This
+ * is what keeps `@gameui/ui`'s root entry usable by games without React.
+ */
+const rendererFreeSources: Record<string, readonly string[]> = {
+  "@gameui/ui": ["src/index.ts", "src/tokens", "src/world", "src/css"],
 };
 
 /** Renderer and site frameworks that only specific packages may use. */
-const restrictedModules = ["react", "react-dom", "phaser", "astro"];
+const restrictedModules = ["react", "react-dom", "@base-ui/react", "phaser", "astro"];
 
 const packagesDir = new URL("../../../packages/", import.meta.url).pathname;
 
@@ -37,16 +43,19 @@ function sourceFiles(dir: string): string[] {
   });
 }
 
-/** The package name of each bare module specifier imported by a file. */
-function importedPackages(file: string): string[] {
+/** Every module specifier imported by a file. */
+function importSpecifiers(file: string): string[] {
   const code = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm, "");
-  const specifiers = [
+  return [
     ...code.matchAll(/\bfrom\s+["']([^"']+)["']/g),
     ...code.matchAll(/\bimport\s*\(?\s*["']([^"']+)["']/g),
     ...code.matchAll(/@import\s+["']([^"']+)["']/g),
   ].map(([, specifier]) => specifier);
+}
 
-  return specifiers
+/** The package name of each bare module specifier imported by a file. */
+function importedPackages(file: string): string[] {
+  return importSpecifiers(file)
     .filter((specifier) => !specifier.startsWith(".") && !specifier.startsWith("node:"))
     .map((specifier) =>
       specifier
@@ -88,3 +97,27 @@ describe.each(packages)("$manifest.name", ({ path, manifest }) => {
     }
   });
 });
+
+describe.each(packages.filter(({ manifest }) => rendererFreeSources[manifest.name]))(
+  "$manifest.name renderer-free sources",
+  ({ path, manifest }) => {
+    const roots = rendererFreeSources[manifest.name]!.map((entry) => join(path, entry));
+    const files = roots.flatMap((root) =>
+      statSync(root).isDirectory() ? sourceFiles(root) : [root],
+    );
+    const reactDir = join(path, "src", "react");
+
+    test.each(files.map((file) => ({ file: file.slice(path.length + 1), abs: file })))(
+      "$file imports no renderer code",
+      ({ abs }) => {
+        for (const name of importedPackages(abs)) {
+          expect(restrictedModules, `${abs} must not import ${name}`).not.toContain(name);
+        }
+        for (const specifier of importSpecifiers(abs).filter((s) => s.startsWith("."))) {
+          const target = resolve(dirname(abs), specifier);
+          expect(target.startsWith(reactDir), `${abs} must not import ${specifier}`).toBe(false);
+        }
+      },
+    );
+  },
+);

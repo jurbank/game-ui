@@ -6,7 +6,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "ignore": [],
-  "fixed": [["@gameui/core", "@gameui/themes", "@gameui/react", "@gameui/world-ui"]],
+  "fixed": [],
   "linked": [],
   "updateInternalDependencies": "patch",
   "privatePackages": false

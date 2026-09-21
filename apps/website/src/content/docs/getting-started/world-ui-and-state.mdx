@@ -11,10 +11,10 @@ The [canvas reference game](/world-ui/canvas/) implements everything here in Can
 
 ## 1. Describe world UI with the contracts
 
-`@gameui/world-ui` exports types only. Build plain descriptors for FloatingLabel, Nameplate, and HealthBar, anchored to a game entity id or a world position:
+`@gameui/ui` exports types only. Build plain descriptors for FloatingLabel, Nameplate, and HealthBar, anchored to a game entity id or a world position:
 
 ```ts
-import type { HealthBar, Nameplate } from "@gameui/world-ui";
+import type { HealthBar, Nameplate } from "@gameui/ui";
 
 const anchor = { kind: "entity", dimension: "2d", entityId: pilot.id } as const;
 
@@ -56,7 +56,7 @@ Your scene owns rendering, the update loop, culling, and pooling. The usual shap
 Renderers can't read CSS variables, so resolve the tokens your world UI uses once, at startup and whenever the theme changes, and pass plain values to the scene:
 
 ```ts
-import { tokenProperty, type GameToken } from "@gameui/core";
+import { tokenProperty, type GameToken } from "@gameui/ui";
 
 export function readPresentation(element: HTMLElement) {
   const styles = getComputedStyle(element);

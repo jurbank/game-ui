@@ -5,9 +5,9 @@
 @layer theme, base, game-ui, components, utilities;
 
 @import "tailwindcss";
-@import "@gameui/themes";
-@import "@gameui/react/styles.css";
-@import "@gameui/themes/tailwind.css";
+@import "@gameui/ui/themes.css";
+@import "@gameui/ui/styles.css";
+@import "@gameui/ui/tailwind.css";
 
 /* Game styles and token overrides follow the framework imports. */
 body {

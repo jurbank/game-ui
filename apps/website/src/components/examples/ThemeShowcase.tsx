@@ -1,4 +1,4 @@
-import { Button, Panel, PlayerList, ProgressBar, Timer, type PlayerEntry } from "@gameui/react";
+import { Button, Panel, PlayerList, ProgressBar, Timer, type PlayerEntry } from "@gameui/ui/react";
 
 const players: PlayerEntry[] = [
   { id: "p1", name: "Nova", status: "Ready", statusTone: "success", detail: "1,240", self: true },

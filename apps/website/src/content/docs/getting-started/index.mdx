@@ -5,54 +5,30 @@ sidebar:
   order: 1
 ---
 
-Game UI is split into small packages so a game installs only the layers it uses.
+Game UI is one package, `@gameui/ui`, with separate entry points so a game loads only the layers it uses.
 
-| Package            | Use it for                                                        | Depends on                         |
-| ------------------ | ----------------------------------------------------------------- | ---------------------------------- |
-| `@gameui/themes`   | Token values, the three starting themes, and the Tailwind mapping | Nothing                            |
-| `@gameui/react`    | Screen UI components such as Button, Panel, and Modal             | core, themes, Base UI; React peers |
-| `@gameui/core`     | Token names and helpers for code outside React, such as a canvas  | Nothing                            |
-| `@gameui/world-ui` | Type-only contracts for world UI you draw in your own renderer    | Nothing at runtime                 |
+| Import                    | Use it for                                                                 | Loads React |
+| ------------------------- | -------------------------------------------------------------------------- | ----------- |
+| `@gameui/ui/react`        | Screen UI components such as Button, Panel, and Modal                      | Yes         |
+| `@gameui/ui/themes.css`   | Token values, the three starting themes, and base styles                   | No          |
+| `@gameui/ui/styles.css`   | Precompiled component styles for `@gameui/ui/react`                        | No          |
+| `@gameui/ui/tailwind.css` | Tailwind CSS v4 mapping from utilities to tokens                           | No          |
+| `@gameui/ui`              | Token names and helpers, and type-only world UI contracts for any renderer | No          |
 
-A game with only React screen UI needs `@gameui/react` and `@gameui/themes`. Add `@gameui/world-ui` and `@gameui/core` when you draw world labels or health bars in your game's renderer.
+A game with React screen UI uses `@gameui/ui/react` plus the stylesheets. A game that draws everything in its own renderer, such as a canvas or three.js game without React, can use `@gameui/ui` and the theme CSS alone.
 
 ## Install
 
 ```bash
-pnpm add @gameui/react @gameui/themes react react-dom
-# Optional, for world UI drawn by your game:
-pnpm add @gameui/world-ui @gameui/core
+pnpm add @gameui/ui react react-dom
+# A game without React screen UI only needs:
+pnpm add @gameui/ui
 ```
 
-`@gameui/react` requires React 19 as a peer dependency, so your game controls the React version. All packages are ESM-only and ship TypeScript declarations. Use a bundler such as Vite, with `"moduleResolution": "bundler"` (or `node16`/`nodenext`) in `tsconfig.json`.
+React 19 is an optional peer dependency: required for `@gameui/ui/react`, unused by everything else. Without React installed, pnpm may warn that Base UI, which the components use internally, is missing its React peer; nothing outside `@gameui/ui/react` loads it. The package is ESM-only and ships TypeScript declarations. Use a bundler such as Vite, with `"moduleResolution": "bundler"` (or `node16`/`nodenext`) in `tsconfig.json`.
 
-:::caution[Not on a registry yet]
-Packages are not published yet. Inside this repository, depend on them with `workspace:*`. From another project, build and pack them, then install the tarballs:
-
-```bash
-# In the Game UI repository
-vp run -r build
-for p in core themes react world-ui; do (cd packages/$p && pnpm pack --pack-destination ../../.tarballs); done
-```
-
-Then install the tarballs your game imports directly:
-
-```bash
-# In your game
-pnpm add file:../game-ui/.tarballs/gameui-react-0.1.0.tgz \
-         file:../game-ui/.tarballs/gameui-themes-0.1.0.tgz
-```
-
-`@gameui/react` also depends on version ranges of core and themes, which pnpm would look up on the registry, so point those at the tarballs too. With pnpm, in your project's `pnpm-workspace.yaml`:
-
-```yaml
-overrides:
-  "@gameui/core": "file:../game-ui/.tarballs/gameui-core-0.1.0.tgz"
-  "@gameui/themes": "file:../game-ui/.tarballs/gameui-themes-0.1.0.tgz"
-  "@gameui/world-ui": "file:../game-ui/.tarballs/gameui-world-ui-0.1.0.tgz"
-```
-
-`examples/consumer` in the repository is a working setup of exactly this, verified by `vp run verify-consumer`. Add `@gameui/world-ui` the same way if your game draws world UI.
+:::note[Developing alongside a game]
+To try unreleased changes in a game, point the dependency at a local checkout, for example `"@gameui/ui": "link:../game-ui/packages/ui"`, and switch back to a version range afterwards. A linked checkout resolves to `dist`, so run `vp run @gameui/ui#build` after changes. `examples/consumer` in the repository installs a packed tarball instead, verified by `vp run verify-consumer`.
 :::
 
 ### Tested versions
@@ -69,9 +45,9 @@ With Tailwind CSS v4:
 @layer theme, base, game-ui, components, utilities;
 
 @import "tailwindcss";
-@import "@gameui/themes";
-@import "@gameui/react/styles.css";
-@import "@gameui/themes/tailwind.css";
+@import "@gameui/ui/themes.css";
+@import "@gameui/ui/styles.css";
+@import "@gameui/ui/tailwind.css";
 
 /* Your game styles and token overrides */
 ```
@@ -79,8 +55,8 @@ With Tailwind CSS v4:
 Without Tailwind:
 
 ```css title="src/styles.css"
-@import "@gameui/themes";
-@import "@gameui/react/styles.css";
+@import "@gameui/ui/themes.css";
+@import "@gameui/ui/styles.css";
 
 /* Your game styles and token overrides */
 ```
@@ -115,7 +91,7 @@ Framework styles are layered, so these win without higher specificity. When you 
 ## Render components
 
 ```tsx
-import { Button, Panel, ProgressBar } from "@gameui/react";
+import { Button, Panel, ProgressBar } from "@gameui/ui/react";
 
 export function PauseMenu({ health, onResume }: { health: number; onResume: () => void }) {
   return (

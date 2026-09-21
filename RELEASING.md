@@ -1,6 +1,15 @@
 # Releasing
 
-`@gameui/core`, `@gameui/themes`, `@gameui/react`, and `@gameui/world-ui` are published to npm under the `@gameui` scope. They are versioned together with [Changesets](https://github.com/changesets/changesets): every release bumps all four to the same version.
+`@gameui/ui` is published to npm under the `@gameui` scope and versioned with [Changesets](https://github.com/changesets/changesets).
+
+It replaces `@gameui/core`, `@gameui/themes`, `@gameui/react`, and `@gameui/world-ui`, which were published once at 0.1.0. After the first `@gameui/ui` release, deprecate them so installs point people to the new package. Run it from outside this repository, with a fresh one-time code:
+
+```bash
+cd ~
+for p in core themes react world-ui; do
+  npm deprecate "@gameui/$p" "Merged into @gameui/ui. See https://github.com/jurbank/game-ui#readme" --otp=123456
+done
+```
 
 ## Recording changes
 
@@ -10,7 +19,7 @@ Any change that affects a published package needs a changeset:
 vp run changeset
 ```
 
-Choose the bump for the affected packages and describe the change for consumers. Because the packages are a fixed group, the highest bump applies to all four. Commit the generated `.changeset/*.md` file with the change. Documentation-site and tooling-only changes need no changeset.
+Choose the bump and describe the change for consumers. Commit the generated `.changeset/*.md` file with the change. Documentation-site and tooling-only changes need no changeset.
 
 While the version is `0.x`, use `minor` for breaking changes and `patch` for everything else.
 
@@ -30,16 +39,28 @@ While the version is `0.x`, use `minor` for breaking changes and `patch` for eve
    vp run release:dry-run
    ```
 
-   Confirm each tarball contains `dist` (or `src` for themes), `README.md`, `LICENSE`, `CHANGELOG.md`, and `package.json`, and that internal dependencies are caret ranges such as `^0.1.0`.
+   Confirm the tarball contains `dist`, `src/css`, `README.md`, `LICENSE`, `CHANGELOG.md`, and `package.json`.
 
-4. Publish from your machine. You must be logged in to npm with publish rights to the `@gameui` organization:
+4. Publish from your machine.
+
+   npm requires two-factor authentication to publish, so enable it on your account first (npm profile → Two-Factor Authentication, with an authenticator app). You also need publish rights to the `@gameui` organization.
+
+   Log in from **outside this repository**. Its `devEngines` field requires pnpm, and the npm CLI refuses to run in a directory that declares another package manager:
 
    ```bash
-   npm login
-   vp run release
+   cd ~ && npm login && npm whoami
    ```
 
-   This runs the validation gate again, publishes any package version not yet on the registry, and creates a git tag per package.
+   A one-time code expires in about 30 seconds, which is shorter than the validation gate takes. So run the gate first, then publish with a fresh code:
+
+   ```bash
+   vp run ready
+   NPM_CONFIG_OTP=123456 vp run publish-packages
+   ```
+
+   This publishes the version if it is not yet on the registry and creates a git tag for it. `vp run release` does both steps in one command, but only works without 2FA or with a granular access token that has "bypass 2FA" enabled.
+
+   If a publish fails partway, re-run it with a new code. Already-published versions are skipped.
 
 5. Push the release commit and tags:
 

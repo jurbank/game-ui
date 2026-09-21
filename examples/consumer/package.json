@@ -9,10 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@gameui/core": "file:.tarballs/gameui-core.tgz",
-    "@gameui/react": "file:.tarballs/gameui-react.tgz",
-    "@gameui/themes": "file:.tarballs/gameui-themes.tgz",
-    "@gameui/world-ui": "file:.tarballs/gameui-world-ui.tgz",
+    "@gameui/ui": "file:.tarballs/gameui-ui.tgz",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

@@ -4,14 +4,6 @@
 packages:
   - .
 
-# @gameui/react depends on core and themes by version. Until those versions
-# exist on a registry, point the transitive resolutions at the same tarballs.
-# Remove this block once the packages are published.
-overrides:
-  "@gameui/core": "file:.tarballs/gameui-core.tgz"
-  "@gameui/themes": "file:.tarballs/gameui-themes.tgz"
-  "@gameui/world-ui": "file:.tarballs/gameui-world-ui.tgz"
-
 # Same policy as the repository root: esbuild needs its postinstall.
 allowBuilds:
   esbuild: true

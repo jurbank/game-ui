@@ -1,4 +1,4 @@
-import { Button, Panel, PlayerList, type PlayerEntry } from "@gameui/react";
+import { Button, Panel, PlayerList, type PlayerEntry } from "@gameui/ui/react";
 import { useState } from "react";
 
 const roster: { id: string; name: string; score: number }[] = [

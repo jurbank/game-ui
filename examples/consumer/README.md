@@ -5,7 +5,7 @@ tarballs, outside this repository's pnpm workspace.
 
 It exists because nothing else in the repository can catch a broken published
 package. Workspace checks, tests, and the documentation website all resolve
-`@gameui/*` through the `@gameui/source` export condition, which points at
+`@gameui/ui` through the `@gameui/source` export condition, which points at
 `src`. A broken `dist` build, export map, or CSS entry would pass all of them.
 
 ## Run it
@@ -14,7 +14,7 @@ package. Workspace checks, tests, and the documentation website all resolve
 vp run verify-consumer   # from the repository root
 ```
 
-That builds the packages, packs them, lints the published shape, installs the
+That packs the built package, lints the published shape, installs the
 tarballs here, type checks, builds, and asserts the output.
 
 ## What it verifies
@@ -37,12 +37,3 @@ consumer is likely to have.
 `examples/` is not matched by the root `pnpm-workspace.yaml` globs, and this
 directory has its own `pnpm-workspace.yaml`. pnpm stops at the nearest workspace
 file, so the fixture resolves independently and gets its own lockfile.
-
-## The overrides
-
-`pnpm-workspace.yaml` overrides `@gameui/core`, `@gameui/themes`, and
-`@gameui/world-ui` to the local tarballs. `@gameui/react` depends on them by
-version, and those versions are not on a registry yet, so without the overrides
-pnpm tries to fetch them and fails. Remove the overrides once the packages are
-published; that is the point at which this fixture also starts proving that real
-published versions resolve.

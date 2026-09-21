@@ -1,4 +1,4 @@
-import { Button, Panel } from "@gameui/react";
+import { Button, Panel } from "@gameui/ui/react";
 import { useState } from "react";
 
 /** Lobby ready check. Match state lives in this example, not in the framework. */

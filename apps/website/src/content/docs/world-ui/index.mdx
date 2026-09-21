@@ -5,10 +5,10 @@ sidebar:
   order: 1
 ---
 
-`@gameui/world-ui` exports TypeScript contracts for **FloatingLabel**, **Nameplate**, and **HealthBar**: plain-data descriptions of UI attached to an entity or world position. They introduce no renderer, DOM dependency, React component, store, or update loop.
+`@gameui/ui` exports TypeScript contracts for **FloatingLabel**, **Nameplate**, and **HealthBar**: plain-data descriptions of UI attached to an entity or world position. They introduce no renderer, DOM dependency, React component, store, or update loop.
 
 ```ts
-import type { HealthBar } from "@gameui/world-ui";
+import type { HealthBar } from "@gameui/ui";
 
 const health: HealthBar<"2d"> = {
   kind: "health-bar",

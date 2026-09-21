@@ -2,10 +2,10 @@
 /**
  * Verifies the built packages the way a consumer receives them.
  *
- * Workspace checks, tests, and the website all resolve `@gameui/*` to source
+ * Workspace checks, tests, and the website all resolve `@gameui/ui` to source
  * through the `@gameui/source` export condition, so none of them can catch a
- * broken `dist` output, export map, or CSS entry. This script packs real
- * tarballs, installs them into `examples/consumer` (which is outside the pnpm
+ * broken `dist` output, export map, or CSS entry. This script packs a real
+ * tarball, installs it into `examples/consumer` (which is outside the pnpm
  * workspace and has no access to that condition), then type checks and builds.
  */
 import { execFileSync } from "node:child_process";
@@ -16,7 +16,8 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const fixture = join(root, "examples", "consumer");
 const tarballs = join(fixture, ".tarballs");
-const PACKAGES = ["core", "themes", "react", "world-ui"];
+const packageDir = join(root, "packages", "ui");
+const tarball = join(tarballs, "gameui-ui.tgz");
 
 const run = (cmd, args, cwd) => {
   process.stdout.write(`\n$ ${cmd} ${args.join(" ")}   (${cwd.replace(root, ".")})\n`);
@@ -25,59 +26,55 @@ const run = (cmd, args, cwd) => {
 
 const step = (message) => process.stdout.write(`\n=== ${message}\n`);
 
-// 1. Pack each package to a stable filename the fixture can pin. Packages must
+// 1. Pack the package to a stable filename the fixture can pin. It must
 //    already be built: this runs as a `vp run` task, and invoking `vp run -r
 //    build` from inside one re-enters the task graph and fails.
-for (const name of PACKAGES) {
-  // themes is CSS-only and publishes src, so it has no dist.
-  if (name === "themes") continue;
-  if (!existsSync(join(root, "packages", name, "dist"))) {
-    process.stderr.write(
-      `\npackages/${name}/dist is missing. Run \`vp run -r build\` first, or use \`vp run ready\`.\n`,
-    );
-    process.exit(1);
-  }
+if (!existsSync(join(packageDir, "dist"))) {
+  process.stderr.write(
+    `\npackages/ui/dist is missing. Run \`vp run -r build\` first, or use \`vp run ready\`.\n`,
+  );
+  process.exit(1);
 }
 
-step("Packing tarballs");
+step("Packing tarball");
 rmSync(tarballs, { recursive: true, force: true });
 mkdirSync(tarballs, { recursive: true });
-for (const name of PACKAGES) {
-  const dir = join(root, "packages", name);
-  run("pnpm", ["pack", "--pack-destination", tarballs], dir);
-  const packed = readdirSync(tarballs).find(
-    (file) => file.startsWith(`gameui-${name}-`) && file.endsWith(".tgz"),
-  );
-  if (!packed) throw new Error(`pnpm pack produced no tarball for ${name}`);
-  copyFileSync(join(tarballs, packed), join(tarballs, `gameui-${name}.tgz`));
-}
+run("pnpm", ["pack", "--pack-destination", tarballs], packageDir);
+const packed = readdirSync(tarballs).find(
+  (file) => file.startsWith("gameui-ui-") && file.endsWith(".tgz"),
+);
+if (!packed) throw new Error("pnpm pack produced no tarball");
+copyFileSync(join(tarballs, packed), tarball);
 
-// 2. Static export-map and type-resolution checks against the real tarballs.
+// 2. Static export-map and type-resolution checks against the real tarball.
 step("Linting published package shape (publint)");
-for (const name of PACKAGES) {
-  run("pnpm", ["dlx", "publint@0.3.24", join(tarballs, `gameui-${name}.tgz`)], root);
-}
+run("pnpm", ["dlx", "publint@0.3.24", tarball], root);
 
 step("Checking type resolution (arethetypeswrong)");
-for (const name of ["core", "react", "world-ui"]) {
-  run(
-    "pnpm",
-    [
-      "dlx",
-      "@arethetypeswrong/cli@0.18.5",
-      "--pack",
-      join(tarballs, `gameui-${name}.tgz`),
-      // The packages are ESM-only by design, so CJS and node10 resolution
-      // failures are expected rather than defects.
-      "--profile",
-      "esm-only",
-      // attw resolves JS and type entries; a CSS entry has neither.
-      "--exclude-entrypoints",
-      "styles.css",
-    ],
-    root,
-  );
-}
+run(
+  "pnpm",
+  [
+    "dlx",
+    "@arethetypeswrong/cli@0.18.5",
+    "--pack",
+    tarball,
+    // The package is ESM-only by design, so CJS and node10 resolution
+    // failures are expected rather than defects.
+    "--profile",
+    "esm-only",
+    // attw resolves JS and type entries; CSS entries have neither.
+    "--exclude-entrypoints",
+    "styles.css",
+    "themes.css",
+    "tokens.css",
+    "base.css",
+    "tailwind.css",
+    "themes/arcade.css",
+    "themes/tactical.css",
+    "themes/playful.css",
+  ],
+  root,
+);
 
 // 3. Install and build as a consumer. The fixture carries its own
 //    pnpm-workspace.yaml, so pnpm treats it as a separate workspace root
@@ -158,6 +155,26 @@ expect(js.length > 10_000, "JS bundle is implausibly small");
 const reactCopies = readdirSync(join(fixture, "node_modules")).filter((d) => d === "react");
 expect(reactCopies.length === 1, "expected exactly one hoisted React copy");
 
+// The root entry is for games without React: nothing it loads, directly or
+// through shared chunks, may import React or Base UI.
+const installed = join(fixture, "node_modules", "@gameui", "ui");
+const reached = new Set();
+const pending = [join(installed, "dist", "index.mjs")];
+while (pending.length > 0) {
+  const file = pending.pop();
+  if (reached.has(file)) continue;
+  reached.add(file);
+  const code = readFileSync(file, "utf8");
+  for (const [, specifier] of code.matchAll(/(?:\bfrom|\bimport)\s*\(?\s*["']([^"']+)["']/g)) {
+    if (specifier.startsWith(".")) pending.push(resolve(dirname(file), specifier));
+    else
+      expect(
+        false,
+        `@gameui/ui root entry imports ${specifier} (via ${file.replace(installed, "")})`,
+      );
+  }
+}
+
 if (failures.length > 0) {
   process.stderr.write(
     `\nConsumer verification failed:\n${failures.map((f) => `  - ${f}`).join("\n")}\n`,
@@ -167,5 +184,5 @@ if (failures.length > 0) {
 
 process.stdout.write(
   `\nConsumer fixture verified: ${cssFile} carries all three themes and component styles; ` +
-    `${jsFile} built from published exports.\n`,
+    `${jsFile} built from published exports; the root entry loads no React.\n`,
 );

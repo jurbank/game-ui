@@ -18,7 +18,7 @@ The framework should make UI reusable across games without coupling game logic, 
 
 ## Repository Structure
 
-Current structure: `world-ui` provides typed FloatingLabel, Nameplate, and HealthBar contracts. World renderer implementations live in consuming games or website examples.
+Game UI publishes one package, `@gameui/ui`. Its source is split into modules with enforced boundaries (see [Module Dependency Direction](#module-dependency-direction)), and subpath exports let a game load only the layers it uses. World renderer implementations live in consuming games or website examples.
 
 ```text
 game-ui/
@@ -33,34 +33,26 @@ game-ui/
 │     └─ astro.config.mjs
 │
 ├─ packages/
-│  ├─ core/
-│  │  └─ src/
-│  │     ├─ types/
-│  │     ├─ tokens/
-│  │     ├─ utils/
-│  │     └─ index.ts
-│  ├─ react/
-│  │  └─ src/
-│  │     ├─ components/
-│  │     ├─ layouts/
-│  │     ├─ hooks/
-│  │     └─ index.ts
-│  ├─ world-ui/
-│  │  └─ src/
-│  │     ├─ floating-label/
-│  │     ├─ nameplate/
-│  │     ├─ health-bar/
-│  │     ├─ types/
-│  │     └─ index.ts
-│  └─ themes/
-│     └─ src/
-│        ├─ base.css
-│        ├─ tokens.css
-│        ├─ themes/
-│        │  ├─ arcade.css
-│        │  ├─ tactical.css
-│        │  └─ playful.css
-│        └─ index.css
+│  └─ ui/                    published as @gameui/ui
+│     ├─ src/
+│     │  ├─ index.ts         `@gameui/ui`: tokens + world contracts, renderer-free
+│     │  ├─ tokens/
+│     │  ├─ world/
+│     │  ├─ css/             theme CSS, published unbuilt
+│     │  │  ├─ tokens.css
+│     │  │  ├─ base.css
+│     │  │  ├─ tailwind.css
+│     │  │  ├─ themes/
+│     │  │  │  ├─ arcade.css
+│     │  │  │  ├─ tactical.css
+│     │  │  │  └─ playful.css
+│     │  │  └─ index.css
+│     │  └─ react/           `@gameui/ui/react`
+│     │     ├─ components/
+│     │     ├─ internal/
+│     │     ├─ styles.css     compiled to `@gameui/ui/styles.css`
+│     │     └─ index.ts
+│     └─ tests/
 │
 ├─ ARCHITECTURE.md
 ├─ OVERVIEW.md
@@ -71,21 +63,24 @@ game-ui/
 └─ tsconfig.json
 ```
 
-## Package Dependency Direction
+## Module Dependency Direction
 
 ```text
-@gameui/react    ──→ @gameui/core + @gameui/themes
-@gameui/world-ui ──→ @gameui/core (shared types/tokens as needed)
-@gameui/themes   ──→ @gameui/core (development-time token checks)
+src/react  ──→ src/tokens + src/css, React, Base UI
+src/world  ──→ nothing at runtime (types only)
+src/tokens ──→ nothing
+src/css    ──→ nothing (tests check it against src/tokens)
 
 Consuming game / website example
-    ├── React bindings ──→ @gameui/react
-    └── Native world UI implementation ──→ @gameui/world-ui contracts
+    ├── React bindings ──→ @gameui/ui/react
+    └── Native world UI implementation ──→ @gameui/ui world contracts
 ```
 
-Arrows point from consumers to their dependencies. Shared packages never depend on individual games. The world UI contracts introduce no required rendering or state runtime.
+Arrows point from consumers to their dependencies. The package never depends on individual games. The world UI contracts introduce no required rendering or state runtime.
 
-## packages/core
+`src/index.ts`, `src/tokens`, `src/world`, and `src/css` are renderer-free: they must not import React, Base UI, an engine, or anything under `src/react`. This keeps the `@gameui/ui` root entry usable by games without React. `tools/workspace-checks` enforces it on source, and `vp run verify-consumer` enforces it on the published `dist`.
+
+## Tokens (`src/tokens`)
 
 ### Responsibility
 
@@ -96,7 +91,7 @@ Renderer-independent shared primitives.
 - Shared TypeScript types
 - Semantic token definitions
 - Small utilities
-- Types shared by multiple UI layers; world-only spatial contracts belong in world-ui
+- Types shared by multiple UI layers; world-only spatial contracts belong in `src/world`
 - Shared enums
 - Framework-level contracts
 
@@ -107,7 +102,7 @@ Renderer-independent shared primitives.
 - Astro
 - Any individual game
 
-## packages/react
+## React components (`src/react`, exported as `@gameui/ui/react`)
 
 ### Responsibility
 
@@ -128,8 +123,8 @@ Screen-space UI rendered with React and normal DOM/CSS.
 
 ### May depend on
 
-- core
-- themes
+- `src/tokens`
+- `src/css`
 - React
 - Base UI (`@base-ui/react`)
 
@@ -153,7 +148,7 @@ Portaled parts such as dialogs, menus, and toasts render under `<body>`. A theme
 
 ### State rule
 
-The package must not own global game state.
+Components must not own global game state.
 Components receive controlled values through props and report intent through callbacks. Game-owned wrappers or hooks bind these props to the chosen store.
 Example:
 
@@ -163,13 +158,13 @@ Example:
 
 The game decides whether that value comes from Zustand, Colyseus, React state, Phaser, or another source.
 
-## packages/world-ui
+## World UI contracts (`src/world`)
 
 ### Responsibility
 
 Provide engine-independent specifications, lightweight TypeScript contracts, and implementation guidance for UI attached to entities or world positions. Agents and developers use these conventions to build native world UI inside their games.
 
-This package does not create render objects, run an update loop, own state, or require a component tree. A game may consume its types at development time without a framework runtime in the world rendering path. Start with typed descriptors and documentation; add JSON Schema only when serialized definitions need validation. Do not interpret or validate descriptors every frame.
+This module does not create render objects, run an update loop, own state, or require a component tree. A game may consume its types at development time without a framework runtime in the world rendering path. Start with typed descriptors and documentation; add JSON Schema only when serialized definitions need validation. Do not interpret or validate descriptors every frame.
 
 ### Initial concepts
 
@@ -181,13 +176,13 @@ DamageNumber, InteractionPrompt, and ObjectiveMarker are later candidates driven
 
 ### Dependencies
 
-World UI may use core's shared types and semantic token names. It must not depend on React, the DOM, an engine, a state library, or individual games.
+World contracts may use `src/tokens` names. It must not depend on React, the DOM, an engine, a state library, or individual games.
 
 ### Contract requirements
 
 Each concept documents content, semantic variants, defaults, configuration, and implementation responsibilities. Distinguish required semantics from optional capabilities such as occlusion, distance fading, or overlap handling. Each implementation must state what it supports and how unsupported options are handled.
 
-The public types in `packages/world-ui/src/index.ts` are used by a working canvas example and an untested 3D integration recipe in the website. The contract is a vocabulary for implementation, not a universal scene graph or renderer API.
+The public types in `packages/ui/src/world/index.ts` are used by a working canvas example and an untested 3D integration recipe in the website. The contract is a vocabulary for implementation, not a universal scene graph or renderer API.
 
 ## World Anchors and Spatial Semantics
 
@@ -195,7 +190,7 @@ Support both 2D and 3D games without assuming every anchor is an `{ x, y }` posi
 
 Document coordinate space and dimensions, world units versus screen-pixel offsets, distance units, and lifetime units. Specify behavior for missing or removed anchors. Camera projection, axis conventions, depth, occlusion, and visibility policy remain in the game implementation, with supported behavior documented by its integration guide.
 
-Shared contracts must not require a Phaser sprite, Three.js object, per-entity position callback, or a newly allocated position object each frame. Native objects and update strategies stay behind the game's integration boundary. Keep world-only spatial types in world-ui until actual cross-package use justifies moving them to core.
+Shared contracts must not require a Phaser sprite, Three.js object, per-entity position callback, or a newly allocated position object each frame. Native objects and update strategies stay behind the game's integration boundary. Keep world-only spatial types in `src/world` until actual use by other modules justifies moving them to `src/tokens`.
 
 ## Game-Owned World UI Implementations
 
@@ -234,7 +229,7 @@ World UI and screen UI share game-owned data and semantic presentation roles. Th
 
 These are composition recommendations, not automatic bindings or promises of identical appearance. For example, game health `{ value: 42, max: 100 }` can feed a native entity health bar and a React ProgressBar. Health thresholds and visibility rules remain game decisions.
 
-CSS custom properties style the web UI. A game-owned presentation adapter resolves relevant semantic values into engine-native colors, fonts, sizes, or materials at initialization and when the theme changes. Document unit conversions, font/asset requirements, and unsupported effects. Do not read computed styles every frame or put DOM dependencies in core or world-ui.
+CSS custom properties style the web UI. A game-owned presentation adapter resolves relevant semantic values into engine-native colors, fonts, sizes, or materials at initialization and when the theme changes. Document unit conversions, font/asset requirements, and unsupported effects. Do not read computed styles every frame or put DOM dependencies in `src/tokens` or `src/world`.
 
 ## UI Layer Decision Rule
 
@@ -308,7 +303,7 @@ Shared components can then use:
 
 The mapping must use `@theme inline` so utilities read the `--game-*` variables where they are applied; otherwise Tailwind resolves them once on `:root` and scoped themes or overrides do not reach the utilities.
 
-Framework CSS lives in the `game-ui` cascade layer (`game-ui.tokens`, `game-ui.themes`, `game-ui.base`, `game-ui.components`). Consumers declare its position after resets and before utilities, such as `@layer theme, base, game-ui, components, utilities;` with Tailwind, so resets like Preflight do not override components and utilities and unlayered game CSS take precedence. React component styles are precompiled with Tailwind into `@gameui/react/styles.css` without Tailwind's default theme, so only static and semantic `game-*` utilities generate CSS. The full styling contract is documented in [`packages/themes/README.md`](./packages/themes/README.md).
+Framework CSS lives in the `game-ui` cascade layer (`game-ui.tokens`, `game-ui.themes`, `game-ui.base`, `game-ui.components`). Consumers declare its position after resets and before utilities, such as `@layer theme, base, game-ui, components, utilities;` with Tailwind, so resets like Preflight do not override components and utilities and unlayered game CSS take precedence. React component styles are precompiled with Tailwind into `@gameui/ui/styles.css` without Tailwind's default theme, so only static and semantic `game-*` utilities generate CSS. The full styling contract is documented in [`packages/ui/README.md`](./packages/ui/README.md#styling-contract).
 
 Avoid shared component styles such as:
 
@@ -322,7 +317,7 @@ when the value represents game branding rather than component behavior.
 
 ## Starting Themes
 
-Three initial themes live in `packages/themes`:
+Three initial themes live in `packages/ui/src/css/themes`:
 
 ```text
 arcade.css
@@ -435,12 +430,12 @@ Do not add a framework store, signal runtime, generic data-provider API, or mand
 A simple React component:
 
 ```text
-packages/react/src/components/Button/
+packages/ui/src/react/components/Button/
 ├─ Button.tsx
 ├─ Button.types.ts
 ├─ Button.styles.ts
 └─ index.ts
-packages/react/tests/
+packages/ui/tests/
 └─ Button.test.tsx
 ```
 
@@ -465,36 +460,28 @@ Consumers should not import from deep internal paths.
 Bad:
 
 ```ts
-import { Button } from "@gameui/react/src/components/Button/Button";
+import { Button } from "@gameui/ui/src/react/components/Button/Button";
 ```
 
 Good:
 
 ```ts
-import { Button } from "@gameui/react";
+import { Button } from "@gameui/ui/react";
+import { tokenVar, type HealthBar } from "@gameui/ui";
 ```
 
-or:
-
-```ts
-import { Button } from "@gameui/react/button";
-```
-
-Use explicit package exports when useful.
+Only paths in the `exports` map are public: `.`, `./react`, `./styles.css`, `./themes.css`, `./tokens.css`, `./base.css`, `./tailwind.css`, and `./themes/<name>.css`. Add a subpath only when a consumer needs to load something separately.
 
 ## Package Conventions
 
-Each framework package follows the same template:
-
-- Package name `@gameui/<name>`, `"type": "module"`, and an explicit `exports` map. Only exported paths are public.
-- TypeScript packages build with `vp pack` to `dist/` with declaration files, and publish only `dist`. CSS-only packages publish their stylesheets unbuilt.
-- TypeScript entry points also export a `@gameui/source` condition pointing at `src`, with the plain `dist` map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while published packages expose only `dist`.
+- One published package, `@gameui/ui`, with `"type": "module"` and an explicit `exports` map. Split out another package only for a genuinely separate dependency, such as an engine adapter; register it in `tools/workspace-checks` when it is introduced.
+- TypeScript entries (`src/index.ts`, `src/react/index.ts`) build with `vp pack` to `dist/` with declaration files. Theme CSS publishes unbuilt from `src/css`; `src/react/styles.css` is compiled to `dist/styles.css`.
+- TypeScript and compiled CSS entries also export a `@gameui/source` condition pointing at `src`, with the plain map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while the published package exposes only built files.
 - Tests live in `tests/` and run through the package `test` script, so `vp run ready` includes them.
-- Framework runtimes (`react`, `react-dom`) are `peerDependencies`, also listed in `devDependencies` for local development. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.
-- Internal `@gameui/*` packages a package needs at runtime are regular `dependencies` using `workspace:^`, which is rewritten to a caret range (such as `^0.1.0`) when packed, so consumers can deduplicate. The published packages version together; see `RELEASING.md`.
+- `react` and `react-dom` are optional `peerDependencies`, also listed in `devDependencies` for local development. They are required only by `@gameui/ui/react`. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.
 - Implementation libraries that consumers never import directly, such as `@base-ui/react`, are regular `dependencies`. They stay external in the build, so a consumer's bundler deduplicates them.
 
-The allowed dependency direction is enforced by `tools/workspace-checks`, which fails when a package declares or imports a dependency outside its allowed set. Register each new package there when it is introduced.
+The allowed dependencies and renderer-free modules are enforced by `tools/workspace-checks`.
 
 ## Documentation Site
 
@@ -603,11 +590,11 @@ A game must be able to establish its own visual identity without editing shared 
 
 ```text
 Game-owned state and actions
-   ├── Game React bindings ──→ @gameui/react
-   └── Game-native world UI (follows @gameui/world-ui contracts)
+   ├── Game React bindings ──→ @gameui/ui/react
+   └── Game-native world UI (follows @gameui/ui world contracts)
 
 Shared presentation vocabulary
-   ├── @gameui/themes CSS tokens ──→ screen styling
+   ├── @gameui/ui theme CSS tokens ──→ screen styling
    └── Game-resolved semantic values ──→ native world styling
 ```
 

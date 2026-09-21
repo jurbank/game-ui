@@ -109,17 +109,19 @@ No engine or state library is required by the shared world UI contracts.
 
 ## Repository Structure
 
-This project is a monorepo. The structure below includes the `world-ui` contracts package; renderer implementations belong in consuming games or website examples.
+This project is a monorepo that publishes one package, `@gameui/ui`. Its source is organized into the modules below, exposed through subpath exports; renderer implementations belong in consuming games or website examples.
 
 ```text
 game-ui/
 ├─ apps/
 │  └─ website/
 ├─ packages/
-│  ├─ core/
-│  ├─ react/
-│  ├─ world-ui/
-│  └─ themes/
+│  └─ ui/
+│     └─ src/
+│        ├─ tokens/   (in @gameui/ui)
+│        ├─ world/    (in @gameui/ui)
+│        ├─ css/      (@gameui/ui/themes.css and related CSS)
+│        └─ react/    (@gameui/ui/react)
 ├─ package.json
 ├─ pnpm-workspace.yaml
 └─ vite.config.ts
@@ -146,7 +148,7 @@ It should contain:
 - Should this be React UI or world UI?
 - Can an agent reuse an existing primitive instead of creating something new?
 
-## packages/core
+## Tokens (`src/tokens`)
 
 Contains renderer-independent shared concepts.
 Examples:
@@ -157,9 +159,9 @@ Examples:
 - Types shared across UI layers
 - UI state contracts
 - Shared enums
-  This package must not depend on React, game engines, or state libraries.
+  This module must not depend on React, game engines, or state libraries.
 
-## packages/react
+## React components (`src/react`)
 
 Contains screen-space React components.
 Examples:
@@ -178,7 +180,7 @@ Examples:
   Components should consume semantic theme tokens rather than hardcoded visual values.
   Components with complex interaction behavior, such as Modal, are built on Base UI's unstyled primitives rather than a styled library such as shadcn/ui, so themes control every visual value.
 
-## packages/world-ui
+## World UI contracts (`src/world`)
 
 Lightweight TypeScript contracts and documentation for FloatingLabel, Nameplate, and HealthBar. DamageNumber, InteractionPrompt, and ObjectiveMarker can follow when games need them.
 
@@ -196,7 +198,7 @@ Keep component APIs controlled through props and callbacks. Game-owned wrappers 
 
 Use Zustand in the first integration example without making it a framework dependency. A provider may inject a game-specific store instance, but the framework does not require providers, signals, or a state library. Keep the current store until profiling demonstrates a reason to change; adopting MobX is not an initial milestone requirement. See [React/Game Communication](./ARCHITECTURE.md#reactgame-communication) for integration details.
 
-## packages/themes
+## Themes (`src/css`)
 
 Contains theme tokens and starting themes.
 Initial themes:

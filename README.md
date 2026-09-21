@@ -19,16 +19,13 @@ The root workspace owns all dependencies and the single `pnpm-lock.yaml`. Run `v
 
 ## Workspace
 
-| Path                     | Package                    | Purpose                                                 |
-| ------------------------ | -------------------------- | ------------------------------------------------------- |
-| `apps/website`           | `@gameui/website`          | Astro/Starlight documentation and examples              |
-| `packages/core`          | `@gameui/core`             | Renderer-independent types and token contract           |
-| `packages/themes`        | `@gameui/themes`           | Token values, themes, and Tailwind mapping              |
-| `packages/world-ui`      | `@gameui/world-ui`         | Engine-independent world UI contracts                   |
-| `packages/react`         | `@gameui/react`            | Screen UI React components                              |
-| `tools/workspace-checks` | `@gameui/workspace-checks` | Repository checks such as package dependency boundaries |
+| Path                     | Package                    | Purpose                                                  |
+| ------------------------ | -------------------------- | -------------------------------------------------------- |
+| `apps/website`           | `@gameui/website`          | Astro/Starlight documentation and examples               |
+| `packages/ui`            | `@gameui/ui`               | The published framework: tokens, themes, React, world UI |
+| `tools/workspace-checks` | `@gameui/workspace-checks` | Repository checks such as package dependency boundaries  |
 
-The `@gameui/world-ui` package supplies typed world concepts. The website includes a game-owned canvas example with shared Zustand health/selection and a 3D integration recipe. Games own world rendering and state integration; no engine adapter or state library is required by the framework. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/themes`](./packages/themes/README.md) for the styling contract.
+`@gameui/ui` has separate entry points: `@gameui/ui/react` for screen components, CSS subpaths for themes and component styles, and a renderer-free root, `@gameui/ui`, for token helpers and typed world concepts. The website includes a game-owned canvas example with shared Zustand health/selection and a 3D integration recipe. Games own world rendering and state integration; no engine adapter or state library is required by the framework. See [Package Conventions](./ARCHITECTURE.md#package-conventions) before adding one, and [`packages/ui`](./packages/ui/README.md#styling-contract) for the styling contract.
 
 Run a task in one package with `vp run <package>#<task>`, for example `vp run @gameui/website#build`.
 

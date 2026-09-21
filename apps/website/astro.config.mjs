@@ -38,8 +38,8 @@ export default defineConfig({
       // them with the source condition; Tailwind's CSS import resolver ignores it.
       customCss: [
         "./src/styles/layers.css",
-        "@gameui/themes",
-        "@gameui/react/styles.css",
+        "@gameui/ui/themes.css",
+        "@gameui/ui/styles.css",
         "./src/styles/examples.css",
       ],
       sidebar: [
@@ -54,7 +54,7 @@ export default defineConfig({
     }),
   ],
   vite: {
-    // Tailwind compiles `@gameui/react/styles.css` from source during development.
+    // Tailwind compiles `@gameui/ui/styles.css` from source during development.
     plugins: [gameUiSource(), tailwindcss()],
   },
 });

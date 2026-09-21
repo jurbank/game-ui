@@ -1,4 +1,4 @@
-import type { WorldTone } from "@gameui/world-ui";
+import type { WorldTone } from "@gameui/ui";
 import { subscribeWithSelector } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
 
