@@ -32,35 +32,36 @@ If the same information appears in both, for example the selected unit's health,
 
 ## Step 2: Map the need to a primitive
 
-| Need                                                  | Use                                                                                                    |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| A clickable action                                    | [`Button`](/components/button/), variant by intent: `primary`, `secondary`, `danger`                   |
-| An in-match toggle, such as ready                     | `Button` with `aria-pressed`                                                                           |
-| An on/off setting, such as subtitles or mute          | [`Switch`](/components/switch/)                                                                        |
-| A tuned setting, such as volume or sensitivity        | [`Slider`](/components/slider/); save in `onValueCommitted`                                            |
-| Sections within one screen, such as settings tabs     | [`Tabs`](/components/tabs/)                                                                            |
-| Name, room code, or chat entry                        | [`TextField`](/components/text-field/); validation stays in game code, passed as `error`               |
-| A standalone role or status label, such as Host       | [`Badge`](/components/badge/)                                                                          |
-| A grouped HUD section or menu                         | [`Panel`](/components/panel/) with a `title`                                                           |
-| A nested group, or a floating card                    | `Panel variant="inset"` or `variant="raised"`                                                          |
-| Pause menu, confirmation, match found, round over     | [`Modal`](/components/modal/); `dismissible={false}` when the player must choose                       |
-| Health, shield, ammo, XP, loading, capture progress   | [`ProgressBar`](/components/progress-bar/); `value={null}` when genuinely unknown                      |
-| Match clock, round timer, cooldown, respawn countdown | [`Timer`](/components/timer/), with the value from the game's clock                                    |
-| Lobby roster, party, squad, ready check               | [`PlayerList`](/components/player-list/); per-row controls in `actions`                                |
-| Standings, results, leaderboard, team scores          | [`Scoreboard`](/components/scoreboard/); extra stats in `columns`                                      |
-| A name, status, or selection above a character        | World [`Nameplate`](/world-ui/nameplate/)                                                              |
-| Health above a character or object                    | World [`HealthBar`](/world-ui/health-bar/)                                                             |
-| A place name, or text at a world position             | World [`FloatingLabel`](/world-ui/floating-label/)                                                     |
-| A damage or heal number at a target                   | World `FloatingLabel` with `lifetimeMs`, a new `id` per event, and a tone                              |
-| "Press E to open" above an object                     | World `FloatingLabel` near the object, plus the key in screen UI for accessibility                     |
-| A notification, join/leave, or pickup message         | [`Toast`](/components/toast/): `createToastManager()` + `ToastRegion` in a HudSlot                     |
-| A countdown, "Go!", or round-end moment               | [`Announcement`](/components/announcement/) in a `center` HudSlot                                      |
-| A control hint such as "Dash Space"                   | [`Kbd`](/components/kbd/), one per key                                                                 |
-| A settings or loadout screen                          | `Panel` with `Tabs`, `Slider`s, and `Switch`es; see the [Slider example](/components/slider/)          |
-| Positioning HUD content over the game                 | [`HudLayer`](/components/hud-layer/) with `HudSlot`s; never hand-written fixed positioning             |
-| Game keys vs focused HUD controls                     | [`uiOwnsKeyboard` and `releaseFocusOnGameKeys`](/patterns/game-input/) from `@gameui/ui/input`         |
-| Movement and action controls on a phone               | [`VirtualStick` and `TouchButton`](/components/touch-controls/) in `TouchControls`, polled by the game |
-| A full HUD                                            | Compose the above; see the [HUD demo](/patterns/hud/) and [walkthrough](/getting-started/walkthrough/) |
+| Need                                                  | Use                                                                                                       |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| A clickable action                                    | [`Button`](/components/button/), variant by intent: `primary`, `secondary`, `danger`                      |
+| An in-match toggle, such as ready                     | `Button` with `aria-pressed`                                                                              |
+| An on/off setting, such as subtitles or mute          | [`Switch`](/components/switch/)                                                                           |
+| A tuned setting, such as volume or sensitivity        | [`Slider`](/components/slider/); save in `onValueCommitted`                                               |
+| Sections within one screen, such as settings tabs     | [`Tabs`](/components/tabs/)                                                                               |
+| Name, room code, or chat entry                        | [`TextField`](/components/text-field/); validation stays in game code, passed as `error`                  |
+| A standalone role or status label, such as Host       | [`Badge`](/components/badge/)                                                                             |
+| A grouped HUD section or menu                         | [`Panel`](/components/panel/) with a `title`                                                              |
+| A nested group, or a floating card                    | `Panel variant="inset"` or `variant="raised"`                                                             |
+| Pause menu, confirmation, match found, round over     | [`Modal`](/components/modal/); `dismissible={false}` when the player must choose                          |
+| Health, shield, ammo, XP, loading, capture progress   | [`ProgressBar`](/components/progress-bar/); `value={null}` when genuinely unknown                         |
+| Match clock, round timer, cooldown, respawn countdown | [`Timer`](/components/timer/), with the value from the game's clock                                       |
+| Lobby roster, party, squad, ready check               | [`PlayerList`](/components/player-list/); per-row controls in `actions`                                   |
+| Standings, results, leaderboard, team scores          | [`Scoreboard`](/components/scoreboard/); extra stats in `columns`                                         |
+| A name, status, or selection above a character        | World [`Nameplate`](/world-ui/nameplate/)                                                                 |
+| Health above a character or object                    | World [`HealthBar`](/world-ui/health-bar/)                                                                |
+| A place name, or text at a world position             | World [`FloatingLabel`](/world-ui/floating-label/)                                                        |
+| A damage or heal number at a target                   | World `FloatingLabel` with `lifetimeMs`, a new `id` per event, and a tone                                 |
+| "Press E to open" above an object                     | World `FloatingLabel` near the object, plus the key in screen UI for accessibility                        |
+| A notification, join/leave, or pickup message         | [`Toast`](/components/toast/): `createToastManager()` + `ToastRegion` in a HudSlot                        |
+| A countdown, "Go!", or round-end moment               | [`Announcement`](/components/announcement/) in a `center` HudSlot                                         |
+| A control hint such as "Dash Space"                   | [`Kbd`](/components/kbd/), one per key                                                                    |
+| A settings or loadout screen                          | `Panel` with `Tabs`, `Slider`s, and `Switch`es; see the [Slider example](/components/slider/)             |
+| Positioning HUD content over the game                 | [`HudLayer`](/components/hud-layer/) with `HudSlot`s; never hand-written fixed positioning                |
+| Game keys vs focused HUD controls                     | [`uiOwnsKeyboard` and `releaseFocusOnGameKeys`](/patterns/game-input/) from `@gameui/ui/input`            |
+| Profanity in names, chat, or nameplates               | [`createTextFilter`](/patterns/text-filtering/) from `@gameui/ui/text`, at the boundary where text enters |
+| Movement and action controls on a phone               | [`VirtualStick` and `TouchButton`](/components/touch-controls/) in `TouchControls`, polled by the game    |
+| A full HUD                                            | Compose the above; see the [HUD demo](/patterns/hud/) and [walkthrough](/getting-started/walkthrough/)    |
 
 ## Step 3: Check variants and composition before building
 

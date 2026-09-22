@@ -96,6 +96,8 @@ Plus the shared fields: `id`, `anchor`, `offset`, `tone`, `visible`, `missingAnc
 
 Don't infer team, rank, or status from the anchor's entity id. Put everything the nameplate shows in its fields.
 
+`name` and `status` are plain text a player may have written, so filter them where the name is set, not where the plate is drawn: see [Filtering player text](/patterns/text-filtering/). Store the clean string in game state and let the nameplate and the [PlayerList](/components/player-list/) read the same one.
+
 ## Tones
 
 Tones colour the text with `--game-text` (default) or `--game-{primary,success,warning,danger}-text`. The game chooses what each tone means, for example `primary` for allies and `danger` for enemies or downed players. The reference game draws selection as a `◆` prefix with a `--game-primary` ring around the marker, on a `--game-panel` backing.

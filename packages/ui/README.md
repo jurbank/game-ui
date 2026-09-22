@@ -26,6 +26,7 @@ import { Button, Panel } from "@gameui/ui/react";
 | `@gameui/ui/react`               | Button, Panel, Modal, ProgressBar, Timer, PlayerList, Scoreboard, Slider, Switch, Tabs, HudLayer, TextField, Badge, Announcement, Toast, Kbd, VirtualStick, TouchButton, TouchControls | Yes         |
 | `@gameui/ui`                     | Token names and helpers; type-only world UI contracts                                                                                                                                  | No          |
 | `@gameui/ui/input`               | Keyboard ownership between the game and focused HUD controls; touch stick and button controllers                                                                                       | No          |
+| `@gameui/ui/text`                | Word filter for player-authored text: display names, chat, nameplates. You supply the word list                                                                                        | No          |
 | `@gameui/ui/styles.css`          | Precompiled component styles for `@gameui/ui/react`                                                                                                                                    | No          |
 | `@gameui/ui/themes.css`          | Default tokens, base styles, and every starting theme                                                                                                                                  | No          |
 | `@gameui/ui/tokens.css`          | Neutral default value for every token on `:root`                                                                                                                                       | No          |
@@ -170,12 +171,14 @@ Before creating screen UI, map the need to an existing component and check its v
 | Joins, pickups, notices     | `createToastManager()` + `ToastRegion`                                      |
 | Key hints                   | `Kbd`, one per key                                                          |
 | Game keys vs HUD focus      | `uiOwnsKeyboard`, `releaseFocusOnGameKeys` (`/input`)                       |
+| Profanity in names or chat  | `createTextFilter({ words })` (`/text`); `loose` names, `word` chat         |
 | Touch movement and actions  | `VirtualStick`, `TouchButton` in `TouchControls`; controllers from `/input` |
 
 - Compose these before writing a new component. Change the look with `--game-*` token overrides, not raw colours or forked components.
 - Components are controlled: pass game state through props and handle callbacks in game code. The game decides ranking, winners, thresholds, and lifecycle.
 - UI attached to characters or world positions is not React: implement the world UI contracts in the game's renderer.
 - World contracts are types, not components. Use Nameplate for names/status/selection above characters, HealthBar for entity health, and FloatingLabel for place names and short-lived world text such as damage numbers (`lifetimeMs`, a new `id` per event).
+- Filter player-authored text where it enters the game, with `@gameui/ui/text`, and store the clean string. Never filter in a render or a frame: components and world renderers receive text that is already filtered. The word list is the game's own: `words` is required and the package ships none.
 - Keep one game-owned value for anything shown in both layers, such as health in a HealthBar and a screen ProgressBar.
 - Reject optional world capabilities your renderer doesn't support (`occlusion: "hide"`, `maxDistance`, 3D anchors) with an error at creation. Never ignore them silently.
 - Resolve theme tokens at startup and on theme change, never per frame. World text is invisible to assistive technology, so mirror important information in screen UI.

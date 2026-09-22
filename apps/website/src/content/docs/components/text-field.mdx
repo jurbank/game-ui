@@ -76,4 +76,5 @@ Uses `--game-surface`, `--game-border`, `--game-border-width`, `--game-radius-md
 ## Agent guidance
 
 - Keep validation rules in game code and pass the message as `error`; do not re-implement error styling.
+- For a display name or chat field, check the text with [`createTextFilter`](/patterns/text-filtering/) and set `error` from the result. Say the name is unavailable rather than naming the word.
 - Gate game input on `uiOwnsKeyboard()` so typing a name never moves the player.

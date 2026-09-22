@@ -96,6 +96,8 @@ const damage: FloatingLabel<"2d"> = {
 
 Plus the shared fields: `id`, `anchor`, `offset`, `tone`, `visible`, `missingAnchor`, `lifetimeMs`, and the optional capabilities `occlusion` and `maxDistance`. [Shared configuration](/world-ui/contracts/#shared-configuration) defines their defaults and units.
 
+When `text` comes from a player — a placed marker, a ship name, a chat bubble — filter it once, where the text is set, with [`createTextFilter`](/patterns/text-filtering/). The renderer draws the label every frame; the filter runs when the string changes.
+
 ## Tones
 
 | Tone      | Use for                           | Text token            |

@@ -48,6 +48,10 @@
       "@gameui/source": "./src/input/index.ts",
       "default": "./dist/input.mjs"
     },
+    "./text": {
+      "@gameui/source": "./src/text/index.ts",
+      "default": "./dist/text.mjs"
+    },
     "./styles.css": {
       "@gameui/source": "./src/react/styles.css",
       "default": "./dist/styles.css"
@@ -66,6 +70,7 @@
       ".": "./dist/index.mjs",
       "./react": "./dist/react.mjs",
       "./input": "./dist/input.mjs",
+      "./text": "./dist/text.mjs",
       "./styles.css": "./dist/styles.css",
       "./themes.css": "./src/css/index.css",
       "./tokens.css": "./src/css/tokens.css",

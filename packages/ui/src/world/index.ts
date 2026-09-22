@@ -59,6 +59,19 @@ export type WorldPresentation<D extends WorldDimension = WorldDimension> = D ext
   ? WorldPresentationFields<D>
   : never;
 
+/**
+ * Player-authored text in a descriptor — a nameplate's `name` or `status`, a
+ * label a player typed — is already filtered by the game when the descriptor
+ * is built. Filter where the text enters the game (name change accepted, chat
+ * message received), not in the renderer: the draw loop runs every frame and
+ * the same string would be re-checked thousands of times for one result.
+ * `@gameui/ui/text` provides the matching (the game supplies the word list)
+ * and runs without React or the DOM.
+ *
+ * Store the filtered text a player sees, and keep the raw text only where
+ * moderation and reporting need it.
+ */
+
 /** Contextual plain text. No HTML, gameplay trigger, or animation is implied. */
 export type FloatingLabel<D extends WorldDimension = WorldDimension> = WorldPresentation<D> & {
   readonly kind: "floating-label";

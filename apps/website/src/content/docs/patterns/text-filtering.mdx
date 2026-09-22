@@ -1,0 +1,161 @@
+---
+title: Filtering player text
+description: Hiding profanity in names, chat, and nameplates with @gameui/ui/text, and where in a game to do it.
+sidebar:
+  order: 4
+---
+
+Anything a player types is read by other players: display names, clan tags, chat, and the nameplates and labels those names appear on. `@gameui/ui/text` folds evasive spellings back together, matches a word list, and reports where each match is, so a game can mask it or refuse the input. It uses no DOM, React, or engine, so the same filter runs in a client, a world renderer, and an authoritative server.
+
+**You supply the words.** Game UI ships no list of banned words: which words a game filters depends on its audience, rating, and languages, and that is an editorial decision, not a framework one. What this module provides is the matching — the part that is easy to get wrong. See [Getting a word list](#getting-a-word-list).
+
+```ts
+import { createTextFilter } from "@gameui/ui/text";
+
+const filter = createTextFilter({ words: bannedWords });
+
+filter.clean("what the shiiit"); // "what the ******"
+filter.hasMatch("gg well played"); // false
+```
+
+Create the filter once at startup and reuse it. Compiling the word list costs more than checking a string, so never build one per message, per render, or inside a game loop. An empty `words` list throws, rather than quietly matching nothing.
+
+## What it catches
+
+Matching normalizes both the text and the list before comparing, so one plain entry covers the spellings players actually use. Write `shit` once; you do not need entries for `sh1t`, `SHIT`, `shiiit`, or `s-h-i-t`:
+
+| Written                    | Folded to   | Why                                   |
+| -------------------------- | ----------- | ------------------------------------- |
+| `SHIT`, `shït`, `ｓｈｉｔ` | shit        | case, accents, full-width forms       |
+| `shiiiit`                  | shit        | repeated letters                      |
+| `sh1t`, `a$$`, `@ss`       | shit, ass   | digits and symbols for letters        |
+| `a s s`, `s-h-i-t`         | ass, shit   | spacing and punctuation inside a word |
+| `shitty`, `bitches`        | shit, bitch | endings, in `word` mode               |
+
+It is a word filter, not a moderation system. It does not judge tone, threats, harassment by implication, or anything outside its list, and a determined player will get something past it. Keep reporting, muting, and human review.
+
+## Two modes
+
+Pick the mode from what the text is, either when creating the filter or per call:
+
+```ts
+const chat = createTextFilter({ words }); // match: "word" (default)
+const names = createTextFilter({ words, match: "loose" });
+
+chat.hasMatch("xXshitlordXx"); // false — word mode won't reach inside
+names.hasMatch("xXshitlordXx"); // true
+```
+
+- **`word`** matches from the start of a word, endings included, and ignores a listed word buried after other letters. "Scunthorpe", "assassin", and "therapist" stay clean on their own. Use it for **chat**, where a false positive is worse than a missed word in a scrolling log. `clean` masks the whole word, so `shitty` becomes `******`, not `****ty`.
+- **`loose`** matches anywhere inside a word, catching `xXshitlordXx` and `ShitLord99`. Use it for **display names, clan tags, and pet or ship names** — one permanent string, chosen deliberately, read by everyone. It has more false positives, which is what the allow list is for.
+
+## Where to filter
+
+Filter where text enters the game, not where it is drawn.
+
+| Text                     | Where                                    | What to do                              |
+| ------------------------ | ---------------------------------------- | --------------------------------------- |
+| Display name             | When it is submitted, on the server      | Reject with `hasMatch`, in `loose` mode |
+| Chat message             | When received, before it reaches the log | Mask with `clean`, in `word` mode       |
+| Nameplates, world labels | When the name changes, not per frame     | Store the cleaned string in game state  |
+| Scoreboard, player list  | Never — pass the already-clean name      | Same string the nameplate uses          |
+
+Filtering in a client is a display courtesy. A modified client sends whatever it likes, so a multiplayer game filters on the server too, and the server's result is what other players receive.
+
+### Rejecting a name
+
+`TextField` reports errors but owns no validation, so the game decides:
+
+```tsx
+const names = createTextFilter({ words, match: "loose" });
+
+function NameField({ value, onValueChange }: NameFieldProps) {
+  const error = names.hasMatch(value) ? "Pick a different name." : undefined;
+  return (
+    <TextField
+      label="Display name"
+      description="Up to 16 characters"
+      value={value}
+      onValueChange={onValueChange}
+      error={error}
+    />
+  );
+}
+```
+
+Say a name is unavailable rather than naming the word: quoting the match back turns the filter into a game of guessing what gets through.
+
+### Cleaning chat
+
+Filter the message once, when it arrives, and keep the result in game state:
+
+```ts
+const chat = createTextFilter({ words });
+
+socket.on("chat", ({ playerId, body }) => {
+  addMessage({ playerId, body: chat.clean(body) });
+});
+```
+
+### Nameplates and world labels
+
+World descriptors carry plain text that the renderer draws every frame. Filter the name when it is set, store the clean string, and let both the nameplate and the scoreboard read it:
+
+```ts
+function setDisplayName(playerId: string, raw: string) {
+  const name = names.hasMatch(raw) ? `Player ${shortId(playerId)}` : raw;
+  players.set(playerId, { ...players.get(playerId), name });
+}
+```
+
+Never call the filter from `draw` or `update`. The string has not changed since the last frame, so the answer has not either.
+
+## Getting a word list
+
+Published lists are the usual starting point. Community-maintained sets such as [LDNOOBW](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) cover dozens of languages, and npm packages such as [`naughty-words`](https://www.npmjs.com/package/naughty-words) publish the same data as importable arrays:
+
+```ts
+import en from "naughty-words/en.json";
+import es from "naughty-words/es.json";
+
+const filter = createTextFilter({ words: [...en, ...es] });
+```
+
+Review whatever you adopt before shipping it. Published lists are blunt: they carry words that are ordinary in some games and some dialects, and they reflect the judgment of whoever assembled them, not your audience's.
+
+Better still for a live game, **load the list at runtime** from your own configuration or server. Word lists change more often than clients ship, and moderation is not a code change:
+
+```ts
+const words = await fetch("/config/filtered-words.json").then((r) => r.json());
+const filter = createTextFilter({ words });
+```
+
+Keep the list where your moderators can edit it, and build the filter once after it loads.
+
+### Words that must never be flagged
+
+`defaultAllowList` ships with the package because it is not an editorial list: it is ordinary English and real place names, tuned to how this matcher treats stems and endings. It is what protects "Scunthorpe", "cockpit", "assassin", and "analysis". `allow` adds to it:
+
+```ts
+createTextFilter({ words, allow: ["Dickinson", "Cockburn"] });
+```
+
+Allowed entries are matched loosely and must contain the match, so a stem such as `analy` exempts "analysis" and "analyze" at once, while `bass` does not make "dumbass" innocent. An entry can only ever prevent a match, never cause one.
+
+Other options: `mask` (the character `clean` repeats, `*` by default), `placeholder` (replace the whole match with `[removed]` instead), `leet` and `collapseRepeats` (turn the folding off for literal matching).
+
+## Localization
+
+Matching itself is language-agnostic: folding case, accents, and repeated letters works the same way everywhere, and one filter can hold several languages at once — the cost is a longer list, not a slower check. Pass the lists for the languages your players actually use.
+
+`defaultAllowList` is English. In another language it simply has nothing to say; it can only prevent matches on the English words it names.
+
+## Agent guidance
+
+- Use `@gameui/ui/text` rather than writing a regular expression over a word list; the evasion handling is the part that is easy to get wrong.
+- `words` is required and the framework ships none. Take the list from the game's own configuration, or a published list the team has reviewed — do not invent one, and do not paste slurs into application source.
+- `loose` for names and tags, `word` for chat. Do not use `loose` on chat without checking false positives.
+- Create one filter at startup; never inside a component, a message handler, or a frame.
+- Filter at the boundary where text enters the game and store the clean string. Components and world renderers receive text that is already filtered.
+- Never report the matched word back to the player in an error message.
+- Client-side filtering is presentation. In multiplayer, filter on the server as well.

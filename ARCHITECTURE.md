@@ -38,6 +38,7 @@ game-ui/
 │     │  ├─ index.ts         `@gameui/ui`: tokens + world contracts, renderer-free
 │     │  ├─ tokens/
 │     │  ├─ world/
+│     │  ├─ text/           `@gameui/ui/text`
 │     │  ├─ css/             theme CSS, published unbuilt
 │     │  │  ├─ tokens.css
 │     │  │  ├─ base.css
@@ -71,6 +72,7 @@ src/world  ──→ nothing at runtime (types only)
 src/tokens ──→ nothing
 src/css    ──→ nothing (tests check it against src/tokens)
 src/input  ──→ the DOM only (keyboard ownership; touch stick and button controllers)
+src/text   ──→ nothing (word filtering for player-authored text)
 
 Consuming game / website example
     ├── React bindings ──→ @gameui/ui/react
@@ -79,7 +81,7 @@ Consuming game / website example
 
 Arrows point from consumers to their dependencies. The package never depends on individual games. The world UI contracts introduce no required rendering or state runtime.
 
-`src/index.ts`, `src/tokens`, `src/world`, `src/css`, and `src/input` are renderer-free: they must not import React, Base UI, an engine, or anything under `src/react`. This keeps the `@gameui/ui` root and `@gameui/ui/input` entries usable by games without React. `tools/workspace-checks` enforces it on source, and `vp run verify-consumer` enforces it on the published `dist`.
+`src/index.ts`, `src/tokens`, `src/world`, `src/css`, `src/input`, and `src/text` are renderer-free: they must not import React, Base UI, an engine, or anything under `src/react`. This keeps the `@gameui/ui` root, `@gameui/ui/input`, and `@gameui/ui/text` entries usable by games without React. `tools/workspace-checks` enforces it on source, and `vp run verify-consumer` enforces it on the published `dist`.
 
 ## Tokens (`src/tokens`)
 
@@ -158,6 +160,29 @@ Example:
 ```
 
 The game decides whether that value comes from Zustand, Colyseus, React state, Phaser, or another source.
+
+## Player text filtering (`src/text`, exported as `@gameui/ui/text`)
+
+### Responsibility
+
+Decide whether player-authored text contains a listed word, and mask it. Display names, clan tags, chat, and the world text those names appear on all come from players and are read by other players.
+
+The module owns matching, not vocabulary. It folds evasive spellings (case, accents, full-width forms, repeated letters, digits and symbols for letters, separators inside a word) back together, exempts an allow list, and reports match positions. Whether a name is rejected, masked, or replaced is a game decision.
+
+The package ships no list of words to filter, and `words` is required. Which words a game filters depends on its audience, rating, and languages; that is an editorial decision belonging to the game, maintained lists are published elsewhere, and a shared framework should not put one in every consumer's bundle. The one list that does ship is `defaultAllowList` — words that must never be flagged — because it is ordinary English tuned to this matcher's handling of stems and endings, not a judgment about language.
+
+It is a word filter, not a moderation system, and never a substitute for reporting and human review.
+
+### Must not depend on
+
+- React, the DOM, an engine, or a state library
+- Any individual game
+
+Games without React, and authoritative servers, use it through `@gameui/ui/text`. Client-side filtering is presentation; a multiplayer game filters on the server too.
+
+### Where filtering happens
+
+Filter where text enters the game — a name accepted, a message received — and store the clean string. Screen components and world renderers receive text that is already filtered; the filter must never run in a render pass or a game loop, where the same unchanged string would be re-checked every frame.
 
 ## World UI contracts (`src/world`)
 
@@ -471,12 +496,12 @@ import { Button } from "@gameui/ui/react";
 import { tokenVar, type HealthBar } from "@gameui/ui";
 ```
 
-Only paths in the `exports` map are public: `.`, `./react`, `./input`, `./styles.css`, `./themes.css`, `./tokens.css`, `./base.css`, `./tailwind.css`, and `./themes/<name>.css`. Add a subpath only when a consumer needs to load something separately.
+Only paths in the `exports` map are public: `.`, `./react`, `./input`, `./text`, `./styles.css`, `./themes.css`, `./tokens.css`, `./base.css`, `./tailwind.css`, and `./themes/<name>.css`. Add a subpath only when a consumer needs to load something separately.
 
 ## Package Conventions
 
 - One published package, `@gameui/ui`, with `"type": "module"` and an explicit `exports` map. Split out another package only for a genuinely separate dependency, such as an engine adapter; register it in `tools/workspace-checks` when it is introduced.
-- TypeScript entries (`src/index.ts`, `src/react/index.ts`, `src/input/index.ts`) build with `vp pack` to `dist/` with declaration files. Theme CSS publishes unbuilt from `src/css`; `src/react/styles.css` is compiled to `dist/styles.css`.
+- TypeScript entries (`src/index.ts`, `src/react/index.ts`, `src/input/index.ts`, `src/text/index.ts`) build with `vp pack` to `dist/` with declaration files. Theme CSS publishes unbuilt from `src/css`; `src/react/styles.css` is compiled to `dist/styles.css`.
 - TypeScript and compiled CSS entries also export a `@gameui/source` condition pointing at `src`, with the plain map repeated in `publishConfig.exports`. The workspace TypeScript and Vite configs enable that condition, so checks, tests, and dev servers work from a fresh checkout without building first, while the published package exposes only built files.
 - Tests live in `tests/` and run through the package `test` script, so `vp run ready` includes them.
 - `react` and `react-dom` are optional `peerDependencies`, also listed in `devDependencies` for local development. They are required only by `@gameui/ui/react`. `vp pack` leaves dependencies and peer dependencies external, so consumer builds contain one copy of each runtime.

@@ -155,11 +155,13 @@ expect(js.length > 10_000, "JS bundle is implausibly small");
 const reactCopies = readdirSync(join(fixture, "node_modules")).filter((d) => d === "react");
 expect(reactCopies.length === 1, "expected exactly one hoisted React copy");
 
-// The root and input entries are for games without React: nothing they load,
-// directly or through shared chunks, may import React or Base UI.
+// The root, input, and text entries are for games without React: nothing they
+// load, directly or through shared chunks, may import React or Base UI.
 const installed = join(fixture, "node_modules", "@gameui", "ui");
 const reached = new Set();
-const pending = ["index.mjs", "input.mjs"].map((entry) => join(installed, "dist", entry));
+const pending = ["index.mjs", "input.mjs", "text.mjs"].map((entry) =>
+  join(installed, "dist", entry),
+);
 while (pending.length > 0) {
   const file = pending.pop();
   if (reached.has(file)) continue;
@@ -184,5 +186,5 @@ if (failures.length > 0) {
 
 process.stdout.write(
   `\nConsumer fixture verified: ${cssFile} carries all three themes and component styles; ` +
-    `${jsFile} built from published exports; the root and input entries load no React.\n`,
+    `${jsFile} built from published exports; the root, input, and text entries load no React.\n`,
 );
